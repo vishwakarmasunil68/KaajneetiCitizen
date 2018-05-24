@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical"
+    tools:context=".activity.loginregistration.EnterMobileNumberActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/ic_login_back" />
+
+    </FrameLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="40dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                        android:id="@+id/tv_mobile_number"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="Please enter the verification code sent to +"
+                        android:textColor="#6F6F6F"
+                        android:textSize="21sp" />
+
+                </FrameLayout>
+
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:minHeight="60dp">
+
+                    <com.goodiebag.pinview.Pinview
+                        android:id="@+id/pinview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cursorVisible="false"
+                        app:forceKeyboard="true"
+                        app:inputType="number"
+                        app:password="false"
+                        app:pinBackground="@drawable/pin_back"
+                        app:pinHeight="70dp"
+                        app:pinLength="4"
+                        app:splitWidth="10dp"
+                        app:pinWidth="60dp" />
+
+                </FrameLayout>
+
+                <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="35dp"
+                    android:gravity="center"
+                    android:text="If we fail to detect the SMS automatically, enter the received OTP"
+                    android:textColor="#C1C1C1"
+                    android:textSize="18sp" />
+
+
+                <Button
+                    android:id="@+id/btn_next"
+                    android:layout_width="175dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="35dp"
+                    android:background="@drawable/btn_next"
+                    android:minHeight="50dp"
+                    android:text="Next"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:layout_width="175dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/btn_next"
+                    android:enabled="false"
+                    android:minHeight="50dp"
+                    android:text="Resend 00:15"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

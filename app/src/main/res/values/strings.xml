@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">KaajneetiCitizen</string>
+
+    <string name="facebook_app_id">186581788824110</string>
+    <string name="fb_login_protocol_scheme">fb186581788824110</string>
+
+    <string name="google_places_api_key">AIzaSyD_0g_gaQzNYafcBCKn1ErgLePEp2d-OGU</string>
+
+    <string name="com.twitter.sdk.android.CONSUMER_KEY">odTUxR2y7jhDIb1ImhiGE4VDY</string>
+    <string name="com.twitter.sdk.android.CONSUMER_SECRET">FFKtAo7BeyDoEoUeRXZUq1FwHAjCHutOXZc4gcimEmG4cOMWKV</string>
+
+    <string name="google_map_key">AIzaSyBgNV2K7mwwsUqwF_tsjYHyGRBu7_rAZmM</string>
+
+    <string-array name="publicpriv">
+        <item>Public</item>
+        <item>Private</item>
+    </string-array>
+    <string-array name="complainttype">
+        <item>Self</item>
+        <item>Group</item>
+        <item>Others</item>
+    </string-array>
+    <string-array name="departmenttype">
+        <item>Public</item>
+        <item>Private</item>
+    </string-array>
+
+</resources>
