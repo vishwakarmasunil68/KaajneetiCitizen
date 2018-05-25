@@ -1,6 +1,7 @@
 package com.ritvi.kaajneeti.Util;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -12,6 +13,8 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.EditText;
 
+
+import com.ritvi.kaajneeti.activity.express.CheckInActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -252,4 +255,29 @@ public class UtilityFunction {
 //
 //    }
 
+
+
+
+    public static double[] getLocation(Context context) {
+        GPSTracker gps;
+        gps = new GPSTracker(context);
+        double latitude =0.00;
+        double longitude =0.00;
+        if (gps.canGetLocation()) {
+
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+
+            Log.d(TagUtils.getTag(), "location:-latitude:-" + latitude);
+            Log.d(TagUtils.getTag(), "location:-longitude:-" + longitude);
+
+            Pref.SetStringPref(context, StringUtils.CURRENT_LATITUDE, String.valueOf(latitude));
+            Pref.SetStringPref(context, StringUtils.CURRENT_LONGITUDE, String.valueOf(longitude));
+        } else {
+//            gps.showSettingsAlert();
+        }
+
+        double[] loc=new double[]{latitude,longitude};
+        return loc;
+    }
 }

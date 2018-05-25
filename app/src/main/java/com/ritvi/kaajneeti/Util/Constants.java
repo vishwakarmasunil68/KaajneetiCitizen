@@ -12,6 +12,12 @@ import java.util.List;
 
 public class Constants {
 
+    //start activity constants...
+    public static final int ACTIVITY_TAG_PEOPLE = 101;
+    public static final int ACTIVITY_LOCATION= 102;
+
+
+    // Access permission
     public static final int ACCESS_CAMERA=2001;
     public static final int READ_CONTACTS=2002;
     public static final int ACCESS_STORAGE=2003;

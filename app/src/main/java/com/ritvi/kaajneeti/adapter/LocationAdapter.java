@@ -6,9 +6,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ritvi.kaajneeti.R;
+import com.ritvi.kaajneeti.activity.express.CheckInActivity;
 import com.ritvi.kaajneeti.pojo.location.LocationPOJO;
 import com.ritvi.kaajneeti.pojo.location.NewLocationPOJO;
 
@@ -42,6 +44,15 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.ViewHo
 
         holder.location_name.setText(items.get(position).getMain_text());
         holder.tv_area_name.setText(items.get(position).getSecondary_text());
+        holder.ll_location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(activity instanceof CheckInActivity){
+                    CheckInActivity checkInActivity= (CheckInActivity) activity;
+                    checkInActivity.setActivityLocation(items.get(position));
+                }
+            }
+        });
 
         holder.itemView.setTag(items.get(position));
     }
@@ -56,11 +67,13 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.ViewHo
 
         public TextView location_name;
         public TextView tv_area_name;
+        public LinearLayout ll_location;
 
         public ViewHolder(View itemView) {
             super(itemView);
             location_name=itemView.findViewById(R.id.location_name);
             tv_area_name=itemView.findViewById(R.id.tv_area_name);
+            ll_location=itemView.findViewById(R.id.ll_location);
         }
     }
 }

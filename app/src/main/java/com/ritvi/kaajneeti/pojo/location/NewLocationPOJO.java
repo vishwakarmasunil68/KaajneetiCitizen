@@ -1,6 +1,8 @@
 package com.ritvi.kaajneeti.pojo.location;
 
-public class NewLocationPOJO {
+import java.io.Serializable;
+
+public class NewLocationPOJO implements Serializable{
     String main_text;
     String secondary_text;
     String place_id;

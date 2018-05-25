@@ -1,6 +1,7 @@
 package com.ritvi.kaajneeti.activity.express;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -25,6 +26,10 @@ import com.ritvi.kaajneeti.fragment.Express.CreateComplaintFragment;
 import com.ritvi.kaajneeti.fragment.Express.CreateEventFragment;
 import com.ritvi.kaajneeti.fragment.Express.CreatePollFragment;
 import com.ritvi.kaajneeti.fragment.Express.CreateSuggestionFragment;
+
+import net.alhazmy13.mediapicker.Image.ImagePicker;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -192,4 +197,13 @@ public class ExpressActivity extends AppCompatActivity {
         startActivity(new Intent(this, CheckInActivity.class));
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+//        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+//            fragment.onActivityResult(requestCode, resultCode, data);
+//        }
+    }
 }

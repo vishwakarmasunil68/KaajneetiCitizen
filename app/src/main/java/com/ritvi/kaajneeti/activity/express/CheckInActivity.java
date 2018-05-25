@@ -1,5 +1,7 @@
 package com.ritvi.kaajneeti.activity.express;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -110,5 +112,18 @@ public class CheckInActivity extends AppCompatActivity {
         rv_location.setAdapter(locationAdapter);
         rv_location.setLayoutManager(linearLayoutManager);
         rv_location.setItemAnimator(new DefaultItemAnimator());
+    }
+
+    public void setActivityLocation(NewLocationPOJO newLocationPOJO) {
+        if(newLocationPOJO!=null){
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("location",newLocationPOJO);
+            setResult(Activity.RESULT_OK,returnIntent);
+            finish();
+        }else{
+            Intent returnIntent = new Intent();
+            setResult(Activity.RESULT_CANCELED, returnIntent);
+            finish();
+        }
     }
 }
