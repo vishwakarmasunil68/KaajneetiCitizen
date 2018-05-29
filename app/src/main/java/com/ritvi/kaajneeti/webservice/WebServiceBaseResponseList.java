@@ -61,6 +61,11 @@ public class WebServiceBaseResponseList<T> extends AsyncTask<String, Void, Respo
         this.msg = msg;
         this.cls=cls;
         this.isdialog = isdialog;
+        String nmv="";
+        for(NameValuePair nameValuePair:nameValuePairs){
+            nmv=nmv+nameValuePair.getName()+" : "+nameValuePair.getValue()+"\n";
+        }
+        Log.d(TagUtils.getTag(),"nmv:-"+nmv);
         Log.d(TAG, this.toString());
     }
 

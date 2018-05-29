@@ -64,4 +64,9 @@
         <item name="android:maxLines">1</item>
     </style>
 
+    <style name="TextAppearance.sourcesansprosemiboldItalic" parent="android:TextAppearance">
+        <!-- Custom Attr-->
+        <item name="fontPath">fonts/sourcesansprosemiboldItalic.ttf</item>
+    </style>
+
 </resources>

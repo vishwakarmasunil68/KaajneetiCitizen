@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -107,6 +108,8 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
     ImageView iv_back;
     @BindView(R.id.spinner_pubpri)
     Spinner spinner_pubpri;
+    @BindView(R.id.ll_back)
+    LinearLayout ll_back;
 
     boolean start_date = false;
     boolean start_time = false;
@@ -130,7 +133,6 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
     String privPublic;
     String event_name;
     List<String> mediaFiles = new ArrayList<>();
-
 
     @Nullable
     @Override
@@ -239,6 +241,13 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
                 });
                 menu.inflate(R.menu.menu_media_picker);
                 menu.show();
+            }
+        });
+
+        ll_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancelEvent();
             }
         });
     }

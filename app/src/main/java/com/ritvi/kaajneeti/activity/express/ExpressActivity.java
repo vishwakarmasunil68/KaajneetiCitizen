@@ -2,6 +2,7 @@ package com.ritvi.kaajneeti.activity.express;
 
 import android.Manifest;
 import android.app.Activity;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -15,7 +16,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
 import com.ritvi.kaajneeti.Util.GPSTracker;
@@ -26,20 +29,28 @@ import com.ritvi.kaajneeti.fragment.Express.CreateComplaintFragment;
 import com.ritvi.kaajneeti.fragment.Express.CreateEventFragment;
 import com.ritvi.kaajneeti.fragment.Express.CreatePollFragment;
 import com.ritvi.kaajneeti.fragment.Express.CreateSuggestionFragment;
+import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
 
 import net.alhazmy13.mediapicker.Image.ImagePicker;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ExpressActivity extends AppCompatActivity {
 
     @BindView(R.id.iv_tag)
     ImageView iv_tag;
-    @BindView(R.id.ic_back)
-    ImageView ic_back;
+    @BindView(R.id.cv_profile_pic)
+    CircleImageView cv_profile_pic;
+    @BindView(R.id.tv_profile_name)
+    TextView tv_profile_name;
+    @BindView(R.id.ll_back)
+    LinearLayout ll_back;
     @BindView(R.id.iv_camera)
     ImageView iv_camera;
     @BindView(R.id.iv_location)
@@ -52,6 +63,7 @@ public class ExpressActivity extends AppCompatActivity {
     LinearLayout ll_event;
     @BindView(R.id.ll_poll)
     LinearLayout ll_poll;
+    List<UserProfilePOJO> taggeduserInfoPOJOS = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +71,16 @@ public class ExpressActivity extends AppCompatActivity {
         setContentView(R.layout.activity_express);
         ButterKnife.bind(this);
 
-        ic_back.setOnClickListener(new View.OnClickListener() {
+        Glide.with(getApplicationContext())
+                .load(Constants.userProfilePOJO.getProfilePhotoPath())
+                .placeholder(R.drawable.ic_default_profile_pic)
+                .error(R.drawable.ic_default_profile_pic)
+                .dontAnimate()
+                .into(cv_profile_pic);
+
+        tv_profile_name.setText(Constants.userProfilePOJO.getFirstName()+" "+Constants.userProfilePOJO.getLastName());
+
+        ll_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -69,7 +90,7 @@ public class ExpressActivity extends AppCompatActivity {
         iv_tag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ExpressActivity.this, TagPeopleActivity.class));
+                startActivityForResult(new Intent(ExpressActivity.this, TagPeopleActivity.class).putExtra("taggedpeople", (Serializable) taggeduserInfoPOJOS), Constants.ACTIVITY_TAG_PEOPLE);
             }
         });
 
@@ -104,6 +125,24 @@ public class ExpressActivity extends AppCompatActivity {
                 createEventFragment();
             }
         });
+
+        iv_camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initiateGalleryPicker();
+            }
+        });
+    }
+
+    public void initiateGalleryPicker() {
+        //0=camera,1=Gallery,2=Camera and gallery
+        new ImagePicker.Builder(this)
+                .mode(ImagePicker.Mode.CAMERA_AND_GALLERY)
+                .compressLevel(ImagePicker.ComperesLevel.MEDIUM)
+                .directory(ImagePicker.Directory.DEFAULT)
+                .allowMultipleImages(true)
+                .enableDebuggingMode(true)
+                .build();
     }
 
     public void createComplaintFragment() {
@@ -202,8 +241,8 @@ public class ExpressActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-//        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-//            fragment.onActivityResult(requestCode, resultCode, data);
-//        }
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

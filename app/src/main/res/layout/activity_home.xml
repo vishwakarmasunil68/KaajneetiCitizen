@@ -17,12 +17,51 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.ritvi.kaajneeti.view.CustomViewPager
-                android:id="@+id/viewPager"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginBottom="70dp"></com.ritvi.kaajneeti.view.CustomViewPager>
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_marginBottom="70dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@color/colorPrimary"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="20dp"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="27dp"
+                            android:layout_gravity="center_vertical"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/ic_search_bar"
+                            android:tint="#FFFFFF" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="27dp"
+                        android:layout_height="27dp"
+                        android:layout_marginRight="23dp"
+                        android:tint="#FFFFFF"
+                        android:src="@drawable/ic_notification"/>
+                </LinearLayout>
+
+                <com.ritvi.kaajneeti.view.CustomViewPager
+                    android:id="@+id/viewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"></com.ritvi.kaajneeti.view.CustomViewPager>
+
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -114,15 +153,7 @@
 
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/cv_express"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_express"
-                android:layout_gravity="right|bottom"
-                android:layout_marginBottom="70dp"
-                android:layout_marginRight="15dp"/>
+
 
         </FrameLayout>
     </FrameLayout>

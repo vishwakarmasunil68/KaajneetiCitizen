@@ -54,9 +54,8 @@ public class AllFeedsFragment extends Fragment{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         attachAdapter();
-        getAllData(false,0);
+//        getAllData(false,0);
     }
-
 
     HomeFeedAdapter homeFeedAdapter;
     List<FeedPOJO> feedPOJOS = new ArrayList<>();

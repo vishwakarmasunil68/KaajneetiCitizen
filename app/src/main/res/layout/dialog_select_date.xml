@@ -7,7 +7,6 @@
     <com.harrywhewell.scrolldatepicker.DayScrollDatePicker
         android:id="@+id/day_date_picker"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

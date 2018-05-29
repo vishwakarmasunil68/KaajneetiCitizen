@@ -27,6 +27,7 @@ import com.ritvi.kaajneeti.fragment.home.AnalyzeFragment;
 import com.ritvi.kaajneeti.fragment.home.ConnectFragment;
 import com.ritvi.kaajneeti.fragment.home.FavoriteFragment;
 import com.ritvi.kaajneeti.fragment.home.HomeFragment;
+import com.ritvi.kaajneeti.fragment.home.MyConnectionFragment;
 import com.ritvi.kaajneeti.view.CustomViewPager;
 
 import butterknife.BindView;
@@ -44,8 +45,6 @@ public class HomeActivity extends AppCompatActivity {
     ImageView iv_analyze;
     @BindView(R.id.iv_favorite)
     ImageView iv_favorite;
-    @BindView(R.id.cv_express)
-    ImageView cv_express;
     @BindView(R.id.ll_sub_menu)
     LinearLayout ll_sub_menu;
 
@@ -83,12 +82,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        cv_express.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(HomeActivity.this, ExpressActivity.class));
-            }
-        });
+
         ll_sub_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,7 +132,7 @@ public class HomeActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
 
         HomeFragment homeFragment = new HomeFragment();
-        ConnectFragment connectFragment = new ConnectFragment();
+        MyConnectionFragment connectFragment = new MyConnectionFragment();
         AnalyzeFragment analyzeFragment = new AnalyzeFragment();
         FavoriteFragment favoriteFragment = new FavoriteFragment();
 

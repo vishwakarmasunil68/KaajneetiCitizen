@@ -15,6 +15,7 @@ public class Constants {
     //start activity constants...
     public static final int ACTIVITY_TAG_PEOPLE = 101;
     public static final int ACTIVITY_LOCATION= 102;
+    public static final int ACTIVITY_SELECT_LEADER= 103;
 
 
     // Access permission
