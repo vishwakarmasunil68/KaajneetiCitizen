@@ -132,6 +132,7 @@
                         android:id="@+id/iv_event_image"
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
+                        android:scaleType="centerCrop"
                         android:background="#26BDBDBD" />
 
                     <ImageView
@@ -165,7 +166,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="7dp"
-                        android:background="@drawable/et_edit_back"
+                        android:background="@drawable/ic_edit_full"
                         android:hint="Add a short &amp; clear name"
                         android:minHeight="45dp"
                         android:paddingLeft="7dp" />
@@ -186,7 +187,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:background="@drawable/et_edit_back"
+                            android:background="@drawable/ic_edit_full"
                             android:gravity="center_vertical"
                             android:minHeight="45dp"
                             android:paddingRight="25dp"
@@ -233,7 +234,7 @@
                                     android:id="@+id/tv_start_date"
                                     android:layout_width="match_parent"
                                     android:layout_height="50dp"
-                                    android:background="@drawable/et_edit_back"
+                                    android:background="@drawable/ic_edit_full"
                                     android:paddingLeft="7dp"
                                     android:paddingRight="7dp"
                                     android:textSize="20sp"
@@ -275,7 +276,7 @@
                                     android:id="@+id/tv_end_date"
                                     android:layout_width="match_parent"
                                     android:layout_height="50dp"
-                                    android:background="@drawable/et_edit_back"
+                                    android:background="@drawable/ic_edit_full"
                                     android:textSize="20sp"
                                     android:layout_gravity="center_vertical"
                                     android:gravity="center_vertical"
@@ -308,7 +309,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="7dp"
-                        android:background="@drawable/et_edit_back"
+                        android:background="@drawable/ic_edit_full"
                         android:hint="Add Description"
                         android:minHeight="90dp"
                         android:paddingLeft="7dp" />
@@ -328,19 +329,17 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="7dp"
-                            android:layout_marginTop="7dp">
+                            android:layout_marginTop="7dp"
+                            android:background="@drawable/ic_edit_full">
 
-                            <TextView
-                                android:id="@+id/tv_tag_people"
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/rv_tags"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:background="@drawable/et_edit_back"
                                 android:gravity="center_vertical"
                                 android:minHeight="45dp"
-                                android:paddingLeft="7dp"
-                                android:text="Tag People"
-                                android:textSize="18sp" />
+                                android:layout_marginLeft="7dp"/>
 
                             <ImageView
                                 android:id="@+id/iv_tag"

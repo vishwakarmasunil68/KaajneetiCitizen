@@ -59,6 +59,7 @@
                         android:textStyle="bold" />
 
                     <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                        android:id="@+id/tv_post"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -101,41 +102,51 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <ImageView
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/cv_profile_pic"
                             android:layout_width="70dp"
                             android:layout_height="70dp"
                             android:layout_margin="7dp"
-                            android:scaleType="fitXY"
                             android:src="@drawable/ic_default_profile_pic" />
 
-                        <com.ritvi.kaajneeti.view.SourceSansProTextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1"
-                            android:gravity="center_vertical"
-                            android:text="John Smith"
-                            android:textSize="18sp" />
+                            android:orientation="vertical"
+                            android:layout_margin="7dp">
 
-                        <RelativeLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginRight="30dp"
-                            android:background="@drawable/spinner_background"
-                            android:gravity="center_vertical"
-                            android:minHeight="30dp"
-                            android:orientation="horizontal"
-                            android:padding="7dp">
-
-                            <Spinner
+                            <com.ritvi.kaajneeti.view.SourceSansProTextView
+                                android:id="@+id/tv_profile_name"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:background="@android:color/transparent"
-                                android:entries="@array/publicpriv"
-                                android:spinnerMode="dropdown"></Spinner>
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical"
+                                android:text="John Smith"
+                                android:textSize="18sp" />
 
-                        </RelativeLayout>
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginRight="30dp"
+                                android:background="@drawable/spinner_background"
+                                android:gravity="center_vertical"
+                                android:minHeight="30dp"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal"
+                                android:padding="5dp">
+
+                                <Spinner
+                                    android:id="@+id/spinner_pubpri"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@android:color/transparent"
+                                    android:entries="@array/publicpriv"
+                                    android:spinnerMode="dropdown"></Spinner>
+
+                            </RelativeLayout>
+                        </LinearLayout>
 
                     </LinearLayout>
 
@@ -152,6 +163,7 @@
                             android:padding="10dp">
 
                             <EditText
+                                android:id="@+id/et_question"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@null"
@@ -171,6 +183,7 @@
                                     android:layout_marginTop="7dp">
 
                                     <EditText
+                                        android:id="@+id/et_ans1"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:background="@drawable/et_edit_back"
@@ -209,6 +222,7 @@
                                     android:layout_marginTop="7dp">
 
                                     <EditText
+                                        android:id="@+id/et_ans2"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:background="@drawable/et_edit_back"
@@ -266,6 +280,7 @@
                                 android:layout_height="27dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="10dp"
+                                android:visibility="gone"
                                 android:src="@drawable/ic_camera_attach" />
 
                             <ImageView

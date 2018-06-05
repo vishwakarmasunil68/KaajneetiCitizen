@@ -104,4 +104,5 @@ public class WebServicesUrls {
     public static final String EVENT_INTEREST_UPDATE = BASE_URL + "event/saveMyEventInterest";
     public static final String EVENT_DETAIL = BASE_URL + "event/getEventDetail";
     public static final String PAYMENT_AND_PAINT_TRANS_LOG= BASE_URL + "payment/getMyAllPaymentAndPointTransactionLog";
+    public static final String CONNECTION_WITH_INCOMING_REQUEST= BASE_URL + "userconnect/getMyConnectionWithIncomingRequest";
 }

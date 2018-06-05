@@ -18,9 +18,9 @@
         app:tabTextColor="#4DFFFFFF"
         app:tabIndicatorColor="#FFEC60"/>
 
-    <android.support.v4.view.ViewPager
+    <com.ritvi.kaajneeti.view.CustomViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v4.view.ViewPager>
+        android:layout_height="match_parent"></com.ritvi.kaajneeti.view.CustomViewPager>
 
 </LinearLayout>

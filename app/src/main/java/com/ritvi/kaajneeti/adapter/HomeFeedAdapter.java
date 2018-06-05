@@ -16,10 +16,13 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -36,10 +39,13 @@ import com.ritvi.kaajneeti.interfaces.PollAnsClickInterface;
 import com.ritvi.kaajneeti.pojo.complaint.ComplaintPOJO;
 import com.ritvi.kaajneeti.pojo.event.EventPOJO;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
+import com.ritvi.kaajneeti.pojo.information.InformationPOJO;
 import com.ritvi.kaajneeti.pojo.poll.PollAnsPOJO;
 import com.ritvi.kaajneeti.pojo.poll.PollPOJO;
 import com.ritvi.kaajneeti.pojo.post.PostPOJO;
+import com.ritvi.kaajneeti.pojo.suggestion.SuggestionPOJO;
 import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
+import com.ritvi.kaajneeti.view.SwipeRevealLayout;
 import com.ritvi.kaajneeti.webservice.WebServiceBase;
 import com.ritvi.kaajneeti.webservice.WebServicesCallBack;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
@@ -113,6 +119,10 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         return 3;
                     case "profile":
                         return 4;
+                    case "suggestion":
+                        return 5;
+                    case "information":
+                        return 6;
                 }
                 return super.getItemViewType(position);
             } else {
@@ -143,6 +153,12 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case 4:
                 v = LayoutInflater.from(parent.getContext()).inflate(R.layout.inflate_search_user_profile, parent, false);
                 return new UserProfileViewHolder(v);
+            case 5:
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.inflate_suggestion_feed, parent, false);
+                return new SuggestionViewHolder(v);
+            case 6:
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.inflate_information_feed, parent, false);
+                return new InformationViewHolder(v);
             case 101:
                 v = LayoutInflater.from(parent.getContext()).inflate(R.layout.inflate_item_loading, parent, false);
                 return new LoadingViewHolder(v);
@@ -178,6 +194,14 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     UserProfileViewHolder userProfileViewHolder = (UserProfileViewHolder) holder;
                     inflateUserData(userProfileViewHolder, items.get(position).getProfiledata(), position);
                     break;
+                case "suggestion":
+                    SuggestionViewHolder suggestionViewHolder = (SuggestionViewHolder) holder;
+                    inflateSuggestionData(suggestionViewHolder, items.get(position).getSuggestiondata(), position);
+                    break;
+                case "information":
+                    InformationViewHolder informationViewHolder = (InformationViewHolder) holder;
+                    inflateInformationData(informationViewHolder, items.get(position).getInformationPOJO(), position);
+                    break;
             }
         }
 
@@ -193,47 +217,60 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 .error(R.drawable.ic_default_profile_pic)
                 .dontAnimate()
                 .into(userProfileViewHolder.cv_profile_pic);
-
+        userProfileViewHolder.swipeRevealLayout.lockDrag(true);
+        userProfileViewHolder.btn_accept.setVisibility(View.GONE);
         switch (userProfilePOJO.getMyFriend()) {
             case 0:
-                userProfileViewHolder.tv_add_friend.setText("Add Friend");
+                userProfileViewHolder.btn_accept.setText("+ Add");
+                userProfileViewHolder.btn_accept.setVisibility(View.VISIBLE);
+                userProfileViewHolder.swipeRevealLayout.lockDrag(true);
                 break;
             case 1:
-                userProfileViewHolder.tv_add_friend.setText("Cancel Friend Request");
+                userProfileViewHolder.btn_accept.setVisibility(View.GONE);
+                userProfileViewHolder.swipeRevealLayout.lockDrag(false);
                 break;
             case 2:
-                userProfileViewHolder.tv_add_friend.setText("Accept Request");
+                userProfileViewHolder.btn_accept.setVisibility(View.VISIBLE);
+                userProfileViewHolder.btn_accept.setText("Accept");
+                userProfileViewHolder.swipeRevealLayout.lockDrag(false);
                 break;
             case 3:
-                userProfileViewHolder.tv_add_friend.setText("Remove Friend");
+                userProfileViewHolder.btn_accept.setVisibility(View.GONE);
+                userProfileViewHolder.swipeRevealLayout.lockDrag(false);
                 break;
             case 4:
-                userProfileViewHolder.tv_add_friend.setText("Follow");
+                userProfileViewHolder.btn_accept.setText("Follow");
+                userProfileViewHolder.btn_accept.setVisibility(View.VISIBLE);
                 break;
         }
 
-        userProfileViewHolder.tv_add_friend.setOnClickListener(new View.OnClickListener() {
+        userProfileViewHolder.btn_accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switch (userProfilePOJO.getMyFriend()) {
                     case 0:
-//                        holder.tv_add_friend.setText("Add Friend");
-                        sendFriendRequest(userProfilePOJO, userProfileViewHolder.tv_add_friend);
-                        break;
-                    case 1:
-                        undoFriendRequest(userProfilePOJO, userProfileViewHolder.tv_add_friend);
-//                        holder.tv_add_friend.setText("Friend Request Sent");
+                        sendFriendRequest(userProfilePOJO);
                         break;
                     case 2:
-//                        holder.tv_add_friend.setText("Accept Request");
-                        acceptRequest(userProfilePOJO, position);
-                        break;
-                    case 3:
-//                        holder.tv_add_friend.setText("");
-                        cancelFriendRequest(userProfilePOJO, userProfileViewHolder.tv_add_friend);
+                        acceptRequest(userProfilePOJO);
                         break;
                 }
+                userProfileViewHolder.swipeRevealLayout.close(true);
+            }
+        });
 
+        userProfileViewHolder.ll_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (userProfilePOJO.getMyFriend()) {
+                    case 1:
+                        undoFriendRequest(userProfilePOJO);
+                        break;
+                    case 3:
+                        sendFriendRequest(userProfilePOJO);
+                        break;
+                }
+                userProfileViewHolder.swipeRevealLayout.close(true);
             }
         });
 
@@ -242,19 +279,18 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             public void onClick(View view) {
                 if (activity instanceof HomeActivity) {
                     HomeActivity homeActivity = (HomeActivity) activity;
-                    Bundle bundle=new Bundle();
-                    bundle.putString("user_id",userProfilePOJO.getUserId());
-                    bundle.putString("profile_id",userProfilePOJO.getUserProfileId());
-                    UserProfileFragment userProfileFragment=new UserProfileFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("userProfile", userProfilePOJO);
+                    UserProfileFragment userProfileFragment = new UserProfileFragment();
                     userProfileFragment.setArguments(bundle);
-                    homeActivity.replaceFragmentinFrameHome(userProfileFragment,userProfileFragment.getClass().getSimpleName());
+                    homeActivity.replaceFragmentinFrameHome(userProfileFragment, userProfileFragment.getClass().getSimpleName());
                 }
             }
         });
     }
 
 
-    public void sendFriendRequest(final UserProfilePOJO userProfilePOJO, TextView textView) {
+    public void sendFriendRequest(final UserProfilePOJO userProfilePOJO) {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
@@ -262,13 +298,26 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         new WebServiceBase(nameValuePairs, activity, new WebServicesCallBack() {
             @Override
             public void onGetMsg(String apicall, String response) {
-                userProfilePOJO.setMyFriend(1);
-                notifyDataSetChanged();
+
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject.optString("status").equalsIgnoreCase("success")) {
+                        if (jsonObject.optString("message").equalsIgnoreCase("Sent connection request to user")) {
+                            userProfilePOJO.setMyFriend(1);
+                            notifyDataSetChanged();
+                        } else if (jsonObject.optString("message").equalsIgnoreCase("My request cancelled")) {
+                            userProfilePOJO.setMyFriend(0);
+                            notifyDataSetChanged();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }, "CALL_ADD_FRIEND_API", true).execute(WebServicesUrls.SEND_FRIEND_REQUEST);
     }
 
-    public void undoFriendRequest(final UserProfilePOJO userProfilePOJO, TextView textView) {
+    public void undoFriendRequest(final UserProfilePOJO userProfilePOJO) {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
@@ -296,7 +345,7 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }, "CALL_ADD_FRIEND_API", true).execute(WebServicesUrls.CANCEL_FRIEND_REQUEST);
     }
 
-    public void acceptRequest(final UserProfilePOJO userProfilePOJO, final int position) {
+    public void acceptRequest(final UserProfilePOJO userProfilePOJO) {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
@@ -304,7 +353,7 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         new WebServiceBase(nameValuePairs, activity, new WebServicesCallBack() {
             @Override
             public void onGetMsg(String apicall, String response) {
-                items.remove(position);
+                userProfilePOJO.setMyFriend(3);
                 notifyDataSetChanged();
             }
         }, "CALL_ADD_FRIEND_API", true).execute(WebServicesUrls.SEND_FRIEND_REQUEST);
@@ -345,12 +394,12 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             public void onClick(View view) {
                 if (activity instanceof HomeActivity) {
                     HomeActivity homeActivity = (HomeActivity) activity;
-                    Bundle bundle=new Bundle();
-                    bundle.putString("user_id",userProfilePOJO.getUserId());
-                    bundle.putString("profile_id",userProfilePOJO.getUserProfileId());
-                    UserProfileFragment userProfileFragment=new UserProfileFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("user_id", userProfilePOJO.getUserId());
+                    bundle.putString("profile_id", userProfilePOJO.getUserProfileId());
+                    UserProfileFragment userProfileFragment = new UserProfileFragment();
                     userProfileFragment.setArguments(bundle);
-                    homeActivity.replaceFragmentinFrameHome(userProfileFragment,userProfileFragment.getClass().getSimpleName());
+                    homeActivity.replaceFragmentinFrameHome(userProfileFragment, userProfileFragment.getClass().getSimpleName());
                 }
             }
         });
@@ -475,7 +524,7 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         String name = "";
         UserProfilePOJO userProfilePOJO = eventPOJO.getEventProfile();
 
-        name = "<b>" + userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName() + "</b>";
+        name = "<b>" + userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName() + "</b> created an <b>event</b>";
 
         eventViewHolder.ll_event.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -511,8 +560,6 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             eventViewHolder.tv_event_date.setText(startDate + "  to " + endDate);
 
             String[] dateValues = UtilityFunction.getDateValues(eventPOJO.getStartDate().split(" ")[0]);
-            eventViewHolder.tv_month.setText(dateValues[1]);
-            eventViewHolder.tv_day.setText(dateValues[0]);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -524,6 +571,9 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         eventViewHolder.tv_profile_name.setText(Html.fromHtml(name));
         eventViewHolder.tv_date.setText(eventPOJO.getAddedOn());
 
+        if (!eventPOJO.getEventDescription().equalsIgnoreCase("")) {
+            eventViewHolder.tv_description.setText(eventPOJO.getEventDescription());
+        }
 
         eventViewHolder.iv_event_menu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -545,82 +595,52 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
         });
 
-        eventViewHolder.ll_going.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                callEventInterestAPI(eventPOJO, eventViewHolder, "1");
-            }
-        });
-
-        eventViewHolder.ll_not_going.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                callEventInterestAPI(eventPOJO, eventViewHolder, "2");
-            }
-        });
-
-        eventViewHolder.ll_may_be.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                callEventInterestAPI(eventPOJO, eventViewHolder, "3");
-            }
-        });
-
         switch (eventPOJO.getMeInterested()) {
+            case 0:
+                eventViewHolder.spinner_interest.setSelection(0);
+                break;
             case 1:
-                eventViewHolder.tv_going.setTextColor(Color.parseColor("#00bcd4"));
-                eventViewHolder.tv_not_going.setTextColor(Color.parseColor("#BDBDBD"));
-                eventViewHolder.tv_may_be.setTextColor(Color.parseColor("#BDBDBD"));
+                eventViewHolder.spinner_interest.setSelection(1);
                 break;
             case 2:
-                eventViewHolder.tv_going.setTextColor(Color.parseColor("#BDBDBD"));
-                eventViewHolder.tv_not_going.setTextColor(Color.parseColor("#00bcd4"));
-                eventViewHolder.tv_may_be.setTextColor(Color.parseColor("#BDBDBD"));
+                eventViewHolder.spinner_interest.setSelection(2);
                 break;
             case 3:
-                eventViewHolder.tv_going.setTextColor(Color.parseColor("#BDBDBD"));
-                eventViewHolder.tv_not_going.setTextColor(Color.parseColor("#BDBDBD"));
-                eventViewHolder.tv_may_be.setTextColor(Color.parseColor("#00bcd4"));
+                eventViewHolder.spinner_interest.setSelection(3);
                 break;
         }
-    }
 
-    public void callEventInterestAPI(EventPOJO eventPOJO, final EventViewHolder eventViewHolder, final String interest_type) {
-        ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
-        nameValuePairs.add(new BasicNameValuePair("event_id", eventPOJO.getEventId()));
-        nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
-        nameValuePairs.add(new BasicNameValuePair("interest_type", interest_type));
-        new WebServiceBase(nameValuePairs, activity, new WebServicesCallBack() {
+        eventViewHolder.spinner_interest.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onGetMsg(String apicall, String response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    if (jsonObject.optString("status").equals("success")) {
-                        switch (interest_type) {
-                            case "1":
-                                eventViewHolder.tv_going.setTextColor(Color.parseColor("#00bcd4"));
-                                eventViewHolder.tv_not_going.setTextColor(Color.parseColor("#BDBDBD"));
-                                eventViewHolder.tv_may_be.setTextColor(Color.parseColor("#BDBDBD"));
-                                break;
-                            case "2":
-                                eventViewHolder.tv_going.setTextColor(Color.parseColor("#BDBDBD"));
-                                eventViewHolder.tv_not_going.setTextColor(Color.parseColor("#00bcd4"));
-                                eventViewHolder.tv_may_be.setTextColor(Color.parseColor("#BDBDBD"));
-                                break;
-                            case "3":
-                                eventViewHolder.tv_going.setTextColor(Color.parseColor("#BDBDBD"));
-                                eventViewHolder.tv_not_going.setTextColor(Color.parseColor("#BDBDBD"));
-                                eventViewHolder.tv_may_be.setTextColor(Color.parseColor("#00bcd4"));
-                                break;
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ArrayList<NameValuePair> nameValuePairs=new ArrayList<>();
+                nameValuePairs.add(new BasicNameValuePair("user_profile_id",Constants.userProfilePOJO.getUserProfileId()));
+                nameValuePairs.add(new BasicNameValuePair("event_id",eventPOJO.getEventId()));
+                nameValuePairs.add(new BasicNameValuePair("interest_type",String.valueOf(position)));
+                new WebServiceBase(nameValuePairs, activity, new WebServicesCallBack() {
+                    @Override
+                    public void onGetMsg(String apicall, String response) {
+                        try{
+                            JSONObject jsonObject=new JSONObject(response);
+                            if(jsonObject.optString("status").equalsIgnoreCase("success")){
+
+                            }
+                            ToastClass.showShortToast(activity.getApplicationContext(),jsonObject.optString("message"));
+                        }catch (Exception e){
+                            e.printStackTrace();
                         }
                     }
-                    ToastClass.showShortToast(activity.getApplicationContext(),jsonObject.optString("message"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                },"CALL_EVENT_INTEREST",false).execute(WebServicesUrls.EVENT_INTEREST_UPDATE);
             }
-        }, "CALL_EVENT_INTEREST_UPDATE", true).execute(WebServicesUrls.EVENT_INTEREST_UPDATE);
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
     }
+
 
     public void inflatePostData(final PostViewHolder postViewHolder, final PostPOJO postPOJO, int position) {
 
@@ -628,17 +648,72 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             UserProfilePOJO userProfilePOJO = postPOJO.getPostProfile();
             SetViews.setProfilePhoto(activity.getApplicationContext(), userProfilePOJO.getProfilePhotoPath(), postViewHolder.cv_profile_pic);
 
-
             if (postPOJO.getPostAttachment().size() > 0) {
 
-                Glide.with(activity.getApplicationContext())
-                        .load(postPOJO.getPostAttachment().get(0).getAttachmentFile())
-                        .error(R.drawable.ic_default_profile_pic)
-                        .placeholder(R.drawable.ic_default_profile_pic)
-                        .dontAnimate()
-                        .into(postViewHolder.iv_feed_image);
+                if (postPOJO.getPostAttachment().size() == 1) {
+                    postViewHolder.iv_feed_image.setVisibility(View.VISIBLE);
+                    postViewHolder.ll_image_2.setVisibility(View.GONE);
+                    postViewHolder.ll_image_3.setVisibility(View.GONE);
+                    Glide.with(activity.getApplicationContext())
+                            .load(postPOJO.getPostAttachment().get(0).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(postViewHolder.iv_feed_image);
+                } else if (postPOJO.getPostAttachment().size() == 2) {
+                    postViewHolder.iv_feed_image.setVisibility(View.GONE);
+                    postViewHolder.ll_image_2.setVisibility(View.VISIBLE);
+                    postViewHolder.ll_image_3.setVisibility(View.GONE);
+                    Glide.with(activity.getApplicationContext())
+                            .load(postPOJO.getPostAttachment().get(0).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(postViewHolder.iv_1);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(postPOJO.getPostAttachment().get(1).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(postViewHolder.iv_2);
+
+
+                } else if (postPOJO.getPostAttachment().size() > 2) {
+                    postViewHolder.iv_feed_image.setVisibility(View.GONE);
+                    postViewHolder.ll_image_2.setVisibility(View.GONE);
+                    postViewHolder.ll_image_3.setVisibility(View.VISIBLE);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(postPOJO.getPostAttachment().get(0).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(postViewHolder.iv_3);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(postPOJO.getPostAttachment().get(1).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(postViewHolder.iv_4);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(postPOJO.getPostAttachment().get(2).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(postViewHolder.iv_5);
+                    if (postPOJO.getPostAttachment().size() > 3) {
+                        postViewHolder.tv_more_img.setVisibility(View.VISIBLE);
+                        postViewHolder.tv_more_img.setText("+" + (postPOJO.getPostAttachment().size() - 3));
+                    }
+                }
+
             } else {
                 postViewHolder.iv_feed_image.setVisibility(View.GONE);
+                postViewHolder.ll_image_2.setVisibility(View.GONE);
+                postViewHolder.ll_image_3.setVisibility(View.GONE);
             }
 
             String name = "";
@@ -757,54 +832,130 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 
     public void inflateComplaintData(final ComplaintViewHolder complaintViewHolder, final ComplaintPOJO complaintPOJO, final int position) {
-
-        Glide.with(activity.getApplicationContext())
-                .load(complaintPOJO.getComplaintProfile().getProfilePhotoPath())
-                .error(R.drawable.ic_default_profile_pic)
-                .placeholder(R.drawable.ic_default_profile_pic)
-                .dontAnimate()
-                .into(complaintViewHolder.cv_profile_pic);
-
-        String name = "";
-        UserProfilePOJO userProfilePOJO = complaintPOJO.getComplaintProfile();
-
-        name = "<b>" + userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName() + "</b>";
-
         try {
-            complaintViewHolder.tv_profile_name.setText(Html.fromHtml(name));
+            UserProfilePOJO userProfilePOJO = complaintPOJO.getComplaintProfile();
+            SetViews.setProfilePhoto(activity.getApplicationContext(), userProfilePOJO.getProfilePhotoPath(), complaintViewHolder.cv_profile_pic);
 
+            if (complaintPOJO.getComplaintAttachments().size() > 0) {
+
+                if (complaintPOJO.getComplaintAttachments().size() == 1) {
+                    complaintViewHolder.iv_feed_image.setVisibility(View.VISIBLE);
+                    complaintViewHolder.ll_image_2.setVisibility(View.GONE);
+                    complaintViewHolder.ll_image_3.setVisibility(View.GONE);
+                    Glide.with(activity.getApplicationContext())
+                            .load(complaintPOJO.getComplaintAttachments().get(0).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(complaintViewHolder.iv_feed_image);
+                } else if (complaintPOJO.getComplaintAttachments().size() == 2) {
+                    complaintViewHolder.iv_feed_image.setVisibility(View.GONE);
+                    complaintViewHolder.ll_image_2.setVisibility(View.VISIBLE);
+                    complaintViewHolder.ll_image_3.setVisibility(View.GONE);
+                    Glide.with(activity.getApplicationContext())
+                            .load(complaintPOJO.getComplaintAttachments().get(0).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(complaintViewHolder.iv_1);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(complaintPOJO.getComplaintAttachments().get(1).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(complaintViewHolder.iv_2);
+
+
+                } else if (complaintPOJO.getComplaintAttachments().size() > 2) {
+                    complaintViewHolder.iv_feed_image.setVisibility(View.GONE);
+                    complaintViewHolder.ll_image_2.setVisibility(View.GONE);
+                    complaintViewHolder.ll_image_3.setVisibility(View.VISIBLE);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(complaintPOJO.getComplaintAttachments().get(0).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(complaintViewHolder.iv_3);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(complaintPOJO.getComplaintAttachments().get(1).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(complaintViewHolder.iv_4);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(complaintPOJO.getComplaintAttachments().get(2).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(complaintViewHolder.iv_5);
+                    if (complaintPOJO.getComplaintAttachments().size() > 3) {
+                        complaintViewHolder.tv_more_img.setVisibility(View.VISIBLE);
+                        complaintViewHolder.tv_more_img.setText("+" + (complaintPOJO.getComplaintAttachments().size() - 3));
+                    }
+                }
+
+            } else {
+                complaintViewHolder.iv_feed_image.setVisibility(View.GONE);
+                complaintViewHolder.ll_image_2.setVisibility(View.GONE);
+                complaintViewHolder.ll_image_3.setVisibility(View.GONE);
+            }
+
+            String name = "";
+            name = "<b>" + userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName() + "</b>";
+            if (complaintPOJO.getComplaintAssigned().size() > 0) {
+                name += " has raised a Complaint with <b>" + complaintPOJO.getComplaintAssigned().get(0).getFirstName() + " " + complaintPOJO.getComplaintAssigned().get(0).getLastName();
+            }
+
+//            String profile_description = "";
+//            boolean containDescribe = false;
+//            if (complaintPOJO.getPostTag().size() > 0) {
+//                containDescribe = true;
+//            }
+//
+//            if (complaintPOJO.getFeelingDataPOJOS().size() > 0) {
+//                containDescribe = true;
+//            }
+//
+//            if (complaintPOJO.getPostLocation().length() > 0) {
+//                containDescribe = true;
+//            }
+//
+//            if (containDescribe) {
+//                profile_description += " is ";
+//
+//                if (complaintPOJO.getFeelingDataPOJOS().size() > 0) {
+//                    profile_description += "<b>feeling " + complaintPOJO.getFeelingDataPOJOS().get(0).getFeelingName() + "</b>";
+//                }
+//
+//                if (complaintPOJO.getPostTag().size() > 0) {
+//                    profile_description += " with ";
+//                    if (complaintPOJO.getPostTag().size() > 2) {
+//                        profile_description += "<b>" + complaintPOJO.getPostTag().get(0).getFirstName() + " and " + (complaintPOJO.getPostTag().size() - 1) + " other" + "</b>";
+//                    } else if (complaintPOJO.getPostTag().size() == 2) {
+//                        profile_description += "<b>" + complaintPOJO.getPostTag().get(0).getFirstName() + " " + complaintPOJO.getPostTag().get(0).getLastName() +
+//                                " and " + complaintPOJO.getPostTag().get(1).getFirstName() + " " + complaintPOJO.getPostTag().get(1).getLastName() + "</b>";
+//                    } else {
+//                        profile_description += "<b>" + complaintPOJO.getPostTag().get(0).getFirstName() + " " + complaintPOJO.getPostTag().get(0).getLastName() + "</b>";
+//                    }
+//                }
+//
+//                if (complaintPOJO.getPostLocation().length() > 0) {
+//                    profile_description += " - at <b>" + complaintPOJO.getPostLocation() + "</b>";
+//                }
+//            }
+            complaintViewHolder.tv_title.setText("Subject : " + complaintPOJO.getComplaintSubject());
+            complaintViewHolder.tv_profile_name.setText(Html.fromHtml(name));
+            if (!complaintPOJO.getComplaintDescription().equalsIgnoreCase("")) {
+                complaintViewHolder.tv_description.setText(complaintPOJO.getComplaintDescription());
+            } else {
+                complaintViewHolder.tv_description.setVisibility(View.GONE);
+            }
             complaintViewHolder.tv_date.setText(complaintPOJO.getAddedOn());
 
-            complaintViewHolder.tv_analyze.setText(complaintPOJO.getComplaintSubject());
-            complaintViewHolder.tv_id.setText("CID:-" + complaintPOJO.getComplaintUniqueId());
-
-//            complaintViewHolder.ll_analyze.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    if (activity instanceof HomeActivity) {
-//                        HomeActivity homeActivity = (HomeActivity) activity;
-//                        ComplaintDetailFragment complaintDetailFragment = new ComplaintDetailFragment(complaintPOJO);
-//                        homeActivity.replaceFragmentinFrameHome(complaintDetailFragment, "complaintDetailFragment");
-//                    }
-//                }
-//            });
-
-            complaintViewHolder.iv_info.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    complaintViewHolder.ll_analyze.callOnClick();
-                }
-            });
-
-//            complaintViewHolder.cv_profile_pic.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    if (activity instanceof HomeActivity) {
-//                        HomeActivity homeActivity = (HomeActivity) activity;
-//                        homeActivity.showUserProfileFragment(complaintPOJO.getComplaintProfile().getUserId(), complaintPOJO.getComplaintProfile().getUserProfileId());
-//                    }
-//                }
-//            });
             complaintViewHolder.tv_profile_name.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -812,39 +963,6 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             });
 
-
-//            if(complaintPOJO.getComplaintTypeId().equalsIgnoreCase("2")){
-//                if(complaintPOJO.getComplaintProfile().getUserProfileId().equalsIgnoreCase(Constants.userProfilePOJO.getUserProfileId())){
-//                    complaintViewHolder.ll_group_complaint_status.setVisibility(View.GONE);
-//                }else {
-//                    complaintViewHolder.ll_group_complaint_status.setVisibility(View.VISIBLE);
-//                }
-//            }else{
-//                complaintViewHolder.ll_group_complaint_status.setVisibility(View.GONE);
-//            }
-
-            complaintViewHolder.ll_group_complaint_status.setVisibility(View.GONE);
-
-
-            complaintViewHolder.iv_complaint_menu.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    final PopupMenu menu = new PopupMenu(activity, view);
-
-                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem menuitem) {
-                            return false;
-                        }
-                    });
-//                    if (complaintPOJO.getComplaintProfile().getUserProfileId().equalsIgnoreCase(Constants.userProfilePOJO.getUserProfileId())) {
-//                        menu.inflate(R.menu.menu_my_feed);
-//                    } else {
-//                        menu.inflate(R.menu.menu_friend_feed);
-//                    }
-                    menu.show();
-                }
-            });
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -854,6 +972,208 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public void inflateSuggestionData(final SuggestionViewHolder suggestionViewHolder, final SuggestionPOJO suggestionPOJO, final int position) {
+        try {
+            UserProfilePOJO userProfilePOJO = suggestionPOJO.getSuggestionProfile();
+            SetViews.setProfilePhoto(activity.getApplicationContext(), userProfilePOJO.getProfilePhotoPath(), suggestionViewHolder.cv_profile_pic);
+
+            if (suggestionPOJO.getSuggestionAttachment().size() > 0) {
+
+                if (suggestionPOJO.getSuggestionAttachment().size() == 1) {
+                    suggestionViewHolder.iv_feed_image.setVisibility(View.VISIBLE);
+                    suggestionViewHolder.ll_image_2.setVisibility(View.GONE);
+                    suggestionViewHolder.ll_image_3.setVisibility(View.GONE);
+                    Glide.with(activity.getApplicationContext())
+                            .load(suggestionPOJO.getSuggestionAttachment().get(0).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(suggestionViewHolder.iv_feed_image);
+                } else if (suggestionPOJO.getSuggestionAttachment().size() == 2) {
+                    suggestionViewHolder.iv_feed_image.setVisibility(View.GONE);
+                    suggestionViewHolder.ll_image_2.setVisibility(View.VISIBLE);
+                    suggestionViewHolder.ll_image_3.setVisibility(View.GONE);
+                    Glide.with(activity.getApplicationContext())
+                            .load(suggestionPOJO.getSuggestionAttachment().get(0).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(suggestionViewHolder.iv_1);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(suggestionPOJO.getSuggestionAttachment().get(1).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(suggestionViewHolder.iv_2);
+
+
+                } else if (suggestionPOJO.getSuggestionAttachment().size() > 2) {
+                    suggestionViewHolder.iv_feed_image.setVisibility(View.GONE);
+                    suggestionViewHolder.ll_image_2.setVisibility(View.GONE);
+                    suggestionViewHolder.ll_image_3.setVisibility(View.VISIBLE);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(suggestionPOJO.getSuggestionAttachment().get(0).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(suggestionViewHolder.iv_3);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(suggestionPOJO.getSuggestionAttachment().get(1).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(suggestionViewHolder.iv_4);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(suggestionPOJO.getSuggestionAttachment().get(2).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(suggestionViewHolder.iv_5);
+                    if (suggestionPOJO.getSuggestionAttachment().size() > 3) {
+                        suggestionViewHolder.tv_more_img.setVisibility(View.VISIBLE);
+                        suggestionViewHolder.tv_more_img.setText("+" + (suggestionPOJO.getSuggestionAttachment().size() - 3));
+                    }
+                }
+
+            } else {
+                suggestionViewHolder.iv_feed_image.setVisibility(View.GONE);
+                suggestionViewHolder.ll_image_2.setVisibility(View.GONE);
+                suggestionViewHolder.ll_image_3.setVisibility(View.GONE);
+            }
+
+            String name = "";
+            name = "<b>" + userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName() + "</b>";
+            if (suggestionPOJO.getSuggestionAssigned().size() > 0) {
+                name += " has suggested <b>" + suggestionPOJO.getSuggestionAssigned().get(0).getFirstName() + " " + suggestionPOJO.getSuggestionAssigned().get(0).getLastName();
+            }
+
+            suggestionViewHolder.tv_title.setText("Subject : " + suggestionPOJO.getSuggestionSubject());
+            suggestionViewHolder.tv_profile_name.setText(Html.fromHtml(name));
+            if (!suggestionPOJO.getSuggestionDescription().equalsIgnoreCase("")) {
+                suggestionViewHolder.tv_description.setText(suggestionPOJO.getSuggestionDescription());
+            } else {
+                suggestionViewHolder.tv_description.setVisibility(View.GONE);
+            }
+            suggestionViewHolder.tv_date.setText(suggestionPOJO.getAddedOn());
+
+            suggestionViewHolder.tv_profile_name.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    suggestionViewHolder.cv_profile_pic.callOnClick();
+                }
+            });
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void inflateInformationData(final InformationViewHolder informationViewHolder, final InformationPOJO informationPOJO, final int position) {
+        try {
+            UserProfilePOJO userProfilePOJO = informationPOJO.getInformationProfile();
+            SetViews.setProfilePhoto(activity.getApplicationContext(), userProfilePOJO.getProfilePhotoPath(), informationViewHolder.cv_profile_pic);
+
+            if (informationPOJO.getInformationAttachment().size() > 0) {
+
+                if (informationPOJO.getInformationAttachment().size() == 1) {
+                    informationViewHolder.iv_feed_image.setVisibility(View.VISIBLE);
+                    informationViewHolder.ll_image_2.setVisibility(View.GONE);
+                    informationViewHolder.ll_image_3.setVisibility(View.GONE);
+                    Glide.with(activity.getApplicationContext())
+                            .load(informationPOJO.getInformationAttachment().get(0).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(informationViewHolder.iv_feed_image);
+                } else if (informationPOJO.getInformationAttachment().size() == 2) {
+                    informationViewHolder.iv_feed_image.setVisibility(View.GONE);
+                    informationViewHolder.ll_image_2.setVisibility(View.VISIBLE);
+                    informationViewHolder.ll_image_3.setVisibility(View.GONE);
+                    Glide.with(activity.getApplicationContext())
+                            .load(informationPOJO.getInformationAttachment().get(0).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(informationViewHolder.iv_1);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(informationPOJO.getInformationAttachment().get(1).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(informationViewHolder.iv_2);
+
+
+                } else if (informationPOJO.getInformationAttachment().size() > 2) {
+                    informationViewHolder.iv_feed_image.setVisibility(View.GONE);
+                    informationViewHolder.ll_image_2.setVisibility(View.GONE);
+                    informationViewHolder.ll_image_3.setVisibility(View.VISIBLE);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(informationPOJO.getInformationAttachment().get(0).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(informationViewHolder.iv_3);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(informationPOJO.getInformationAttachment().get(1).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(informationViewHolder.iv_4);
+
+                    Glide.with(activity.getApplicationContext())
+                            .load(informationPOJO.getInformationAttachment().get(2).getAttachmentFile())
+                            .error(R.drawable.ic_default_profile_pic)
+                            .placeholder(R.drawable.ic_default_profile_pic)
+                            .dontAnimate()
+                            .into(informationViewHolder.iv_5);
+                    if (informationPOJO.getInformationAttachment().size() > 3) {
+                        informationViewHolder.tv_more_img.setVisibility(View.VISIBLE);
+                        informationViewHolder.tv_more_img.setText("+" + (informationPOJO.getInformationAttachment().size() - 3));
+                    }
+                }
+
+            } else {
+                informationViewHolder.iv_feed_image.setVisibility(View.GONE);
+                informationViewHolder.ll_image_2.setVisibility(View.GONE);
+                informationViewHolder.ll_image_3.setVisibility(View.GONE);
+            }
+
+            String name = "";
+            name = "<b>" + userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName() + "</b> has post an <b>Information</b>";
+//            if (informationPOJO.get().size() > 0) {
+//                name += " has suggested <b>" + informationPOJO.getSuggestionAssigned().get(0).getFirstName() + " " + informationPOJO.getSuggestionAssigned().get(0).getLastName();
+//            }
+
+            informationViewHolder.tv_title.setText("Subject : " + informationPOJO.getInformationSubject());
+            informationViewHolder.tv_profile_name.setText(Html.fromHtml(name));
+            if (!informationPOJO.getInformationDescription().equalsIgnoreCase("")) {
+                informationViewHolder.tv_description.setText(informationPOJO.getInformationDescription());
+            } else {
+                informationViewHolder.tv_description.setVisibility(View.GONE);
+            }
+            informationViewHolder.tv_date.setText(informationPOJO.getAddedOn());
+
+            informationViewHolder.tv_profile_name.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    informationViewHolder.cv_profile_pic.callOnClick();
+                }
+            });
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -904,16 +1224,10 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public ImageView iv_event_menu;
         public ImageView cv_profile_pic;
         public TextView tv_event_date;
+        public TextView tv_description;
         public TextView tv_place;
-        public TextView tv_month;
-        public TextView tv_day;
-        public TextView tv_may_be;
-        public TextView tv_not_going;
-        public TextView tv_going;
         public LinearLayout ll_event;
-        public LinearLayout ll_going;
-        public LinearLayout ll_not_going;
-        public LinearLayout ll_may_be;
+        public Spinner spinner_interest;
 
         public EventViewHolder(View itemView) {
             super(itemView);
@@ -924,16 +1238,10 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             iv_event_menu = itemView.findViewById(R.id.iv_event_menu);
             cv_profile_pic = itemView.findViewById(R.id.cv_profile_pic);
             tv_event_date = itemView.findViewById(R.id.tv_event_date);
+            tv_description = itemView.findViewById(R.id.tv_description);
             tv_place = itemView.findViewById(R.id.tv_place);
-            tv_month = itemView.findViewById(R.id.tv_month);
-            tv_day = itemView.findViewById(R.id.tv_day);
-            tv_may_be = itemView.findViewById(R.id.tv_may_be);
-            tv_not_going = itemView.findViewById(R.id.tv_not_going);
-            tv_going = itemView.findViewById(R.id.tv_going);
             ll_event = itemView.findViewById(R.id.ll_event);
-            ll_going = itemView.findViewById(R.id.ll_going);
-            ll_not_going = itemView.findViewById(R.id.ll_not_going);
-            ll_may_be = itemView.findViewById(R.id.ll_may_be);
+            spinner_interest = itemView.findViewById(R.id.spinner_interest);
         }
     }
 
@@ -944,8 +1252,15 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public ImageView iv_post_menu;
         public TextView tv_description;
         public CircleImageView cv_profile_pic;
-        public ViewPager viewPager;
         public LinearLayout ll_news_feed;
+        public ImageView iv_1;
+        public ImageView iv_2;
+        public ImageView iv_3;
+        public ImageView iv_4;
+        public ImageView iv_5;
+        public TextView tv_more_img;
+        public LinearLayout ll_image_2;
+        public LinearLayout ll_image_3;
 
         public PostViewHolder(View itemView) {
             super(itemView);
@@ -955,56 +1270,153 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             iv_post_menu = itemView.findViewById(R.id.iv_post_menu);
             tv_description = itemView.findViewById(R.id.tv_description);
             cv_profile_pic = itemView.findViewById(R.id.cv_profile_pic);
-            viewPager = itemView.findViewById(R.id.viewPager);
             ll_news_feed = itemView.findViewById(R.id.ll_news_feed);
+            iv_1 = itemView.findViewById(R.id.iv_1);
+            iv_2 = itemView.findViewById(R.id.iv_2);
+            iv_3 = itemView.findViewById(R.id.iv_3);
+            iv_4 = itemView.findViewById(R.id.iv_4);
+            iv_5 = itemView.findViewById(R.id.iv_5);
+            tv_more_img = itemView.findViewById(R.id.tv_more_img);
+            ll_image_2 = itemView.findViewById(R.id.ll_image_2);
+            ll_image_3 = itemView.findViewById(R.id.ll_image_3);
         }
     }
 
     class ComplaintViewHolder extends RecyclerView.ViewHolder {
         public TextView tv_profile_name;
+        public TextView tv_title;
         public TextView tv_date;
+        public ImageView iv_feed_image;
+        public ImageView iv_post_menu;
+        public TextView tv_description;
         public CircleImageView cv_profile_pic;
-        public TextView tv_analyze, tv_id, tv_accepted;
-        public LinearLayout ll_analyze;
-        public LinearLayout ll_decline;
-        public LinearLayout ll_accept;
-        public LinearLayout ll_accepted;
-        public LinearLayout ll_acceptdecline;
-        public LinearLayout ll_group_complaint_status;
-        public ImageView iv_info;
-        public ImageView iv_complaint_menu;
+        public LinearLayout ll_news_feed;
+        public ImageView iv_1;
+        public ImageView iv_2;
+        public ImageView iv_3;
+        public ImageView iv_4;
+        public ImageView iv_5;
+        public TextView tv_more_img;
+        public LinearLayout ll_image_2;
+        public LinearLayout ll_image_3;
 
         public ComplaintViewHolder(View itemView) {
             super(itemView);
             tv_profile_name = itemView.findViewById(R.id.tv_profile_name);
+            tv_title = itemView.findViewById(R.id.tv_title);
             tv_date = itemView.findViewById(R.id.tv_date);
+            iv_feed_image = itemView.findViewById(R.id.iv_feed_image);
+            iv_post_menu = itemView.findViewById(R.id.iv_post_menu);
+            tv_description = itemView.findViewById(R.id.tv_description);
             cv_profile_pic = itemView.findViewById(R.id.cv_profile_pic);
-            tv_analyze = itemView.findViewById(R.id.tv_analyze);
-            tv_id = itemView.findViewById(R.id.tv_id);
-            tv_accepted = itemView.findViewById(R.id.tv_accepted);
-            ll_analyze = itemView.findViewById(R.id.ll_analyze);
-            ll_accept = itemView.findViewById(R.id.ll_accept);
-            ll_decline = itemView.findViewById(R.id.ll_decline);
-            ll_accepted = itemView.findViewById(R.id.ll_accepted);
-            ll_group_complaint_status = itemView.findViewById(R.id.ll_group_complaint_status);
-            ll_acceptdecline = itemView.findViewById(R.id.ll_acceptdecline);
-            iv_info = itemView.findViewById(R.id.iv_info);
-            iv_complaint_menu = itemView.findViewById(R.id.iv_complaint_menu);
+            ll_news_feed = itemView.findViewById(R.id.ll_news_feed);
+            iv_1 = itemView.findViewById(R.id.iv_1);
+            iv_2 = itemView.findViewById(R.id.iv_2);
+            iv_3 = itemView.findViewById(R.id.iv_3);
+            iv_4 = itemView.findViewById(R.id.iv_4);
+            iv_5 = itemView.findViewById(R.id.iv_5);
+            tv_more_img = itemView.findViewById(R.id.tv_more_img);
+            ll_image_2 = itemView.findViewById(R.id.ll_image_2);
+            ll_image_3 = itemView.findViewById(R.id.ll_image_3);
+        }
+    }
+
+    class SuggestionViewHolder extends RecyclerView.ViewHolder {
+        public TextView tv_profile_name;
+        public TextView tv_title;
+        public TextView tv_date;
+        public ImageView iv_feed_image;
+        public ImageView iv_post_menu;
+        public TextView tv_description;
+        public CircleImageView cv_profile_pic;
+        public LinearLayout ll_news_feed;
+        public ImageView iv_1;
+        public ImageView iv_2;
+        public ImageView iv_3;
+        public ImageView iv_4;
+        public ImageView iv_5;
+        public TextView tv_more_img;
+        public LinearLayout ll_image_2;
+        public LinearLayout ll_image_3;
+
+        public SuggestionViewHolder(View itemView) {
+            super(itemView);
+            tv_profile_name = itemView.findViewById(R.id.tv_profile_name);
+            tv_title = itemView.findViewById(R.id.tv_title);
+            tv_date = itemView.findViewById(R.id.tv_date);
+            iv_feed_image = itemView.findViewById(R.id.iv_feed_image);
+            iv_post_menu = itemView.findViewById(R.id.iv_post_menu);
+            tv_description = itemView.findViewById(R.id.tv_description);
+            cv_profile_pic = itemView.findViewById(R.id.cv_profile_pic);
+            ll_news_feed = itemView.findViewById(R.id.ll_news_feed);
+            iv_1 = itemView.findViewById(R.id.iv_1);
+            iv_2 = itemView.findViewById(R.id.iv_2);
+            iv_3 = itemView.findViewById(R.id.iv_3);
+            iv_4 = itemView.findViewById(R.id.iv_4);
+            iv_5 = itemView.findViewById(R.id.iv_5);
+            tv_more_img = itemView.findViewById(R.id.tv_more_img);
+            ll_image_2 = itemView.findViewById(R.id.ll_image_2);
+            ll_image_3 = itemView.findViewById(R.id.ll_image_3);
+        }
+    }
+
+    class InformationViewHolder extends RecyclerView.ViewHolder {
+        public TextView tv_profile_name;
+        public TextView tv_title;
+        public TextView tv_date;
+        public ImageView iv_feed_image;
+        public ImageView iv_post_menu;
+        public TextView tv_description;
+        public CircleImageView cv_profile_pic;
+        public LinearLayout ll_news_feed;
+        public ImageView iv_1;
+        public ImageView iv_2;
+        public ImageView iv_3;
+        public ImageView iv_4;
+        public ImageView iv_5;
+        public TextView tv_more_img;
+        public LinearLayout ll_image_2;
+        public LinearLayout ll_image_3;
+
+        public InformationViewHolder(View itemView) {
+            super(itemView);
+            tv_profile_name = itemView.findViewById(R.id.tv_profile_name);
+            tv_title = itemView.findViewById(R.id.tv_title);
+            tv_date = itemView.findViewById(R.id.tv_date);
+            iv_feed_image = itemView.findViewById(R.id.iv_feed_image);
+            iv_post_menu = itemView.findViewById(R.id.iv_post_menu);
+            tv_description = itemView.findViewById(R.id.tv_description);
+            cv_profile_pic = itemView.findViewById(R.id.cv_profile_pic);
+            ll_news_feed = itemView.findViewById(R.id.ll_news_feed);
+            iv_1 = itemView.findViewById(R.id.iv_1);
+            iv_2 = itemView.findViewById(R.id.iv_2);
+            iv_3 = itemView.findViewById(R.id.iv_3);
+            iv_4 = itemView.findViewById(R.id.iv_4);
+            iv_5 = itemView.findViewById(R.id.iv_5);
+            tv_more_img = itemView.findViewById(R.id.tv_more_img);
+            ll_image_2 = itemView.findViewById(R.id.ll_image_2);
+            ll_image_3 = itemView.findViewById(R.id.ll_image_3);
         }
     }
 
 
     public static class UserProfileViewHolder extends RecyclerView.ViewHolder {
         public CircleImageView cv_profile_pic;
-        public TextView tv_user_name, tv_add_friend;
+        public TextView tv_user_name, tv_email;
         public LinearLayout ll_user;
+        public Button btn_accept;
+        public LinearLayout ll_delete;
+        public SwipeRevealLayout swipeRevealLayout;
 
         public UserProfileViewHolder(View itemView) {
             super(itemView);
             cv_profile_pic = itemView.findViewById(R.id.cv_profile_pic);
             tv_user_name = itemView.findViewById(R.id.tv_user_name);
-            tv_add_friend = itemView.findViewById(R.id.tv_add_friend);
+            tv_email = itemView.findViewById(R.id.tv_email);
             ll_user = itemView.findViewById(R.id.ll_user);
+            btn_accept = itemView.findViewById(R.id.btn_accept);
+            ll_delete = itemView.findViewById(R.id.ll_delete);
+            swipeRevealLayout = itemView.findViewById(R.id.swipeRevealLayout);
         }
     }
 

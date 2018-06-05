@@ -14,6 +14,7 @@ import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.adapter.ViewPagerWithTitleAdapter;
 import com.ritvi.kaajneeti.fragment.myconnection.ConnectionsFragment;
 import com.ritvi.kaajneeti.fragment.myconnection.GroupFragment;
+import com.ritvi.kaajneeti.view.CustomViewPager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,7 +24,7 @@ public class MyConnectionFragment extends Fragment{
     @BindView(R.id.tabs)
     TabLayout tabs;
     @BindView(R.id.viewPager)
-    ViewPager viewPager;
+    CustomViewPager viewPager;
 
     @Nullable
     @Override
@@ -36,8 +37,18 @@ public class MyConnectionFragment extends Fragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewPager.setPagingEnabled(false);
+    }
+    boolean is_initialized=false;
+    public void initializeFragment(){
+        if(!is_initialized){
+            is_initialized=true;
+            setUpPager();
+        }
+    }
 
 
+    public void setUpPager(){
         ViewPagerWithTitleAdapter adapter = new ViewPagerWithTitleAdapter(getChildFragmentManager());
         adapter.addFrag(new ConnectionsFragment(), "Connections");
         adapter.addFrag(new GroupFragment(), "Groups");

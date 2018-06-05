@@ -26,7 +26,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by sunil on 01-03-2018.
@@ -279,5 +281,10 @@ public class UtilityFunction {
 
         double[] loc=new double[]{latitude,longitude};
         return loc;
+    }
+
+    public static List<String> listOfCountries(){
+        List<String> list = Arrays.asList(Constants.country);
+        return  list;
     }
 }

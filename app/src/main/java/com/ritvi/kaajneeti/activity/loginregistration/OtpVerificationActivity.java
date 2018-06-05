@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,6 +48,8 @@ public class OtpVerificationActivity extends AppCompatActivity {
     Button btn_next;
     @BindView(R.id.iv_back)
     ImageView iv_back;
+    @BindView(R.id.btn_resend_otp)
+    Button btn_resend_otp;
     String mobile_number="";
     String type = "";
     @Override
@@ -72,9 +76,23 @@ public class OtpVerificationActivity extends AppCompatActivity {
                         callOTPAPI();
                     }else if(type.equalsIgnoreCase(Constants.ENTER_MOBILE_REGISTRATION_TYPE)){
                         registerValidateOTP();
+                    }else if(type.equalsIgnoreCase(Constants.ENTER_MOBILE_FORGOT_MPIN)){
+                        callVARIFYOTP();
                     }
                 }
-//                startActivity(new Intent(OtpVerificationActivity.this,SetMpinActivity.class));
+            }
+        });
+
+        btn_resend_otp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(type.equalsIgnoreCase(Constants.ENTER_MOBILE_LOGIN_WITH_OTP_TYPE)) {
+                    callLoginWithOtpVerifyResend();
+                }else if(type.equalsIgnoreCase(Constants.ENTER_MOBILE_FORGOT_MPIN)){
+                    callForgotMPINResendOTP();
+                }else if(type.equalsIgnoreCase(Constants.ENTER_MOBILE_REGISTRATION_TYPE)){
+                    callLoginWithOtpVerifyResend();
+                }
             }
         });
 
@@ -84,7 +102,103 @@ public class OtpVerificationActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+        startTimer();
     }
+
+    public void callLoginWithOtpVerifyResend(){
+        ArrayList<NameValuePair> nameValuePairs=new ArrayList<>();
+        nameValuePairs.add(new BasicNameValuePair("mobile","+91"+mobile_number));
+        new WebServiceBase(nameValuePairs, this, new WebServicesCallBack() {
+            @Override
+            public void onGetMsg(String apicall, String response) {
+                try{
+                    JSONObject jsonObject=new JSONObject(response);
+                    if(jsonObject.optString("status").equalsIgnoreCase("success")){
+                        startTimer();
+                    }else{
+                        ToastClass.showShortToast(getApplicationContext(),jsonObject.optString("message"));
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }, Constants.CALL_LOGIN_OTP, true).execute(WebServicesUrls.LOGIN_URL);
+    }
+
+
+    private void callForgotMPINResendOTP() {
+        ArrayList<NameValuePair> nameValuePairs=new ArrayList<>();
+        nameValuePairs.add(new BasicNameValuePair("mobile","+91"+mobile_number));
+        new WebServiceBase(nameValuePairs, this, new WebServicesCallBack() {
+            @Override
+            public void onGetMsg(String apicall, String response) {
+                try{
+                    JSONObject jsonObject=new JSONObject(response);
+                    if(jsonObject.optString("status").equalsIgnoreCase("success")){
+                        startTimer();
+                    }else{
+                        ToastClass.showShortToast(getApplicationContext(),jsonObject.optString("message"));
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },"FORGOT_MPIN",true).execute(WebServicesUrls.FORGOT_MPIN);
+    }
+
+
+    public void startTimer(){
+//        btn_resend_otp.setEnabled(false);
+        resendDisabled();
+        new CountDownTimer(60000, 1000) {
+
+            @Override
+            public void onTick(long l) {
+                btn_resend_otp.setText("Resend 00:"+String.valueOf((int) (l/1000)));
+            }
+
+            @Override
+            public void onFinish() {
+                btn_resend_otp.setText("Resend");
+                resendEnabled();
+            }
+        }.start();
+    }
+
+    public void resendDisabled(){
+        btn_resend_otp.setEnabled(false);
+        btn_resend_otp.setBackgroundResource(R.drawable.btn_resend);
+        btn_resend_otp.setTextColor(Color.parseColor("#C1C1C1"));
+    }
+
+    public void resendEnabled(){
+        btn_resend_otp.setEnabled(true);
+        btn_resend_otp.setBackgroundResource(R.drawable.btn_next);
+        btn_resend_otp.setTextColor(Color.parseColor("#FFFFFF"));
+    }
+
+    private void callVARIFYOTP() {
+        ArrayList<NameValuePair> nameValuePairs=new ArrayList<>();
+        nameValuePairs.add(new BasicNameValuePair("mobile","+91"+mobile_number));
+        nameValuePairs.add(new BasicNameValuePair("reset_code",pinview.getValue().toString()));
+        new WebServiceBase(nameValuePairs, this, new WebServicesCallBack() {
+            @Override
+            public void onGetMsg(String apicall, String response) {
+                Log.d(TagUtils.getTag(),"response:-"+response);
+                try{
+                    JSONObject jsonObject=new JSONObject(response);
+                    if(jsonObject.optString("status").equalsIgnoreCase("success")){
+                        startActivity(new Intent(OtpVerificationActivity.this,SetMpinActivity.class).putExtra("mobile_number",mobile_number).putExtra("type",type));
+                    }else{
+                        ToastClass.showShortToast(getApplicationContext(),jsonObject.optString("message"));
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },"CALL_VALIDATE_MPIN",true).execute(WebServicesUrls.VALIDATE_FORGOT_MPIN);
+    }
+
 
     public void registerValidateOTP(){
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();

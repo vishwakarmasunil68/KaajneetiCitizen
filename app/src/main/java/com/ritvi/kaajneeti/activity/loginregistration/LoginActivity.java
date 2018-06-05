@@ -1,5 +1,6 @@
 package com.ritvi.kaajneeti.activity.loginregistration;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -104,6 +105,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     EditText et_phone_number;
     @BindView(R.id.et_mpin)
     EditText et_mpin;
+    @BindView(R.id.tv_forgot_mpin)
+    TextView tv_forgot_mpin;
 
     CallbackManager callbackManager;
     GoogleApiClient mGoogleApiClient;
@@ -224,6 +227,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             @Override
             public void onClick(View v) {
                 callLoginAPI();
+            }
+        });
+        tv_forgot_mpin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this,EnterMobileNumberActivity.class).putExtra("type",Constants.ENTER_MOBILE_FORGOT_MPIN));
             }
         });
     }
@@ -415,10 +424,24 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         request.executeAsync();
     }
 
-
+    ProgressDialog progressDialog;
     public void saveImageFromUrl(final String social_type, final String id, final String name, final String email, final String picture, final String mobile) {
         new AsyncTask<Void, Void, Void>() {
             File file = new File(FileUtils.getSocialDir() + File.separator + social_type + "_" + System.currentTimeMillis() + ".png");
+
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                try {
+                    progressDialog = new ProgressDialog(LoginActivity.this);
+                    progressDialog.setMessage("Please Wait...");
+                    progressDialog.setCancelable(true);
+                    progressDialog.show();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
 
             @Override
             protected Void doInBackground(Void... voids) {
@@ -484,6 +507,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             new WebUploadService(reqEntity, this, new WebServicesCallBack() {
                 @Override
                 public void onGetMsg(String apicall, String response) {
+                    if (progressDialog != null&&progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
                     parseLoginResponse(response);
                 }
             }, Constants.CALL_UPLOAD_SOCIAL_DATA, false).execute(WebServicesUrls.LOGIN_WITH_SOCIAL);

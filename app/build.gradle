@@ -35,6 +35,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    dexOptions {
+        incremental = true;
+        maxProcessCount 4
+        javaMaxHeapSize "4g"
+        dexInProcess = false
+        preDexLibraries = false
+    }
 }
 
 dependencies {
@@ -71,5 +78,20 @@ dependencies {
     compile 'net.alhazmy13.MediaPicker:libary:2.4.0'
     compile 'io.github.inflationx:calligraphy3:3.0.0'
     compile 'io.github.inflationx:viewpump:1.0.0'
+    compile 'com.github.zcweng:switch-button:0.0.3@aar'
+    compile 'com.savvi.datepicker:rangepicker:1.2.0'
+    compile 'com.sothree.slidinguppanel:library:3.4.0'
+}
+android.packagingOptions {
+    exclude 'the META-INF / DEPENDENCIES'
+    exclude 'META-INF/DEPENDENCIES.txt'
+    exclude 'the META-INF / LICENSE'
+    exclude 'the META-INF / LICENSE.txt'
+    exclude 'the META-INF / license.txt'
+    exclude 'the META-INF / NOTICE'
+    exclude 'the META-INF / the NOTICE.txt '
+    exclude ' the META-INF / NOTICE.txt '
+    exclude ' the META-INF / ASL2.0 '
+    exclude ' the META-INF / Services / javax.annotation.processing.Processor '
 }
 apply plugin: 'com.google.gms.google-services'

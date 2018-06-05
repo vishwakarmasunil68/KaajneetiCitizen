@@ -1,8 +1,10 @@
 package com.ritvi.kaajneeti.activity.loginregistration;
 
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +15,7 @@ import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
 import com.ritvi.kaajneeti.Util.Pref;
 import com.ritvi.kaajneeti.Util.StringUtils;
+import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
@@ -50,7 +53,6 @@ public class EnterMobileNumberActivity extends AppCompatActivity {
             type = bundle.getString("type");
         }
 
-
         btn_verification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,6 +63,8 @@ public class EnterMobileNumberActivity extends AppCompatActivity {
                         callLoginOTPAPI();
                     }else if(type.equalsIgnoreCase(Constants.ENTER_MOBILE_REGISTRATION_TYPE)){
                         callRegisterAPI();
+                    }else if(type.equalsIgnoreCase(Constants.ENTER_MOBILE_FORGOT_MPIN)){
+                        callForgotMPIN();
                     }
                 }
 //                startActivity(new Intent(EnterMobileNumberActivity.this, OtpVerificationActivity.class).putExtra("mobile", et_phone_number.getText().toString()));
@@ -73,6 +77,26 @@ public class EnterMobileNumberActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+    }
+
+    private void callForgotMPIN() {
+        ArrayList<NameValuePair> nameValuePairs=new ArrayList<>();
+        nameValuePairs.add(new BasicNameValuePair("mobile","+91"+et_phone_number.getText().toString()));
+        new WebServiceBase(nameValuePairs, this, new WebServicesCallBack() {
+            @Override
+            public void onGetMsg(String apicall, String response) {
+                try{
+                    JSONObject jsonObject=new JSONObject(response);
+                    if(jsonObject.optString("status").equalsIgnoreCase("success")){
+                        startActivity(new Intent(EnterMobileNumberActivity.this,OtpVerificationActivity.class).putExtra("mobile_number",et_phone_number.getText().toString()).putExtra("type",type));
+                    }else{
+                        ToastClass.showShortToast(getApplicationContext(),jsonObject.optString("message"));
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },"FORGOT_MPIN",true).execute(WebServicesUrls.FORGOT_MPIN);
     }
 
     public void callRegisterAPI(){

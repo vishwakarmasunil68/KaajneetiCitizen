@@ -107,8 +107,9 @@
         <activity android:name=".activity.express.TagPeopleActivity" />
         <activity android:name=".activity.express.CheckInActivity" />
         <activity android:name=".activity.user.SelectFavoriteLeaderActivity" />
-        <activity android:name=".activity.user.AllLeaderActivity"></activity>
-
+        <activity android:name=".activity.user.AllLeaderActivity" />
+        <activity android:name=".activity.IntroActivity" />
+        <activity android:name=".testing.FloatTestingActivity"></activity>
     </application>
 
 </manifest>

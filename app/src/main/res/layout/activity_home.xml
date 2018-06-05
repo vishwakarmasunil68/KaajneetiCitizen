@@ -30,6 +30,7 @@
                     android:gravity="center_vertical">
 
                     <LinearLayout
+                        android:id="@+id/ll_search"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -42,15 +43,13 @@
                             android:layout_height="27dp"
                             android:layout_gravity="center_vertical"
                             android:adjustViewBounds="true"
-                            android:src="@drawable/ic_search_bar"
-                            android:tint="#FFFFFF" />
+                            android:src="@drawable/ic_search_bar"/>
                     </LinearLayout>
 
                     <ImageView
                         android:layout_width="27dp"
                         android:layout_height="27dp"
                         android:layout_marginRight="23dp"
-                        android:tint="#FFFFFF"
                         android:src="@drawable/ic_notification"/>
                 </LinearLayout>
 
@@ -86,7 +85,8 @@
                         android:id="@+id/iv_home"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
-                        android:src="@drawable/ic_home" />
+                        android:layout_marginTop="5dp"
+                        android:src="@drawable/ic_home_filled" />
 
                 </LinearLayout>
 
@@ -101,6 +101,7 @@
                         android:id="@+id/iv_connect"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
+                        android:layout_marginTop="5dp"
                         android:src="@drawable/ic_connect_people" />
 
                 </LinearLayout>
@@ -116,6 +117,7 @@
                         android:id="@+id/iv_analyze"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
+                        android:layout_marginTop="5dp"
                         android:src="@drawable/ic_analyze" />
 
                 </LinearLayout>
@@ -131,6 +133,7 @@
                         android:id="@+id/iv_favorite"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
+                        android:layout_marginTop="5dp"
                         android:src="@drawable/ic_favorite" />
 
                 </LinearLayout>
@@ -147,6 +150,7 @@
                         android:id="@+id/iv_ham"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
+                        android:layout_marginTop="5dp"
                         android:src="@drawable/ic_ham" />
 
                 </LinearLayout>
@@ -156,5 +160,15 @@
 
 
         </FrameLayout>
+
+        <com.ritvi.kaajneeti.view.MovableFloatingActionButton
+            android:id="@+id/cv_express"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="right|bottom"
+            android:layout_marginBottom="60dp"
+            android:layout_marginRight="10dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_express" />
     </FrameLayout>
 </LinearLayout>

@@ -29,14 +29,12 @@
                     android:id="@+id/cv_profile_pic"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_default_profile_pic"
-                    app:civ_border_color="#000000"
-                    app:civ_border_width="1dp" />
+                    android:src="@drawable/ic_default_profile_pic"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="7dp"
+                    android:layout_marginLeft="12dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
@@ -59,14 +57,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="18 February at 2:09 PM"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:layout_marginTop="7dp"/>
                 </LinearLayout>
 
                 <ImageView
                     android:id="@+id/iv_post_menu"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/ic_action_navigation_more_vert"
+                    android:src="@drawable/ic_action_navigation_horizontal"
                     android:tint="#757575" />
             </LinearLayout>
 
@@ -82,11 +81,85 @@
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true" />
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/viewPager"
+            <LinearLayout
+                android:id="@+id/ll_image_2"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:visibility="gone"></android.support.v4.view.ViewPager>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/iv_1"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:layout_margin="7dp"/>
+
+                <ImageView
+                    android:id="@+id/iv_2"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:layout_margin="7dp"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_image_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/iv_3"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:layout_margin="7dp"/>
+
+                <ImageView
+                    android:id="@+id/iv_4"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:layout_margin="7dp"/>
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_margin="7dp"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/iv_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"/>
+
+
+                    <com.ritvi.kaajneeti.view.SourceSansProBoldTextView
+                        android:id="@+id/tv_more_img"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="+5"
+                        android:textSize="25sp"
+                        android:textColor="#FFFFFF"
+                        android:visibility="gone"/>
+
+                </FrameLayout>
+
+            </LinearLayout>
+
 
             <View
                 android:layout_width="match_parent"
@@ -113,16 +186,17 @@
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
+                        android:layout_width="20dp"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
                         android:scaleType="fitXY"
-                        android:src="@drawable/ic_eye_view" />
+                        android:src="@drawable/ic_like" />
 
-                    <TextView
+                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:text="116,324" />
+                        android:text="10"
+                        android:layout_marginLeft="7dp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -137,13 +211,13 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/ic_love" />
+                        android:src="@drawable/ic_comment" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:text="3,490" />
+                        android:text="3,490"
+                        android:layout_marginLeft="7dp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -152,6 +226,7 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:visibility="invisible"
                     android:orientation="horizontal">
 
                     <ImageView
@@ -164,7 +239,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
                         android:text="85" />
                 </LinearLayout>
 

@@ -20,6 +20,12 @@
         <item>Group</item>
         <item>Others</item>
     </string-array>
+    <string-array name="spinnerevent">
+        <item>Select</item>
+        <item>Interested</item>
+        <item>Not Interested</item>
+        <item>May be</item>
+    </string-array>
     <string-array name="departmenttype">
         <item>Public</item>
         <item>Private</item>

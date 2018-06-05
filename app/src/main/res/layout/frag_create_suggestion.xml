@@ -60,6 +60,7 @@
                         android:textStyle="bold" />
 
                     <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                        android:id="@+id/tv_post"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -101,43 +102,57 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:layout_gravity="center"
+                        android:gravity="center">
 
-                        <ImageView
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/cv_profile_pic"
                             android:layout_width="70dp"
                             android:layout_height="70dp"
                             android:layout_margin="7dp"
-                            android:scaleType="fitXY"
                             android:src="@drawable/ic_default_profile_pic" />
 
-                        <com.ritvi.kaajneeti.view.SourceSansProTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1"
-                            android:gravity="center_vertical"
-                            android:text="John Smith"
-                            android:textSize="18sp" />
+                       <LinearLayout
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_weight="1"
+                           android:layout_marginLeft="10dp"
+                           android:orientation="vertical">
 
-                        <RelativeLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginRight="30dp"
-                            android:background="@drawable/spinner_background"
-                            android:gravity="center_vertical"
-                            android:minHeight="30dp"
-                            android:orientation="horizontal"
-                            android:padding="7dp">
+                           <TextView
+                               android:id="@+id/tv_profile_name"
+                               android:layout_width="wrap_content"
+                               android:layout_height="wrap_content"
+                               android:layout_gravity="center_vertical"
+                               android:layout_weight="1"
+                               android:gravity="center_vertical"
+                               android:text="John Smith"
+                               android:textSize="18sp" />
 
-                            <Spinner
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@android:color/transparent"
-                                android:entries="@array/publicpriv"
-                                android:spinnerMode="dropdown"></Spinner>
+                           <RelativeLayout
+                               android:layout_width="wrap_content"
+                               android:layout_height="wrap_content"
+                               android:layout_gravity="center_vertical"
+                               android:layout_marginRight="30dp"
+                               android:background="@drawable/spinner_background"
+                               android:gravity="center_vertical"
+                               android:minHeight="30dp"
+                               android:orientation="horizontal"
+                               android:layout_marginTop="7dp"
+                               android:padding="3dp">
 
-                        </RelativeLayout>
+                               <Spinner
+                                   android:id="@+id/spinner_pubpri"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content"
+                                   android:background="@android:color/transparent"
+                                   android:entries="@array/publicpriv"
+                                   android:spinnerMode="dropdown"></Spinner>
+
+                           </RelativeLayout>
+
+                       </LinearLayout>
 
                     </LinearLayout>
 
@@ -154,11 +169,13 @@
                             android:padding="10dp">
 
                             <FrameLayout
+                                android:id="@+id/frame_fav_leader"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp">
 
                                 <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                    android:id="@+id/tv_leader_name"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
@@ -168,7 +185,7 @@
                                     android:paddingLeft="7dp"
                                     android:paddingRight="35dp"
                                     android:singleLine="true"
-                                    android:text="Select a leader"
+                                    android:hint="Select a leader"
                                     android:textSize="16sp" />
 
                                 <ImageView
@@ -176,6 +193,7 @@
                                     android:layout_height="20dp"
                                     android:layout_gravity="right|center"
                                     android:layout_marginRight="7dp"
+                                    android:tint="@color/colorPrimary"
                                     android:src="@drawable/ic_search_icon" />
 
                             </FrameLayout>
@@ -207,10 +225,11 @@
                                 android:text="Subject" />
 
                             <EditText
+                                android:id="@+id/et_subject"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="7dp"
-                                android:background="@drawable/et_edit_back"
+                                android:background="@drawable/ic_edit_full"
                                 android:hint="Enter subject"
                                 android:minHeight="45dp"
                                 android:paddingLeft="7dp" />
@@ -227,10 +246,11 @@
                                 android:layout_marginTop="7dp">
 
                                 <TextView
+                                    android:id="@+id/tv_date"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
-                                    android:background="@drawable/et_edit_back"
+                                    android:background="@drawable/ic_edit_full"
                                     android:gravity="center_vertical"
                                     android:minHeight="45dp"
                                     android:paddingLeft="7dp"
@@ -244,7 +264,7 @@
                                     android:layout_gravity="right|center"
                                     android:layout_marginRight="7dp"
                                     android:src="@drawable/ic_event_white"
-                                    android:tint="#757575" />
+                                    android:tint="@color/colorPrimary" />
 
                             </FrameLayout>
 
@@ -255,13 +275,27 @@
                                 android:text="Description" />
 
                             <EditText
+                                android:id="@+id/et_description"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="7dp"
-                                android:background="@drawable/et_edit_back"
+                                android:background="@drawable/ic_edit_full"
                                 android:hint="Add Description"
                                 android:minHeight="90dp"
                                 android:paddingLeft="7dp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="7dp"
+                                android:orientation="vertical">
+
+                                <android.support.v7.widget.RecyclerView
+                                    android:id="@+id/rv_media"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+
+                            </LinearLayout>
 
                         </LinearLayout>
 

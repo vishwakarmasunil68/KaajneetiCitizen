@@ -14,6 +14,9 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -39,6 +42,9 @@ import com.ritvi.kaajneeti.Util.UtilityFunction;
 import com.ritvi.kaajneeti.activity.express.CheckInActivity;
 import com.ritvi.kaajneeti.activity.express.TagPeopleActivity;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
+import com.ritvi.kaajneeti.adapter.AttachMediaAdapter;
+import com.ritvi.kaajneeti.adapter.TagPeopleAdapter;
+import com.ritvi.kaajneeti.adapter.TagShowAdapter;
 import com.ritvi.kaajneeti.pojo.location.NewLocationPOJO;
 import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
 import com.ritvi.kaajneeti.webservice.WebServicesCallBack;
@@ -98,8 +104,8 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
     ImageView iv_end_date;
     @BindView(R.id.et_description)
     EditText et_description;
-    @BindView(R.id.tv_tag_people)
-    TextView tv_tag_people;
+    @BindView(R.id.rv_tags)
+    RecyclerView rv_tags;
     @BindView(R.id.iv_tag)
     ImageView iv_tag;
     @BindView(R.id.iv_post)
@@ -413,13 +419,20 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
         } else if (requestCode == Constants.ACTIVITY_TAG_PEOPLE) {
             if (resultCode == Activity.RESULT_OK) {
                 taggeduserInfoPOJOS = (List<UserProfilePOJO>) data.getSerializableExtra("taggedpeople");
-
-//                tagging_description = getTaggedDescription(taggeduserInfoPOJOS);
-//                updateProfileStatus();
+                attachTagPeopleAdapter();
             }
         }
     }
 
+    public void attachTagPeopleAdapter() {
+        TagShowAdapter tagShowAdapter = new TagShowAdapter(getActivity(), this, taggeduserInfoPOJOS);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        rv_tags.setHasFixedSize(true);
+        rv_tags.setAdapter(tagShowAdapter);
+        rv_tags.setLayoutManager(linearLayoutManager);
+        rv_tags.setItemAnimator(new DefaultItemAnimator());
+
+    }
     public void updateCoverImage(String cover_image_path) {
         if (new File(cover_image_path).exists()) {
             Glide.with(getActivity().getApplicationContext())

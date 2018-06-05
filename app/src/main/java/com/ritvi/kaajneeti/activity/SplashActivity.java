@@ -28,14 +28,12 @@ public class SplashActivity extends AppCompatActivity {
                     Constants.userProfilePOJO = new Gson().fromJson(Pref.GetStringPref(getApplicationContext(), StringUtils.USER_PROFILE, ""), UserProfilePOJO.class);
                     startActivity(new Intent(SplashActivity.this, HomeActivity.class));
                 } else {
-//                    if (Pref.getPermanentBoolean(getApplicationContext(), StringUtils.INTRO_COMPLETED, false)) {
+                    if (Pref.getPermanentBoolean(getApplicationContext(), StringUtils.INTRO_COMPLETED, false)) {
                         startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-//                    } else {
-//                        startActivity(new Intent(SplashActivity.this, SliderActivity.class));
-//                    }
+                    } else {
+                        startActivity(new Intent(SplashActivity.this, IntroActivity.class));
+                    }
                 }
-//                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-//                startActivity(new Intent(SplashActivity.this, HomeActivity.class));
                 finishAffinity();
             }
         },2000);

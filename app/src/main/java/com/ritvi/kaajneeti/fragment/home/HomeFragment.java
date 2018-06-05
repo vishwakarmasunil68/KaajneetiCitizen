@@ -28,6 +28,7 @@ import com.ritvi.kaajneeti.adapter.ViewPagerWithTitleAdapter;
 import com.ritvi.kaajneeti.fragment.user.UserProfileFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,8 +46,8 @@ public class HomeFragment extends Fragment {
     TextView tv_profile_name;
     @BindView(R.id.tv_what)
     TextView tv_what;
-    @BindView(R.id.cv_express)
-    ImageView cv_express;
+//    @BindView(R.id.cv_express)
+//    ImageView cv_express;
 
     @Nullable
     @Override
@@ -69,38 +70,82 @@ public class HomeFragment extends Fragment {
         });
         setUpViewPager();
 
-        cv_express.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), ExpressActivity.class));
-            }
-        });
+//        cv_express.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivity(new Intent(getActivity(), ExpressActivity.class));
+//            }
+//        });
 
         cv_profile_pic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(getActivity() instanceof HomeActivity){
                     HomeActivity homeActivity= (HomeActivity) getActivity();
-                    homeActivity.replaceFragmentinFrameHome(new UserProfileFragment(),"UserProfileFragment");
+                    UserProfileFragment userProfileFragment=new UserProfileFragment();
+                    Bundle bundle=new Bundle();
+                    bundle.putSerializable("userProfile",Constants.userProfilePOJO);
+                    userProfileFragment.setArguments(bundle);
+
+                    homeActivity.replaceFragmentinFrameHome(userProfileFragment,"UserProfileFragment");
                 }
+            }
+        });
+        tv_profile_name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cv_profile_pic.callOnClick();
             }
         });
     }
 
     public void setUpViewPager() {
+        AllFeedsFragment fragment1=new AllFeedsFragment("All");
+        AllFeedsFragment fragment2=new AllFeedsFragment("event");
+        AllFeedsFragment fragment3=new AllFeedsFragment("poll");
+        AllFeedsFragment fragment4=new AllFeedsFragment("complaint");
+        AllFeedsFragment fragment5=new AllFeedsFragment("suggestion");
+        AllFeedsFragment fragment6=new AllFeedsFragment("information");
+
+        final List<AllFeedsFragment> allFeedsFragments=new ArrayList<>();
+        allFeedsFragments.add(fragment1);
+        allFeedsFragments.add(fragment2);
+        allFeedsFragments.add(fragment3);
+        allFeedsFragments.add(fragment4);
+        allFeedsFragments.add(fragment5);
+        allFeedsFragments.add(fragment6);
 
         ViewPagerWithTitleAdapter adapter = new ViewPagerWithTitleAdapter(getChildFragmentManager());
-        adapter.addFrag(new AllFeedsFragment(), "All");
-//        adapter.addFrag(new FeedsFragment(), "Feeds");
-        adapter.addFrag(new FeedsFragment(), "Event");
-        adapter.addFrag(new FeedsFragment(), "Poll");
-        adapter.addFrag(new FeedsFragment(), "Complaint");
-        adapter.addFrag(new FeedsFragment(), "Suggestion");
-        adapter.addFrag(new FeedsFragment(), "Information");
+        adapter.addFrag(fragment1, "All");
+        adapter.addFrag(fragment2, "Event");
+        adapter.addFrag(fragment3, "Poll");
+        adapter.addFrag(fragment4, "Complaint");
+        adapter.addFrag(fragment5, "Suggestion");
+        adapter.addFrag(fragment6, "Information");
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(adapter.getCount());
 
         tabs.setupWithViewPager(viewPager);
+
+        allFeedsFragments.get(0).initializeData();
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                allFeedsFragments.get(position).initializeData();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
     }
 
 }

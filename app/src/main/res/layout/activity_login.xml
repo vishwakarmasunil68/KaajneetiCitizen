@@ -72,7 +72,8 @@
                         android:layout_height="match_parent"
                         android:background="@null"
                         android:hint="Phone Number"
-                        android:inputType="textEmailAddress"
+                        android:maxLength="10"
+                        android:inputType="phone"
                         android:paddingLeft="55dp" />
 
                     <View
@@ -127,6 +128,7 @@
                         android:textColor="#9B9B9B" />
 
                     <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                        android:id="@+id/tv_forgot_mpin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="right"

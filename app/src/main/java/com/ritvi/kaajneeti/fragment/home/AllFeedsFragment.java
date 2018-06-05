@@ -1,5 +1,6 @@
 package com.ritvi.kaajneeti.fragment.home;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
@@ -35,6 +37,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+@SuppressLint("ValidFragment")
 public class AllFeedsFragment extends Fragment{
 
     int range = 10;
@@ -42,6 +45,13 @@ public class AllFeedsFragment extends Fragment{
     RecyclerView rv_feeds;
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.pb_loader)
+    ProgressBar pb_loader;
+
+    String feed_type="";
+    public AllFeedsFragment(String feed_type){
+        this.feed_type=feed_type;
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -54,7 +64,23 @@ public class AllFeedsFragment extends Fragment{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         attachAdapter();
-//        getAllData(false,0);
+
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getAllData(true,0);
+            }
+        });
+    }
+
+    boolean initialize=false;
+
+    public void initializeData(){
+        if(!initialize){
+            initialize=true;
+            getAllData(false,0);
+        }
     }
 
     HomeFeedAdapter homeFeedAdapter;
@@ -96,13 +122,16 @@ public class AllFeedsFragment extends Fragment{
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
         nameValuePairs.add(new BasicNameValuePair("start", String.valueOf(start_position)));
         nameValuePairs.add(new BasicNameValuePair("end", String.valueOf(range)));
+        if(!feed_type.equalsIgnoreCase("all")) {
+            nameValuePairs.add(new BasicNameValuePair("feed_type", feed_type));
+        }
         new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
             @Override
             public void onGetMsg(ResponseListPOJO<FeedPOJO> responseListPOJO) {
+                pb_loader.setVisibility(View.GONE);
                 try {
 //                    feedPOJOS.clear();
                     removeLastPosition();
-
                     if (responseListPOJO.isSuccess()) {
                         Log.d(TagUtils.getTag(), "response length:-" + responseListPOJO.getResultList().size());
                         if (is_refreshing) {
