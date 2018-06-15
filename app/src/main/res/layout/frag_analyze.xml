@@ -228,6 +228,7 @@
                     android:orientation="vertical">
 
                     <LinearLayout
+                        android:id="@+id/ll_friends"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -298,6 +299,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/ll_follower"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -333,6 +335,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/ll_following"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"

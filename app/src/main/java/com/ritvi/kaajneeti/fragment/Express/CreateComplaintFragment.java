@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +15,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,15 +40,19 @@ import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.Util.UtilityFunction;
 import com.ritvi.kaajneeti.activity.express.CheckInActivity;
-import com.ritvi.kaajneeti.activity.express.ExpressActivity;
 import com.ritvi.kaajneeti.activity.express.TagPeopleActivity;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.activity.user.SelectFavoriteLeaderActivity;
 import com.ritvi.kaajneeti.adapter.AttachMediaAdapter;
 import com.ritvi.kaajneeti.adapter.TagShowAdapter;
 import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
+import com.ritvi.kaajneeti.pojo.allfeeds.MediaPOJO;
+import com.ritvi.kaajneeti.pojo.complaint.ComplaintAttachmentPOJO;
+import com.ritvi.kaajneeti.pojo.complaint.ComplaintPOJO;
 import com.ritvi.kaajneeti.pojo.express.complaint.DepartmentPOJO;
-import com.ritvi.kaajneeti.pojo.location.NewLocationPOJO;
+import com.ritvi.kaajneeti.pojo.location.GeometryPOJO;
+import com.ritvi.kaajneeti.pojo.location.LatLongPOJO;
+import com.ritvi.kaajneeti.pojo.location.LocationPOJO;
 import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
 import com.ritvi.kaajneeti.webservice.ResponseListCallback;
 import com.ritvi.kaajneeti.webservice.WebServiceBaseResponseList;
@@ -84,6 +91,8 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
     Spinner spinner_comp_type;
     @BindView(R.id.iv_schedule_date)
     ImageView iv_schedule_date;
+    @BindView(R.id.frame_schedule)
+    FrameLayout frame_schedule;
     @BindView(R.id.ll_tag)
     LinearLayout ll_tag;
     @BindView(R.id.ll_complaint_other)
@@ -98,6 +107,8 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
     ImageView iv_tag;
     @BindView(R.id.iv_location)
     ImageView iv_location;
+    @BindView(R.id.frame_location)
+    FrameLayout frame_location;
     @BindView(R.id.et_applicant_name)
     EditText et_applicant_name;
     @BindView(R.id.tv_leader_name)
@@ -128,8 +139,10 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
     CircleImageView cv_profile_pic;
 
     UserProfilePOJO leaderUserProfilePOJO;
-    NewLocationPOJO newLocationPOJO;
+    LocationPOJO locationPOJO;
     List<UserProfilePOJO> taggeduserInfoPOJOS = new ArrayList<>();
+    ComplaintPOJO complaintPOJO;
+    public List<String> deleteServerFiles = new ArrayList<>();
 
     @Nullable
     @Override
@@ -142,11 +155,16 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
     @Override
     public void onViewCreated(@NonNull View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getAllDepartment();
+
+        if (getArguments() != null) {
+            complaintPOJO = (ComplaintPOJO) getArguments().getSerializable("complaintPOJO");
+        }
+
+//        getAllDepartment();
         attachMediaAdapter();
         setupPubPrivSpinner();
 
-        tv_profile_name.setText(Constants.userProfilePOJO.getFirstName()+" "+Constants.userProfilePOJO.getLastName());
+        tv_profile_name.setText(Constants.userProfilePOJO.getFirstName() + " " + Constants.userProfilePOJO.getLastName());
         Glide.with(getActivity().getApplicationContext())
                 .load(Constants.userProfilePOJO.getProfilePhotoPath())
                 .error(R.drawable.ic_default_profile_pic)
@@ -166,6 +184,12 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
                         now.get(Calendar.DAY_OF_MONTH)
                 );
                 dpd.show(getActivity().getFragmentManager(), "Datepickerdialog");
+            }
+        });
+        frame_schedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                iv_schedule_date.callOnClick();
             }
         });
         tv_date.setText(UtilityFunction.getCurrentDate());
@@ -189,6 +213,7 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
                         ll_tag.setVisibility(View.GONE);
                         break;
                 }
+                checkPostStatus();
             }
 
             @Override
@@ -224,6 +249,12 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
                 checkLocation();
             }
         });
+        frame_location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkLocation();
+            }
+        });
         iv_tag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -236,6 +267,153 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
                 saveComplaint();
             }
         });
+
+        if (complaintPOJO != null) {
+            switch (complaintPOJO.getComplaintTypeId()) {
+                case "1":
+                    spinner_comp_type.setSelection(0);
+                    break;
+                case "2":
+                    spinner_comp_type.setSelection(1);
+                    break;
+                case "3":
+                    spinner_comp_type.setSelection(2);
+                    break;
+            }
+
+            leaderUserProfilePOJO = complaintPOJO.getComplaintAssigned().get(0);
+            tv_leader_name.setText(leaderUserProfilePOJO.getFirstName() + " " + leaderUserProfilePOJO.getLastName());
+            et_subject.setText(complaintPOJO.getComplaintSubject());
+            et_description.setText(complaintPOJO.getComplaintDescription());
+//            tv_date.setText(complaintPOJO.ge);
+
+            tv_date.setText(UtilityFunction.convertServerDateFromDT(complaintPOJO.getScheduleOn()));
+            if (complaintPOJO.getComplaintMemberPOJOS() != null && complaintPOJO.getComplaintMemberPOJOS().size() > 0) {
+                taggeduserInfoPOJOS.addAll(complaintPOJO.getComplaintMemberPOJOS());
+                attachTagPeopleAdapter();
+            }
+            if (complaintPOJO.getComplaintAttachments() != null && complaintPOJO.getComplaintAttachments().size() > 0) {
+                for (ComplaintAttachmentPOJO postAttachmentPOJO : complaintPOJO.getComplaintAttachments()) {
+                    MediaPOJO mediaPOJO = new MediaPOJO();
+                    mediaPOJO.setPath(postAttachmentPOJO.getAttachmentFile());
+                    mediaPOJO.setIs_server(true);
+                    mediaPOJO.setId(postAttachmentPOJO.getComplaintAttachmentId());
+                    attachPathString.add(mediaPOJO);
+                }
+                attachMediaAdapter.notifyDataSetChanged();
+            }
+
+            if (complaintPOJO.getComplaintPrivacy().equalsIgnoreCase("1")) {
+                spinner_pubpri.setSelection(0);
+            } else {
+                spinner_pubpri.setSelection(1);
+            }
+
+//            et_whats_new.setText(postPOJO.getPostTitle());
+
+            if (complaintPOJO.getServerLocationPOJO() != null) {
+                LocationPOJO locationPOJO = new LocationPOJO();
+                locationPOJO.setPlaceId(complaintPOJO.getServerLocationPOJO().getPlaceId());
+                locationPOJO.setFormatted_address(complaintPOJO.getServerLocationPOJO().getLocationAddress());
+                locationPOJO.setUrl(complaintPOJO.getServerLocationPOJO().getLocationUrl());
+                locationPOJO.setAdr_address(complaintPOJO.getServerLocationPOJO().getLocationAddress());
+                locationPOJO.setVicinity(complaintPOJO.getServerLocationPOJO().getLocationVicinity());
+
+                GeometryPOJO geometryPOJO = new GeometryPOJO();
+                LatLongPOJO latLongPOJO = new LatLongPOJO();
+                latLongPOJO.setLat(UtilityFunction.getFormattedValue(complaintPOJO.getServerLocationPOJO().getLocationLattitude()));
+                latLongPOJO.setLng(UtilityFunction.getFormattedValue(complaintPOJO.getServerLocationPOJO().getLocationLongitude()));
+
+                geometryPOJO.setLocation(latLongPOJO);
+                locationPOJO.setGeometry(geometryPOJO);
+                this.locationPOJO = locationPOJO;
+
+                tv_location.setText(locationPOJO.getFormatted_address());
+            }
+        }
+
+
+        checkPostStatus();
+
+        et_subject.addTextChangedListener(textWatcher);
+        et_applicant_father_name.addTextChangedListener(textWatcher);
+        et_applicant_name.addTextChangedListener(textWatcher);
+        et_phone_number.addTextChangedListener(textWatcher);
+        et_description.addTextChangedListener(textWatcher);
+        tv_date.addTextChangedListener(textWatcher);
+        tv_location.addTextChangedListener(textWatcher);
+
+    }
+
+    TextWatcher textWatcher=new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            checkPostStatus();
+        }
+    };
+
+    public void checkPostStatus() {
+        boolean enable_post = true;
+        if (spinner_comp_type.getSelectedItemPosition() == 1) {
+            if (taggeduserInfoPOJOS != null && taggeduserInfoPOJOS.size() > 0) {
+//                enable_post = true;
+            } else {
+                enable_post = false;
+            }
+        } else if (spinner_comp_type.getSelectedItemPosition() == 2) {
+            if(et_applicant_name.getText().toString().length()>0
+                    &&et_applicant_father_name.getText().toString().length()>0
+                    &&et_phone_number.getText().toString().length()>0){
+//                enable_post=true;
+            }else{
+                enable_post=false;
+            }
+        }
+
+        if (locationPOJO != null) {
+//            enable_post = true;
+        } else {
+            enable_post = false;
+        }
+
+        if (et_subject.getText().toString().length() > 0) {
+//            enable_post = true;
+        } else {
+            enable_post = false;
+        }
+
+        if (tv_date.getText().toString().length() > 0) {
+//            enable_post = true;
+        } else {
+            enable_post = false;
+        }
+
+        if(et_description.getText().toString().length()==0){
+            enable_post=false;
+        }
+
+        if(leaderUserProfilePOJO==null){
+            enable_post=false;
+        }
+
+        if (enable_post) {
+            tv_post.setEnabled(true);
+            tv_post.setTextColor(Color.parseColor("#FFFFFF"));
+        } else {
+            tv_post.setEnabled(false);
+            tv_post.setTextColor(Color.parseColor("#90FFFFFF"));
+        }
+
     }
 
     public void setupPubPrivSpinner() {
@@ -362,29 +540,40 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
             }
         } else if (requestCode == Constants.ACTIVITY_LOCATION) {
             if (resultCode == Activity.RESULT_OK) {
-                newLocationPOJO = (NewLocationPOJO) data.getSerializableExtra("location");
-                tv_location.setText(newLocationPOJO.getMain_text() + "," + newLocationPOJO.getSecondary_text());
+                locationPOJO = (LocationPOJO) data.getSerializableExtra("location");
+                tv_location.setText(locationPOJO.getFormatted_address());
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
-                newLocationPOJO = null;
+                locationPOJO = null;
             }
         } else if (requestCode == ImagePicker.IMAGE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             List<String> mPaths = (List<String>) data.getSerializableExtra(ImagePicker.EXTRA_IMAGE_PATH);
             if (mPaths.size() > 0) {
                 for (String path : mPaths) {
-                    if (!attachPathString.contains(path)) {
-                        attachPathString.add(path);
+                    if (!isImagePresent(path)) {
+                        MediaPOJO mediaPOJO = new MediaPOJO();
+                        mediaPOJO.setPath(path);
+                        attachPathString.add(mediaPOJO);
                     }
                 }
                 attachMediaAdapter.notifyDataSetChanged();
             }
         }
+        checkPostStatus();
     }
 
+    public boolean isImagePresent(String path) {
+        for (MediaPOJO mediaPOJO : attachPathString) {
+            if (mediaPOJO.getPath().equalsIgnoreCase(path)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     AttachMediaAdapter attachMediaAdapter;
-    List<String> attachPathString = new ArrayList<>();
+    List<MediaPOJO> attachPathString = new ArrayList<>();
 
     public void attachMediaAdapter() {
         attachMediaAdapter = new AttachMediaAdapter(getActivity(), this, attachPathString);
@@ -393,7 +582,6 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
         rv_media.setAdapter(attachMediaAdapter);
         rv_media.setLayoutManager(linearLayoutManager);
         rv_media.setItemAnimator(new DefaultItemAnimator());
-
     }
 
     public void attachTagPeopleAdapter() {
@@ -403,7 +591,6 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
         rv_tags.setAdapter(tagShowAdapter);
         rv_tags.setLayoutManager(linearLayoutManager);
         rv_tags.setItemAnimator(new DefaultItemAnimator());
-
     }
 
     @Override
@@ -444,11 +631,14 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
                 reqEntity.addPart("assign_to_profile_id", new StringBody(leaderUserProfilePOJO.getUserProfileId()));
 
                 switch (spinner_comp_type.getSelectedItemPosition()) {
-                    case 0:reqEntity.addPart("complaint_type_id", new StringBody("1"));
+                    case 0:
+                        reqEntity.addPart("complaint_type_id", new StringBody("1"));
                         break;
-                    case 1:reqEntity.addPart("complaint_type_id", new StringBody("2"));
+                    case 1:
+                        reqEntity.addPart("complaint_type_id", new StringBody("2"));
                         break;
-                    case 2:reqEntity.addPart("complaint_type_id", new StringBody("3"));
+                    case 2:
+                        reqEntity.addPart("complaint_type_id", new StringBody("3"));
                         break;
                 }
                 reqEntity.addPart("applicant_email", new StringBody(userProfilePOJO.getEmail()));
@@ -458,30 +648,75 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
                 } else {
                     reqEntity.addPart("privacy", new StringBody("0"));
                 }
-                if (newLocationPOJO != null) {
-                    reqEntity.addPart("address", new StringBody(newLocationPOJO.getDescription()));
-                    reqEntity.addPart("place", new StringBody(newLocationPOJO.getMain_text()));
+
+                if (locationPOJO != null) {
+                    try {
+                        reqEntity.addPart("location_detail[place_id]", new StringBody(locationPOJO.getPlaceId()));
+                        reqEntity.addPart("location_detail[location_name]", new StringBody(locationPOJO.getFormatted_address()));
+                        reqEntity.addPart("location_detail[location_lant]", new StringBody(String.valueOf(locationPOJO.getGeometry().getLocation().getLat())));
+                        reqEntity.addPart("location_detail[location_long]", new StringBody(String.valueOf(locationPOJO.getGeometry().getLocation().getLng())));
+                        reqEntity.addPart("location_detail[location_url]", new StringBody(locationPOJO.getUrl()));
+                        reqEntity.addPart("location_detail[location_address]", new StringBody(locationPOJO.getAdr_address()));
+                        reqEntity.addPart("location_detail[location_vicinity]", new StringBody(locationPOJO.getVicinity()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 //                if (latLong != null) {
 //                    reqEntity.addPart("latitude", new StringBody(String.valueOf(latLong.latitude)));
 //                    reqEntity.addPart("longitude", new StringBody(String.valueOf(latLong.longitude)));
 //                } else {
-                    reqEntity.addPart("latitude", new StringBody(""));
-                    reqEntity.addPart("longitude", new StringBody(""));
+                reqEntity.addPart("latitude", new StringBody(""));
+                reqEntity.addPart("longitude", new StringBody(""));
+//                }
+//
+//                if (departmentPOJOS.size() > 0) {
+//                    reqEntity.addPart("department", new StringBody(departmentPOJOS.get(spinner_department.getSelectedItemPosition()).getDepartmentId()));
+//                } else {
+//                    reqEntity.addPart("department", new StringBody(""));
 //                }
 
-                if (departmentPOJOS.size() > 0) {
-                    reqEntity.addPart("department", new StringBody(departmentPOJOS.get(spinner_department.getSelectedItemPosition()).getDepartmentId()));
+                if (taggeduserInfoPOJOS.size() > 0) {
+                    int count = 0;
+                    for (UserProfilePOJO userProfilePOJO1 : taggeduserInfoPOJOS) {
+                        reqEntity.addPart("complaint_member[" + count + "]", new StringBody(userProfilePOJO1.getUserProfileId()));
+                        count++;
+                    }
                 } else {
-                    reqEntity.addPart("department", new StringBody(""));
+                    reqEntity.addPart("complaint_member", new StringBody(""));
                 }
-                reqEntity.addPart("complaint_member", new StringBody(""));
 
                 int count = 0;
 
-                for (int i = 0; i < attachPathString.size(); i++) {
-                    reqEntity.addPart("file[" + (i) + "]", new FileBody(new File(attachPathString.get(i))));
-                    reqEntity.addPart("thumb[" + (i) + "]", new StringBody(""));
+                for (MediaPOJO mediaPOJO : attachPathString) {
+                    if (!mediaPOJO.isIs_server()) {
+                        if (mediaPOJO.getPath().contains(".mp4")
+                                || mediaPOJO.getPath().contains(".MP4")) {
+                            reqEntity.addPart("file[" + (count) + "]", new FileBody(new File(mediaPOJO.getPath())));
+//                    reqEntity.addPart("thumb[" + (count) + "]", new FileBody(new File(UtilityFunction.saveThumbFile(new File(file_path)))));
+                        } else {
+                            reqEntity.addPart("file[" + (count) + "]", new FileBody(new File(mediaPOJO.getPath())));
+                            reqEntity.addPart("thumb[" + (count) + "]", new StringBody(""));
+                        }
+                        count++;
+                    }
+                }
+
+                if (deleteServerFiles.size() > 0) {
+                    int delete_count = 0;
+                    for (String str : deleteServerFiles) {
+                        reqEntity.addPart("delete_image[" + delete_count + "]", new StringBody(str));
+                        delete_count++;
+                    }
+                }
+
+                String url = "";
+                if (complaintPOJO != null) {
+                    reqEntity.addPart("complaint_id", new StringBody(complaintPOJO.getComplaintId()));
+                    reqEntity.addPart("status", new StringBody("1"));
+                    url = WebServicesUrls.UPDATE_COMPLAINT;
+                } else {
+                    url = WebServicesUrls.POST_COMPLAINT;
                 }
 
 
@@ -501,7 +736,7 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
                             e.printStackTrace();
                         }
                     }
-                }, "CREATE_EVENT", true).execute(WebServicesUrls.POST_COMPLAINT);
+                }, "CREATE_COMPLAINT", true).execute(url);
             } else {
                 ToastClass.showShortToast(getActivity().getApplicationContext(), "Please Select Leader First");
             }
@@ -510,4 +745,11 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
         }
     }
 
+    public void removePosition(MediaPOJO mediaPOJO, int position) {
+        if (mediaPOJO.isIs_server()) {
+            deleteServerFiles.add(mediaPOJO.getId());
+        }
+        attachPathString.remove(position);
+        attachMediaAdapter.notifyDataSetChanged();
+    }
 }

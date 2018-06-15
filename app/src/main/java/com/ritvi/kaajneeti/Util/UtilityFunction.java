@@ -1,7 +1,6 @@
 package com.ritvi.kaajneeti.Util;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -13,9 +12,6 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.EditText;
 
-
-import com.ritvi.kaajneeti.activity.express.CheckInActivity;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,10 +21,10 @@ import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by sunil on 01-03-2018.
@@ -52,63 +48,105 @@ public class UtilityFunction {
 //    }
 
 
-    public static String getCurrentDate(){
-        Date d=new Date();
-        SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
-        String formatted_date=sdf.format(d);
+    public static String getCurrentDate() {
+        Date d = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        String formatted_date = sdf.format(d);
         return formatted_date;
     }
 
-    public static String getConvertedDate(String date){
+    public static String getConvertedDate(String date) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
             Date d = sdf.parse(date);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String formatted_date = simpleDateFormat.format(d);
             return formatted_date;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
     }
 
-    public static String getServerConvertedDate(String date){
+    public static String getServerConvertedDate(String date) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date d = sdf.parse(date);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
             String formatted_date = simpleDateFormat.format(d);
             return formatted_date;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
     }
-    public static String getServerConvertedFullDate(String date){
+
+    public static String getServerConvertedFullDate(String date) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date d = sdf.parse(date);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
             String formatted_date = simpleDateFormat.format(d);
             return formatted_date;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
     }
 
-    public static String[] getDateValues(String date){
+    public static String convertServerDateTime(String date) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date d = sdf.parse(date);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
+            String formatted_date = simpleDateFormat.format(d);
+            return formatted_date;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static String convertServerDateFromDT(String date) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date d = sdf.parse(date);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+            String formatted_date = simpleDateFormat.format(d);
+            return formatted_date;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static String[] getDateValues(String date) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date d = sdf.parse(date);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-            String formatted_date=simpleDateFormat.format(d);
-            String[] dateValues={formatted_date.split("-")[0],formatted_date.split("-")[1],formatted_date.split("-")[2]};
+            String formatted_date = simpleDateFormat.format(d);
+            String[] dateValues = {formatted_date.split("-")[0], formatted_date.split("-")[1], formatted_date.split("-")[2]};
             return dateValues;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static int getdateDifference(String fromDate, String toDate) {
+        try {
+            SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            Date date1 = myFormat.parse(fromDate);
+            Date date2 = myFormat.parse(toDate);
+            long diff = date2.getTime() - date1.getTime();
+            System.out.println("Days: " + TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
+            return (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
 //    public static String getProfileID(UserInfoPOJO userInfoPOJO){
@@ -156,9 +194,9 @@ public class UtilityFunction {
         return hexString.toString();
     }
 
-    public static boolean checkEdits(EditText... editTexts){
-        for(EditText editText:editTexts){
-            if(editText.getText().toString().length()==0){
+    public static boolean checkEdits(EditText... editTexts) {
+        for (EditText editText : editTexts) {
+            if (editText.getText().toString().length() == 0) {
                 return false;
             }
         }
@@ -166,7 +204,7 @@ public class UtilityFunction {
     }
 
 
-    public static String saveThumbFile(File f){
+    public static String saveThumbFile(File f) {
         Bitmap thumb = ThumbnailUtils.createVideoThumbnail(f.toString(), MediaStore.Video.Thumbnails.MINI_KIND);
 //            iv_image.setImageBitmap(thumb);
 
@@ -221,27 +259,25 @@ public class UtilityFunction {
         return (int) Math.ceil(1 * value);
     }
 
-    public static int dpToPx(int dp)
-    {
+    public static int dpToPx(int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
-    public static int pxToDp(int px)
-    {
+    public static int pxToDp(int px) {
         return (int) (px / Resources.getSystem().getDisplayMetrics().density);
     }
 
-    public static int convertedDP(Context context, int size){
+    public static int convertedDP(Context context, int size) {
         final float scale = context.getResources().getDisplayMetrics().density;
-        Log.d(TagUtils.getTag(),"scale:-"+scale);
-        return (int) (size/scale);
+        Log.d(TagUtils.getTag(), "scale:-" + scale);
+        return (int) (size / scale);
     }
 
-    public static int convertDpToPx(Context context,int dp){
-        return Math.round(dp*(context.getResources().getDisplayMetrics().xdpi/ DisplayMetrics.DENSITY_DEFAULT));
+    public static int convertDpToPx(Context context, int dp) {
+        return Math.round(dp * (context.getResources().getDisplayMetrics().xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
-    public static int[] screenDimensions(Context context){
+    public static int[] screenDimensions(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
@@ -249,7 +285,7 @@ public class UtilityFunction {
         int width = size.x;
         int height = size.y;
 
-        int[] sizes=new int[]{width,height};
+        int[] sizes = new int[]{width, height};
         return sizes;
     }
 
@@ -258,13 +294,11 @@ public class UtilityFunction {
 //    }
 
 
-
-
     public static double[] getLocation(Context context) {
         GPSTracker gps;
         gps = new GPSTracker(context);
-        double latitude =0.00;
-        double longitude =0.00;
+        double latitude = 0.00;
+        double longitude = 0.00;
         if (gps.canGetLocation()) {
 
             latitude = gps.getLatitude();
@@ -279,12 +313,33 @@ public class UtilityFunction {
 //            gps.showSettingsAlert();
         }
 
-        double[] loc=new double[]{latitude,longitude};
+        double[] loc = new double[]{latitude, longitude};
         return loc;
     }
 
-    public static List<String> listOfCountries(){
+    public static List<String> listOfCountries() {
         List<String> list = Arrays.asList(Constants.country);
-        return  list;
+        return list;
     }
+
+    public static double getTransAmount(String amount) {
+        try {
+            double trans_amount = Double.parseDouble(amount);
+            return trans_amount;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+
+    public static double getFormattedValue(String value) {
+        try {
+            return Double.parseDouble(value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
+
 }

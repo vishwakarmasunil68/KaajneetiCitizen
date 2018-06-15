@@ -2,7 +2,9 @@ package com.ritvi.kaajneeti.pojo.location;
 
 import com.google.gson.annotations.SerializedName;
 
-public class LatLongPOJO {
+import java.io.Serializable;
+
+public class LatLongPOJO implements Serializable {
     @SerializedName("lat")
     private Double lat;
     @SerializedName("lng")

@@ -61,11 +61,11 @@ public class IntroActivity extends AppCompatActivity {
             }
         });
 
-        btn_login.setOnClickListener(new View.OnClickListener() {
+        btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Pref.SetBooleanPref(getApplicationContext(), StringUtils.INTRO_COMPLETED,true);
-                startActivity(new Intent(IntroActivity.this,EnterMobileNumberActivity.class).putExtra("type", Constants.ENTER_MOBILE_LOGIN_WITH_OTP_TYPE));
+                startActivity(new Intent(IntroActivity.this,EnterMobileNumberActivity.class).putExtra("type", Constants.ENTER_MOBILE_REGISTRATION_TYPE));
                 finishAffinity();
             }
         });

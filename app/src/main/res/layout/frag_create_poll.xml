@@ -150,7 +150,7 @@
 
                     </LinearLayout>
 
-                    <ScrollView
+                    <android.support.v4.widget.NestedScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1">
@@ -162,95 +162,48 @@
                             android:orientation="vertical"
                             android:padding="10dp">
 
-                            <EditText
-                                android:id="@+id/et_question"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:background="@null"
-                                android:hint="Ask a question..."
-                                android:layout_marginTop="20dp"/>
-
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:layout_marginTop="10dp">
+                                android:layout_marginTop="20dp">
 
-                                <FrameLayout
+                                <EditText
+                                    android:id="@+id/et_question"
                                     android:layout_width="wrap_content"
-                                    android:layout_weight="1"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="7dp">
-
-                                    <EditText
-                                        android:id="@+id/et_ans1"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:background="@drawable/et_edit_back"
-                                        android:hint="Option 1"
-                                        android:minHeight="45dp"
-                                        android:paddingLeft="7dp" />
-
-                                    <ImageView
-                                        android:layout_width="25dp"
-                                        android:layout_height="25dp"
-                                        android:layout_marginRight="7dp"
-                                        android:src="@drawable/ic_camera_attach"
-                                        android:layout_gravity="right|center"/>
-
-                                </FrameLayout>
+                                    android:layout_weight="1"
+                                    android:background="@null"
+                                    android:hint="Ask a question..."/>
 
                                 <ImageView
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:src="@drawable/ic_close"
-                                    android:layout_gravity="center"
-                                    android:layout_marginRight="5dp"
-                                    android:layout_marginLeft="5dp"/>
+                                    android:id="@+id/iv_select_image"
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
+                                    android:layout_gravity="right|center"
+                                    android:layout_marginRight="7dp"
+                                    android:src="@drawable/ic_camera_attach" />
 
                             </LinearLayout>
 
-                            <LinearLayout
+                            <ImageView
+                                android:id="@+id/iv_poll_image"
+                                android:layout_width="match_parent"
+                                android:layout_height="150dp"
+                                android:visibility="gone"
+                                android:src="@drawable/ic_default_pic"
+                                android:scaleType="centerCrop"/>
+
+
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/rv_options"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal">
-
-                                <FrameLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_weight="1"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="7dp">
-
-                                    <EditText
-                                        android:id="@+id/et_ans2"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:background="@drawable/et_edit_back"
-                                        android:hint="Option 1"
-                                        android:minHeight="45dp"
-                                        android:paddingLeft="7dp" />
-
-                                    <ImageView
-                                        android:layout_width="25dp"
-                                        android:layout_height="25dp"
-                                        android:layout_marginRight="7dp"
-                                        android:src="@drawable/ic_camera_attach"
-                                        android:layout_gravity="right|center"/>
-
-                                </FrameLayout>
-
-                                <ImageView
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:src="@drawable/ic_close"
-                                    android:layout_gravity="center"
-                                    android:layout_marginRight="5dp"
-                                    android:layout_marginLeft="5dp"/>
-
-                            </LinearLayout>
+                                android:layout_marginTop="10dp"></android.support.v7.widget.RecyclerView>
 
                             <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                                 android:layout_width="wrap_content"
+                                android:id="@+id/tv_add_option"
                                 android:layout_height="wrap_content"
                                 android:text="+ Add Option"
                                 android:textColor="@color/colorPrimary"
@@ -259,9 +212,104 @@
                                 android:layout_marginTop="7dp"/>
 
 
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="15dp"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="5dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Start Date"
+                                        android:textStyle="bold" />
+
+                                    <FrameLayout
+                                        android:id="@+id/frame_start_date"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="7dp">
+
+                                        <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                            android:id="@+id/tv_start_date"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="50dp"
+                                            android:background="@drawable/ic_edit_full"
+                                            android:paddingLeft="7dp"
+                                            android:paddingRight="7dp"
+                                            android:textSize="20sp"
+                                            android:layout_gravity="center_vertical"
+                                            android:gravity="center_vertical"
+                                            android:singleLine="true" />
+
+                                        <ImageView
+                                            android:id="@+id/iv_start_date"
+                                            android:layout_width="25dp"
+                                            android:layout_height="25dp"
+                                            android:src="@drawable/ic_event_white"
+                                            android:tint="@color/colorPrimary"
+                                            android:layout_gravity="right|center"
+                                            android:layout_marginRight="5dp"/>
+
+                                    </FrameLayout>
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="End Date"
+                                        android:textStyle="bold" />
+
+                                    <FrameLayout
+                                        android:id="@+id/frame_end_date"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="7dp">
+
+                                        <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                            android:id="@+id/tv_end_date"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="50dp"
+                                            android:background="@drawable/ic_edit_full"
+                                            android:textSize="20sp"
+                                            android:layout_gravity="center_vertical"
+                                            android:gravity="center_vertical"
+                                            android:paddingLeft="7dp"
+                                            android:paddingRight="7dp"
+                                            android:singleLine="true" />
+
+                                        <ImageView
+                                            android:id="@+id/iv_end_date"
+                                            android:layout_width="25dp"
+                                            android:layout_height="25dp"
+                                            android:src="@drawable/ic_event_white"
+                                            android:tint="@color/colorPrimary"
+                                            android:layout_gravity="right|center"
+                                            android:layout_marginRight="5dp"/>
+
+                                    </FrameLayout>
+
+                                </LinearLayout>
+                            </LinearLayout>
+
+
                         </LinearLayout>
 
-                    </ScrollView>
+                    </android.support.v4.widget.NestedScrollView>
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -296,6 +344,7 @@
                                 android:layout_height="27dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="10dp"
+                                android:visibility="gone"
                                 android:src="@drawable/ic_activity" />
 
                             <ImageView

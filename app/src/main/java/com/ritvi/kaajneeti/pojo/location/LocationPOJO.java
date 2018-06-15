@@ -2,17 +2,24 @@ package com.ritvi.kaajneeti.pojo.location;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class LocationPOJO {
+public class LocationPOJO implements Serializable {
     @SerializedName("geometry")
     private GeometryPOJO geometry;
+    @SerializedName("adr_address")
+    private String adr_address;
+    @SerializedName("formatted_address")
+    private String formatted_address;
     @SerializedName("icon")
     private String icon;
     @SerializedName("id")
     private String id;
     @SerializedName("name")
     private String name;
+    @SerializedName("url")
+    private String url;
     @SerializedName("place_id")
     private String placeId;
     @SerializedName("reference")
@@ -94,5 +101,29 @@ public class LocationPOJO {
 
     public void setVicinity(String vicinity) {
         this.vicinity = vicinity;
+    }
+
+    public String getAdr_address() {
+        return adr_address;
+    }
+
+    public void setAdr_address(String adr_address) {
+        this.adr_address = adr_address;
+    }
+
+    public String getFormatted_address() {
+        return formatted_address;
+    }
+
+    public void setFormatted_address(String formatted_address) {
+        this.formatted_address = formatted_address;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

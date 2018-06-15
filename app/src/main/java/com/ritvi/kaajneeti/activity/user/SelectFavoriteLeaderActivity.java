@@ -18,10 +18,15 @@ import android.widget.LinearLayout;
 
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
+import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.adapter.FavoriteLeaderAdapter;
+import com.ritvi.kaajneeti.fragment.user.SearchUserResultPOJO;
 import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
+import com.ritvi.kaajneeti.pojo.ResponsePOJO;
 import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
+import com.ritvi.kaajneeti.webservice.ResponseCallBack;
 import com.ritvi.kaajneeti.webservice.ResponseListCallback;
+import com.ritvi.kaajneeti.webservice.WebServiceBaseResponse;
 import com.ritvi.kaajneeti.webservice.WebServiceBaseResponseList;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
 
@@ -64,7 +69,11 @@ public class SelectFavoriteLeaderActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-               callLeaderAPI();
+                if(et_search.getText().length()>0){
+                    callLeaderSearchAPI();
+                }else{
+                    callLeaderAPI();
+                }
             }
         });
 
@@ -118,6 +127,27 @@ public class SelectFavoriteLeaderActivity extends AppCompatActivity {
             }
         }, UserProfilePOJO.class, "CALL_LEADER_API", false).execute(WebServicesUrls.GET_MY_FAVORITE_LEADER);
     }
+
+
+    public void callLeaderSearchAPI() {
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+        nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("search", et_search.getText().toString()));
+
+        new WebServiceBaseResponse<SearchUserResultPOJO>(nameValuePairs, this, new ResponseCallBack<SearchUserResultPOJO>() {
+            @Override
+            public void onGetMsg(ResponsePOJO<SearchUserResultPOJO> responsePOJO) {
+                leaderPOJOS.clear();
+                if (responsePOJO.isSuccess()) {
+                    leaderPOJOS.addAll(responsePOJO.getResult().getLeaderUserInfoPOJOS());
+                } else {
+                    ToastClass.showShortToast(getApplicationContext(), "No Leader Found");
+                }
+                leaderAdapter.notifyDataSetChanged();
+            }
+        },SearchUserResultPOJO.class,"CALL_ALL_LEADER",false).execute(WebServicesUrls.SEARCH_LEADER_PROFILE);
+    }
+
 
     public void selectLeader(UserProfilePOJO userProfilePOJO) {
         Intent returnIntent = new Intent();

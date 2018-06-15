@@ -50,14 +50,16 @@
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
-            <ImageView
-                android:id="@+id/iv_post"
+            <com.ritvi.kaajneeti.view.SourceSansProBoldTextView
+                android:id="@+id/tv_post"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:adjustViewBounds="true"
-                android:layout_marginRight="10dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_express" />
+                android:layout_marginRight="10dp"
+                android:text="POST"
+                android:textColor="#90FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
 
         </LinearLayout>
@@ -133,7 +135,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:scaleType="centerCrop"
-                        android:background="#26BDBDBD" />
+                        android:src="@drawable/ic_default_pic"/>
 
                     <ImageView
                         android:id="@+id/iv_select_image"
@@ -161,7 +163,7 @@
                         android:layout_marginTop="10dp"
                         android:text="Event Name" />
 
-                    <EditText
+                    <com.ritvi.kaajneeti.view.EditTextProximaNovaLight
                         android:id="@+id/et_event_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -178,6 +180,7 @@
                         android:text="Event Location" />
 
                     <FrameLayout
+                        android:id="@+id/frame_location"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="7dp">
@@ -226,6 +229,7 @@
                                 android:textStyle="bold" />
 
                             <FrameLayout
+                                android:id="@+id/frame_start_date"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="7dp">
@@ -268,6 +272,7 @@
                                 android:textStyle="bold" />
 
                             <FrameLayout
+                                android:id="@+id/frame_end_date"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="7dp">
@@ -304,14 +309,14 @@
                         android:layout_marginTop="10dp"
                         android:text="Description" />
 
-                    <EditText
+                    <com.ritvi.kaajneeti.view.EditTextProximaNovaLight
                         android:id="@+id/et_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="7dp"
                         android:background="@drawable/ic_edit_full"
                         android:hint="Add Description"
-                        android:minHeight="90dp"
+                        android:minHeight="45dp"
                         android:paddingLeft="7dp" />
 
                     <LinearLayout
@@ -339,6 +344,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:gravity="center_vertical"
                                 android:minHeight="45dp"
+                                android:layout_marginRight="25dp"
                                 android:layout_marginLeft="7dp"/>
 
                             <ImageView

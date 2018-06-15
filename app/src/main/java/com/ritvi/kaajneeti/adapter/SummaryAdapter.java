@@ -3,6 +3,7 @@ package com.ritvi.kaajneeti.adapter;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ritvi.kaajneeti.R;
+import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.pojo.user.SummaryPOJO;
 
@@ -43,6 +45,8 @@ public class SummaryAdapter extends RecyclerView.Adapter<SummaryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+
+//        Log.d(TagUtils.getTag(),"summary:-"+items.get(position).toString());
 
         holder.tv_total.setText(items.get(position).getTotal());
         holder.tv_type.setText(items.get(position).getType());

@@ -18,6 +18,8 @@ public class AllSearchPOJO {
     List<FeedPOJO> suggestionFeeds;
     @SerializedName("Profile")
     List<FeedPOJO> profileFeeds;
+    @SerializedName("Information")
+    List<FeedPOJO> informationFeeds;
 
     public List<FeedPOJO> getEventFeeds() {
         return eventFeeds;
@@ -65,5 +67,13 @@ public class AllSearchPOJO {
 
     public void setProfileFeeds(List<FeedPOJO> profileFeeds) {
         this.profileFeeds = profileFeeds;
+    }
+
+    public List<FeedPOJO> getInformationFeeds() {
+        return informationFeeds;
+    }
+
+    public void setInformationFeeds(List<FeedPOJO> informationFeeds) {
+        this.informationFeeds = informationFeeds;
     }
 }

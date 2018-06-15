@@ -100,6 +100,8 @@ public class UserProfileFragment extends Fragment {
     TextView tv_title;
     @BindView(R.id.rv_feeds)
     RecyclerView rv_feeds;
+    @BindView(R.id.ll_feeds)
+    LinearLayout ll_feeds;
 
     UserProfilePOJO userProfilePOJO;
     List<UserProfilePOJO> friendProfilePOJOS = new ArrayList<>();
@@ -207,8 +209,9 @@ public class UserProfileFragment extends Fragment {
 
                         feedPOJOS.addAll(responseListPOJO.getResultList());
                         homeFeedAdapter.notifyDataSetChanged();
-
+                        ll_feeds.setVisibility(View.VISIBLE);
                     } else {
+                        ll_feeds.setVisibility(View.GONE);
                         ToastClass.showShortToast(getActivity(), responseListPOJO.getMessage());
                     }
                 } catch (Exception e) {
@@ -242,7 +245,7 @@ public class UserProfileFragment extends Fragment {
                     .dontAnimate()
                     .into(cv_profile_pic);
 
-            if (!Constants.userProfilePOJO.getProfilePhotoPath().equals(fullProfilePOJO.getProfilePOJO().getProfilePhotoPath())) {
+            if (Constants.userProfilePOJO.getUserProfileId().equals(fullProfilePOJO.getProfilePOJO().getUserProfileId())) {
                 SetViews.changeProfilePics(getActivity().getApplicationContext(), fullProfilePOJO.getProfilePOJO().getProfilePhotoPath());
             }
             tv_profile_name.setText(fullProfilePOJO.getProfilePOJO().getFirstName() + " " + fullProfilePOJO.getProfilePOJO().getLastName());
@@ -435,7 +438,7 @@ public class UserProfileFragment extends Fragment {
     public void getFriendSummary() {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
-        nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", userProfilePOJO.getProfilePhotoId()));
+        nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", userProfilePOJO.getUserProfileId()));
         new WebServiceBaseResponseList<SummaryPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<SummaryPOJO>() {
             @Override
             public void onGetMsg(ResponseListPOJO<SummaryPOJO> responseListPOJO) {

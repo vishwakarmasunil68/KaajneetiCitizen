@@ -102,9 +102,9 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
                         android:layout_gravity="center"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/cv_profile_pic"
@@ -116,8 +116,8 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginLeft="10dp"
+                            android:layout_weight="1"
                             android:orientation="vertical">
 
                             <TextView
@@ -135,11 +135,11 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginRight="30dp"
+                                android:layout_marginTop="7dp"
                                 android:background="@drawable/spinner_background"
                                 android:gravity="center_vertical"
                                 android:minHeight="30dp"
                                 android:orientation="horizontal"
-                                android:layout_marginTop="7dp"
                                 android:padding="3dp">
 
                                 <Spinner
@@ -181,11 +181,11 @@
                                     android:layout_gravity="center_vertical"
                                     android:background="@drawable/et_search_back"
                                     android:gravity="center_vertical"
+                                    android:hint="Select a leader"
                                     android:minHeight="45dp"
                                     android:paddingLeft="7dp"
                                     android:paddingRight="35dp"
                                     android:singleLine="true"
-                                    android:hint="Select a leader"
                                     android:textSize="16sp" />
 
                                 <ImageView
@@ -193,8 +193,8 @@
                                     android:layout_height="20dp"
                                     android:layout_gravity="right|center"
                                     android:layout_marginRight="7dp"
-                                    android:tint="@color/colorPrimary"
-                                    android:src="@drawable/ic_search_icon" />
+                                    android:src="@drawable/ic_search_icon"
+                                    android:tint="@color/colorPrimary" />
 
                             </FrameLayout>
 
@@ -227,8 +227,29 @@
                                 android:layout_marginTop="7dp"
                                 android:background="@drawable/ic_edit_full"
                                 android:hint="Add Description"
-                                android:minHeight="90dp"
+                                android:minHeight="45dp"
                                 android:paddingLeft="7dp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginTop="10dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <com.ritvi.kaajneeti.view.SourceSansProBoldTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Hide Me" />
+
+                                <com.suke.widget.SwitchButton
+                                    android:id="@+id/switch_button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+                            </LinearLayout>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -271,14 +292,16 @@
                                 android:layout_height="27dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="10dp"
-                                android:src="@drawable/ic_tag_attach" />
+                                android:src="@drawable/ic_tag_attach"
+                                android:visibility="gone" />
 
                             <ImageView
                                 android:layout_width="27dp"
                                 android:layout_height="27dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="10dp"
-                                android:src="@drawable/ic_activity" />
+                                android:src="@drawable/ic_activity"
+                                android:visibility="gone" />
 
                             <ImageView
                                 android:id="@+id/iv_location"
@@ -286,7 +309,8 @@
                                 android:layout_height="27dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="10dp"
-                                android:src="@drawable/ic_location_attach" />
+                                android:src="@drawable/ic_location_attach"
+                                android:visibility="gone" />
 
                         </LinearLayout>
 

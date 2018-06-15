@@ -1,19 +1,20 @@
 package com.ritvi.kaajneeti.adapter;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.ritvi.kaajneeti.R;
+import com.ritvi.kaajneeti.fragment.wallet.ContributeAmountFragment;
+import com.ritvi.kaajneeti.fragment.wallet.SelectUserForContributionFragment;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
-import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by sunil on 03-11-2017.
  */
 
-public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder>{
+public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder> {
     private List<FeedPOJO> items;
     Activity activity;
     Fragment fragment;
@@ -54,6 +55,20 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
                 .dontAnimate()
                 .into(holder.cv_profile_pic);
 
+        holder.ll_user.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (fragment instanceof SelectUserForContributionFragment) {
+                    SelectUserForContributionFragment selectUserForContributionFragment = (SelectUserForContributionFragment) fragment;
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("userProfilePOJO", items.get(position).getProfiledata());
+                    ContributeAmountFragment contributeAmountFragment = new ContributeAmountFragment();
+                    contributeAmountFragment.setArguments(bundle);
+                    selectUserForContributionFragment.activityManager.startFragmentForResult(R.id.frame_home, selectUserForContributionFragment,contributeAmountFragment,101);
+                }
+            }
+        });
+
         holder.itemView.setTag(items.get(position));
     }
 
@@ -69,10 +84,12 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
         TextView tv_name;
         @BindView(R.id.tv_email)
         TextView tv_email;
+        @BindView(R.id.ll_user)
+        LinearLayout ll_user;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 }

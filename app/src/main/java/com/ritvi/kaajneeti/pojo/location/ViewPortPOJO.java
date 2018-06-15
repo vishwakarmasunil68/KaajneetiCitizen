@@ -2,7 +2,9 @@ package com.ritvi.kaajneeti.pojo.location;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ViewPortPOJO {
+import java.io.Serializable;
+
+public class ViewPortPOJO implements Serializable {
     @SerializedName("northeast")
     LocationPOJO northeastLocation;
     @SerializedName("southwest")

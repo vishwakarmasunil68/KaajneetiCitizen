@@ -23,4 +23,12 @@ public class SummaryPOJO {
     public void setTotal(String total) {
         this.total = total;
     }
+
+    @Override
+    public String toString() {
+        return "SummaryPOJO{" +
+                "type='" + type + '\'' +
+                ", total='" + total + '\'' +
+                '}';
+    }
 }

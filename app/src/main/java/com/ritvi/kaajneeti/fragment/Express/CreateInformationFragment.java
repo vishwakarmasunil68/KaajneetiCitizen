@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,7 +14,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,44 +36,36 @@ import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.Util.UtilityFunction;
 import com.ritvi.kaajneeti.activity.express.CheckInActivity;
-import com.ritvi.kaajneeti.activity.express.ExpressActivity;
 import com.ritvi.kaajneeti.activity.express.TagPeopleActivity;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.activity.user.SelectFavoriteLeaderActivity;
 import com.ritvi.kaajneeti.adapter.AttachMediaAdapter;
-import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
-import com.ritvi.kaajneeti.pojo.express.complaint.DepartmentPOJO;
-import com.ritvi.kaajneeti.pojo.location.NewLocationPOJO;
+import com.ritvi.kaajneeti.pojo.allfeeds.MediaPOJO;
+import com.ritvi.kaajneeti.pojo.location.LocationPOJO;
 import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
-import com.ritvi.kaajneeti.webservice.ResponseListCallback;
-import com.ritvi.kaajneeti.webservice.WebServiceBaseResponseList;
 import com.ritvi.kaajneeti.webservice.WebServicesCallBack;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
 import com.ritvi.kaajneeti.webservice.WebUploadService;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import net.alhazmy13.mediapicker.Image.ImagePicker;
 
-import org.apache.http.NameValuePair;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class CreateInformationFragment extends Fragment{
+public class CreateInformationFragment extends Fragment {
 
     @BindView(R.id.ll_back)
     LinearLayout ll_back;
@@ -100,12 +95,13 @@ public class CreateInformationFragment extends Fragment{
     CircleImageView cv_profile_pic;
 
     UserProfilePOJO leaderUserProfilePOJO;
-    NewLocationPOJO newLocationPOJO;
+    LocationPOJO locationPOJO;
     List<UserProfilePOJO> taggeduserInfoPOJOS = new ArrayList<>();
 
-    String tagging_description="";
+    String tagging_description = "";
     String profile_description = "";
     String place_description = "";
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -171,7 +167,59 @@ public class CreateInformationFragment extends Fragment{
                 saveInformation();
             }
         });
+
+
+        checkPostStatus();
+        et_subject.addTextChangedListener(textWatcher);
+        tv_leader_name.addTextChangedListener(textWatcher);
+        et_description.addTextChangedListener(textWatcher);
     }
+
+
+    TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            checkPostStatus();
+        }
+    };
+
+    public void checkPostStatus() {
+        boolean enable_post = true;
+
+
+        if (et_subject.getText().toString().length() > 0) {
+        } else {
+            enable_post = false;
+        }
+
+        if (et_description.getText().toString().length() == 0) {
+            enable_post = false;
+        }
+
+        if (leaderUserProfilePOJO == null) {
+            enable_post = false;
+        }
+
+        if (enable_post) {
+            tv_post.setEnabled(true);
+            tv_post.setTextColor(Color.parseColor("#FFFFFF"));
+        } else {
+            tv_post.setEnabled(false);
+            tv_post.setTextColor(Color.parseColor("#90FFFFFF"));
+        }
+
+    }
+
 
     public void saveInformation() {
         try {
@@ -189,8 +237,8 @@ public class CreateInformationFragment extends Fragment{
 
             int count = 0;
 
-            for (String file_path : attachPathString) {
-                reqEntity.addPart("file[" + (count) + "]", new FileBody(new File(file_path)));
+            for (MediaPOJO mediaPOJO : attachPathString) {
+                reqEntity.addPart("file[" + (count) + "]", new FileBody(new File(mediaPOJO.getPath())));
                 reqEntity.addPart("thumb[" + (count) + "]", new StringBody(""));
                 count++;
             }
@@ -230,7 +278,6 @@ public class CreateInformationFragment extends Fragment{
     }
 
 
-
     public void checkLocation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
@@ -267,7 +314,7 @@ public class CreateInformationFragment extends Fragment{
     }
 
     AttachMediaAdapter attachMediaAdapter;
-    List<String> attachPathString = new ArrayList<>();
+    List<MediaPOJO> attachPathString = new ArrayList<>();
 
     public void attachMediaAdapter() {
         attachMediaAdapter = new AttachMediaAdapter(getActivity(), this, attachPathString);
@@ -304,25 +351,31 @@ public class CreateInformationFragment extends Fragment{
             }
         } else if (requestCode == Constants.ACTIVITY_LOCATION) {
             if (resultCode == Activity.RESULT_OK) {
-                newLocationPOJO= (NewLocationPOJO) data.getSerializableExtra("location");
-                place_description=" - at <b>" + newLocationPOJO.getMain_text() + "</b>";
-                updateProfileStatus();
+                if (resultCode == Activity.RESULT_OK) {
+                    LocationPOJO locationPOJO = (LocationPOJO) data.getSerializableExtra("location");
+                    this.locationPOJO = locationPOJO;
+                    String check_in = locationPOJO.getFormatted_address();
+                    place_description = " - at <b>" + locationPOJO.getFormatted_address() + "</b>";
+                    updateProfileStatus();
+                }
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
-                newLocationPOJO=null;
+                locationPOJO = null;
             }
         } else if (requestCode == ImagePicker.IMAGE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             List<String> mPaths = (List<String>) data.getSerializableExtra(ImagePicker.EXTRA_IMAGE_PATH);
             if (mPaths.size() > 0) {
                 for (String path : mPaths) {
-                    if (!attachPathString.contains(path)) {
-                        attachPathString.add(path);
-                    }
+//                    if (!attachPathString.contains(path)) {
+//                        attachPathString.add(path);
+//                    }
                 }
                 attachMediaAdapter.notifyDataSetChanged();
             }
         }
+
+        checkPostStatus();
     }
 
 

@@ -14,6 +14,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,10 +36,15 @@ import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.Util.UtilityFunction;
 import com.ritvi.kaajneeti.activity.express.CheckInActivity;
 import com.ritvi.kaajneeti.adapter.HomeFeedAdapter;
+import com.ritvi.kaajneeti.fragment.search.SearchAllFragment;
 import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
+import com.ritvi.kaajneeti.pojo.ResponsePOJO;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
 import com.ritvi.kaajneeti.pojo.location.NewLocationPOJO;
+import com.ritvi.kaajneeti.pojo.search.AllSearchPOJO;
+import com.ritvi.kaajneeti.webservice.ResponseCallBack;
 import com.ritvi.kaajneeti.webservice.ResponseListCallback;
+import com.ritvi.kaajneeti.webservice.WebServiceBaseResponse;
 import com.ritvi.kaajneeti.webservice.WebServiceBaseResponseList;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
 import com.savvi.rangedatepicker.CalendarPickerView;
@@ -66,6 +73,8 @@ public class AllPostFragment extends Fragment {
     SlidingUpPanelLayout sliding_layout;
     @BindView(R.id.iv_filter)
     ImageView iv_filter;
+    @BindView(R.id.et_search)
+    EditText et_search;
 
     @BindView(R.id.iv_delete_filter)
     ImageView iv_delete_filter;
@@ -99,7 +108,11 @@ public class AllPostFragment extends Fragment {
     Button btn_apply;
     @BindView(R.id.iv_location)
     ImageView iv_location;
+    @BindView(R.id.tv_title)
+    TextView tv_title;
 
+    boolean is_search=false;
+    String search_text="";
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -112,6 +125,21 @@ public class AllPostFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        if(getArguments()!=null){
+            is_search=getArguments().getBoolean(Constants.IS_SEARCH);
+            search_text=getArguments().getString(Constants.SEARCH_TEXT);
+            et_search.setText(search_text);
+
+            if(is_search){
+                et_search.setVisibility(View.VISIBLE);
+                tv_title.setVisibility(View.GONE);
+            }else{
+                et_search.setVisibility(View.GONE);
+                tv_title.setVisibility(View.VISIBLE);
+            }
+        }
+
+        tv_title.setText("Posts");
         attachAdapter();
         callAPI();
 
@@ -121,8 +149,25 @@ public class AllPostFragment extends Fragment {
                 getActivity().onBackPressed();
             }
         });
-
         checkfilters();
+        et_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                callAPI();
+            }
+        });
+
+
     }
 
     String date_start_range = "";
@@ -230,7 +275,11 @@ public class AllPostFragment extends Fragment {
                 }
 
                 iv_filter.callOnClick();
-                callAPI();
+                if(is_search){
+
+                }else {
+                    callAPI();
+                }
             }
         });
 
@@ -346,22 +395,52 @@ public class AllPostFragment extends Fragment {
             nameValuePairs.add(new BasicNameValuePair("location", ""));
         }
 
-        new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
-            @Override
-            public void onGetMsg(ResponseListPOJO responseListPOJO) {
-                feedPOJOS.clear();
-                try {
-                    if (responseListPOJO.isSuccess()) {
-                        feedPOJOS.addAll(responseListPOJO.getResultList());
-                    } else {
-                        ToastClass.showShortToast(getActivity().getApplicationContext(), responseListPOJO.getMessage());
+        String url="";
+        if(is_search){
+            nameValuePairs.add(new BasicNameValuePair("q", et_search.getText().toString()));
+            nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
+            url=WebServicesUrls.ALL_SEARCH_API;
+
+            new WebServiceBaseResponse<AllSearchPOJO>(nameValuePairs, getActivity(), new ResponseCallBack<AllSearchPOJO>() {
+
+                @Override
+                public void onGetMsg(ResponsePOJO<AllSearchPOJO> responsePOJO) {
+                    feedPOJOS.clear();
+                    try {
+                        if (responsePOJO.isSuccess()) {
+                            feedPOJOS.addAll(responsePOJO.getResult().getPostFeeds());
+                        } else {
+                            ToastClass.showShortToast(getActivity().getApplicationContext(), responsePOJO.getMessage());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    homeFeedAdapter.notifyDataSetChanged();
                 }
-                homeFeedAdapter.notifyDataSetChanged();
-            }
-        }, FeedPOJO.class, "call_complaint_list_api", true).execute(WebServicesUrls.ALL_POST);
+            }, AllSearchPOJO.class, "ALL_SEARCH_API", false).execute(url);
+
+        }else{
+            url=WebServicesUrls.ALL_POST;
+            new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
+                @Override
+                public void onGetMsg(ResponseListPOJO responseListPOJO) {
+                    feedPOJOS.clear();
+                    try {
+                        if (responseListPOJO.isSuccess()) {
+                            feedPOJOS.addAll(responseListPOJO.getResultList());
+                        } else {
+                            ToastClass.showShortToast(getActivity().getApplicationContext(), responseListPOJO.getMessage());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    homeFeedAdapter.notifyDataSetChanged();
+                }
+            }, FeedPOJO.class, "get_all_post", true).execute(url);
+        }
+
+
+
     }
 
 

@@ -22,17 +22,17 @@ public class MainApplication extends Application {
         final TwitterAuthConfig authConfig = new TwitterAuthConfig("odTUxR2y7jhDIb1ImhiGE4VDY", "FFKtAo7BeyDoEoUeRXZUq1FwHAjCHutOXZc4gcimEmG4cOMWKV");
         Fabric.with(this, new Twitter(authConfig));
 
-        ViewPump.init(ViewPump.builder()
-                .addInterceptor(new CalligraphyInterceptor(
-                        new CalligraphyConfig.Builder()
-                                .setDefaultFontPath("fonts/sourcesanspro.ttf")
-                                .setFontAttrId(R.attr.fontPath)
-                                .build()))
-                .build());
+//        ViewPump.init(ViewPump.builder()
+//                .addInterceptor(new CalligraphyInterceptor(
+//                        new CalligraphyConfig.Builder()
+//                                .setDefaultFontPath("fonts/sourcesanspro.ttf")
+//                                .setFontAttrId(R.attr.fontPath)
+//                                .build()))
+//                .build());
     }
 
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(ViewPumpContextWrapper.wrap(base));
-    }
+//    @Override
+//    protected void attachBaseContext(Context base) {
+//        super.attachBaseContext(ViewPumpContextWrapper.wrap(base));
+//    }
 }

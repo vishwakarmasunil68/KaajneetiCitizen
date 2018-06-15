@@ -4,7 +4,9 @@ import android.location.Location;
 
 import com.google.gson.annotations.SerializedName;
 
-public class GeometryPOJO {
+import java.io.Serializable;
+
+public class GeometryPOJO implements Serializable {
     @SerializedName("location")
     private LatLongPOJO location;
     @SerializedName("viewport")

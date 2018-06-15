@@ -17,7 +17,6 @@ public class Constants {
     public static final int ACTIVITY_LOCATION = 102;
     public static final int ACTIVITY_SELECT_LEADER = 103;
 
-
     // Access permission
     public static final int ACCESS_CAMERA = 2001;
     public static final int READ_CONTACTS = 2002;
@@ -73,6 +72,9 @@ public class Constants {
     public static final String PAYMENT_FEED_POINT = "point";
     public static final String PAYMENT_FEED_MONEY = "payment";
 
+    public static final String IS_SEARCH="is_search";
+    public static final String SEARCH_TEXT="search_text";
+
     //getstate list array
     public static List<String> setStateList() {
         List<String> stateList = new ArrayList<>();
@@ -123,6 +125,7 @@ public class Constants {
     public static final String SEARCH_IN_POLL = "poll";
     public static final String SEARCH_IN_COMPLAINT = "complaint";
     public static final String SEARCH_IN_SUGGESTION = "suggestion";
+    public static final String SEARCH_IN_INFORMATION = "information";
 
 
     public static final String SEARCH_LOCATION = "search_location";

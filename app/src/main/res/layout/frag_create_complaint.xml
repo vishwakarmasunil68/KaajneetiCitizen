@@ -234,7 +234,8 @@
                                 android:background="@drawable/et_search_back"
                                 android:minHeight="45dp"
                                 android:orientation="horizontal"
-                                android:padding="5dp">
+                                android:padding="5dp"
+                                android:visibility="gone">
 
                                 <Spinner
                                     android:id="@+id/spinner_department"
@@ -273,7 +274,7 @@
                                             android:text="Applicant's Name"
                                             android:textStyle="bold" />
 
-                                        <EditText
+                                        <com.ritvi.kaajneeti.view.EditTextProximaNovaLight
                                             android:id="@+id/et_applicant_name"
                                             android:layout_width="match_parent"
                                             android:layout_height="50dp"
@@ -299,7 +300,7 @@
                                             android:text="Father's Name"
                                             android:textStyle="bold" />
 
-                                        <EditText
+                                        <com.ritvi.kaajneeti.view.EditTextProximaNovaLight
                                             android:id="@+id/et_applicant_father_name"
                                             android:layout_width="match_parent"
                                             android:layout_height="50dp"
@@ -320,7 +321,7 @@
                                     android:text="Phone Number"
                                     android:textStyle="bold" />
 
-                                <EditText
+                                <com.ritvi.kaajneeti.view.EditTextProximaNovaLight
                                     android:id="@+id/et_phone_number"
                                     android:layout_width="match_parent"
                                     android:layout_height="50dp"
@@ -341,7 +342,7 @@
                                 android:layout_marginTop="10dp"
                                 android:text="Subject" />
 
-                            <EditText
+                            <com.ritvi.kaajneeti.view.EditTextProximaNovaLight
                                 android:id="@+id/et_subject"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -358,11 +359,12 @@
                                 android:text="Schedule Date" />
 
                             <FrameLayout
+                                android:id="@+id/frame_schedule"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="7dp">
 
-                                <TextView
+                                <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                                     android:id="@+id/tv_date"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -391,14 +393,14 @@
                                 android:layout_marginTop="10dp"
                                 android:text="Description" />
 
-                            <EditText
+                            <com.ritvi.kaajneeti.view.EditTextProximaNovaLight
                                 android:id="@+id/et_description"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="7dp"
                                 android:background="@drawable/ic_edit_full"
-                                android:hint="Add Description"
-                                android:minHeight="90dp"
+                                android:hint="Enter complaint Description"
+                                android:minHeight="45dp"
                                 android:paddingLeft="7dp" />
 
 
@@ -426,6 +428,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
                                         android:layout_marginLeft="7dp"
+                                        android:layout_marginRight="25dp"
                                         android:gravity="center_vertical"
                                         android:minHeight="45dp" />
 
@@ -455,12 +458,13 @@
                                     android:text="Location" />
 
                                 <FrameLayout
+                                    android:id="@+id/frame_location"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginBottom="7dp"
                                     android:layout_marginTop="7dp">
 
-                                    <TextView
+                                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                                         android:id="@+id/tv_location"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -468,6 +472,7 @@
                                         android:background="@drawable/ic_edit_full"
                                         android:gravity="center_vertical"
                                         android:minHeight="45dp"
+                                        android:paddingRight="25dp"
                                         android:paddingLeft="7dp"
                                         android:textSize="18sp" />
 
@@ -522,6 +527,7 @@
                                 android:layout_height="27dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="10dp"
+                                android:visibility="gone"
                                 android:src="@drawable/ic_activity" />
 
 

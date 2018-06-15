@@ -148,6 +148,7 @@ public class WebServiceBaseResponseList<T> extends AsyncTask<String, Void, Respo
     }
 
     public static <T> List<T> getObjectList(String jsonString, Class<T> cls){
+        Log.d(TagUtils.getTag(),"jsonString:-"+jsonString);
         List<T> list = new ArrayList<T>();
         try {
             Gson gson = new Gson();

@@ -2,20 +2,22 @@ package com.ritvi.kaajneeti.activity.express;
 
 import android.Manifest;
 import android.app.Activity;
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -35,14 +37,22 @@ import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.Util.UtilityFunction;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.adapter.AttachMediaAdapter;
-import com.ritvi.kaajneeti.adapter.LeaderAdapter;
 import com.ritvi.kaajneeti.fragment.Express.CreateComplaintFragment;
 import com.ritvi.kaajneeti.fragment.Express.CreateEventFragment;
 import com.ritvi.kaajneeti.fragment.Express.CreateInformationFragment;
 import com.ritvi.kaajneeti.fragment.Express.CreatePollFragment;
 import com.ritvi.kaajneeti.fragment.Express.CreateSuggestionFragment;
-import com.ritvi.kaajneeti.pojo.express.complaint.DepartmentPOJO;
-import com.ritvi.kaajneeti.pojo.location.NewLocationPOJO;
+import com.ritvi.kaajneeti.fragmentcontroller.ActivityManager;
+import com.ritvi.kaajneeti.interfaces.ItemSizeChangeListener;
+import com.ritvi.kaajneeti.pojo.allfeeds.MediaPOJO;
+import com.ritvi.kaajneeti.pojo.complaint.ComplaintPOJO;
+import com.ritvi.kaajneeti.pojo.event.EventPOJO;
+import com.ritvi.kaajneeti.pojo.location.GeometryPOJO;
+import com.ritvi.kaajneeti.pojo.location.LatLongPOJO;
+import com.ritvi.kaajneeti.pojo.location.LocationPOJO;
+import com.ritvi.kaajneeti.pojo.poll.PollPOJO;
+import com.ritvi.kaajneeti.pojo.post.PostAttachmentPOJO;
+import com.ritvi.kaajneeti.pojo.post.PostPOJO;
 import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
 import com.ritvi.kaajneeti.webservice.WebServicesCallBack;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
@@ -68,7 +78,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ExpressActivity extends AppCompatActivity {
+public class ExpressActivity extends ActivityManager {
 
     @BindView(R.id.iv_tag)
     ImageView iv_tag;
@@ -102,17 +112,50 @@ public class ExpressActivity extends AppCompatActivity {
     TextView et_whats_new;
     List<UserProfilePOJO> taggeduserInfoPOJOS = new ArrayList<>();
 
-    String tagging_description="";
+    String tagging_description = "";
     String profile_description = "";
     String place_description = "";
 
-    NewLocationPOJO newLocationPOJO;
+    LocationPOJO locationPOJO;
+    PostPOJO postPOJO;
+    EventPOJO eventPOJO;
+    ComplaintPOJO complaintPOJO;
+    PollPOJO pollPOJO;
+    List<String> deleteServerFiles = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_express);
         ButterKnife.bind(this);
+
+        postPOJO = (PostPOJO) getIntent().getSerializableExtra("post");
+        eventPOJO = (EventPOJO) getIntent().getSerializableExtra("eventPOJO");
+        complaintPOJO = (ComplaintPOJO) getIntent().getSerializableExtra("complaintPOJO");
+
+        if (eventPOJO != null) {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("eventPOJO", eventPOJO);
+            CreateEventFragment createEventFragment = new CreateEventFragment();
+            createEventFragment.setArguments(bundle);
+            startFragment(R.id.frame_main, createEventFragment);
+        }
+
+        if (complaintPOJO != null) {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("complaintPOJO", complaintPOJO);
+            CreateComplaintFragment createComplaintFragment = new CreateComplaintFragment();
+            createComplaintFragment.setArguments(bundle);
+            startFragment(R.id.frame_main, createComplaintFragment);
+        }
+
+        if (pollPOJO != null) {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("pollPOJO", pollPOJO);
+            CreatePollFragment createPollFragment = new CreatePollFragment();
+            createPollFragment.setArguments(bundle);
+            startFragment(R.id.frame_main, createPollFragment);
+        }
 
         setupPubPrivSpinner();
 
@@ -125,7 +168,6 @@ public class ExpressActivity extends AppCompatActivity {
                 .dontAnimate()
                 .into(cv_profile_pic);
 
-//        tv_profile_name.setText(Constants.userProfilePOJO.getFirstName()+" "+Constants.userProfilePOJO.getLastName());
         updateProfileStatus();
         ll_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,7 +186,6 @@ public class ExpressActivity extends AppCompatActivity {
         iv_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                startActivity(new Intent(ExpressActivity.this,CheckInActivity.class));
                 checkLocation();
             }
         });
@@ -194,11 +235,104 @@ public class ExpressActivity extends AppCompatActivity {
                 savePost();
             }
         });
+
+        if (postPOJO != null) {
+            if (postPOJO.getPostTag() != null && postPOJO.getPostTag().size() > 0) {
+                taggeduserInfoPOJOS.addAll(postPOJO.getPostTag());
+                tagging_description = getTaggedDescription(taggeduserInfoPOJOS);
+                updateProfileStatus();
+            }
+            if (postPOJO.getPostAttachment() != null && postPOJO.getPostAttachment().size() > 0) {
+                for (PostAttachmentPOJO postAttachmentPOJO : postPOJO.getPostAttachment()) {
+                    MediaPOJO mediaPOJO = new MediaPOJO();
+                    mediaPOJO.setPath(postAttachmentPOJO.getAttachmentFile());
+                    mediaPOJO.setIs_server(true);
+                    mediaPOJO.setId(postAttachmentPOJO.getPostAttachmentId());
+                    attachPathString.add(mediaPOJO);
+                }
+                attachMediaAdapter.notifyDataSetChanged();
+            }
+
+            if (postPOJO.getPostPrivacy().equalsIgnoreCase("1")) {
+                spinner_pubpri.setSelection(0);
+            } else {
+                spinner_pubpri.setSelection(1);
+            }
+
+            et_whats_new.setText(postPOJO.getPostTitle());
+
+            if (postPOJO.getServerLocationPOJO() != null) {
+                LocationPOJO locationPOJO = new LocationPOJO();
+                locationPOJO.setPlaceId(postPOJO.getServerLocationPOJO().getPlaceId());
+                locationPOJO.setFormatted_address(postPOJO.getServerLocationPOJO().getLocationAddress());
+                locationPOJO.setUrl(postPOJO.getServerLocationPOJO().getLocationUrl());
+                locationPOJO.setAdr_address(postPOJO.getServerLocationPOJO().getLocationAddress());
+                locationPOJO.setVicinity(postPOJO.getServerLocationPOJO().getLocationVicinity());
+
+                GeometryPOJO geometryPOJO = new GeometryPOJO();
+                LatLongPOJO latLongPOJO = new LatLongPOJO();
+                latLongPOJO.setLat(UtilityFunction.getFormattedValue(postPOJO.getServerLocationPOJO().getLocationLattitude()));
+                latLongPOJO.setLng(UtilityFunction.getFormattedValue(postPOJO.getServerLocationPOJO().getLocationLongitude()));
+
+                geometryPOJO.setLocation(latLongPOJO);
+                locationPOJO.setGeometry(geometryPOJO);
+                this.locationPOJO = locationPOJO;
+
+                place_description = " - at <b>" + locationPOJO.getFormatted_address() + "</b>";
+                updateProfileStatus();
+            }
+        }
+
+        checkPostStatus();
+        et_whats_new.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                checkPostStatus();
+            }
+        });
+
+    }
+
+    public void checkPostStatus() {
+        boolean enable_post = false;
+        if (taggeduserInfoPOJOS != null && taggeduserInfoPOJOS.size() > 0) {
+            enable_post = true;
+        }
+
+        if (attachPathString.size() > 0) {
+            enable_post = true;
+        }
+
+        if (locationPOJO != null) {
+            enable_post = true;
+        }
+
+        if (et_whats_new.getText().toString().length() > 0) {
+            enable_post = true;
+        }
+
+        if (enable_post) {
+            tv_post.setEnabled(true);
+            tv_post.setTextColor(Color.parseColor("#FFFFFF"));
+        } else {
+            tv_post.setEnabled(false);
+            tv_post.setTextColor(Color.parseColor("#90FFFFFF"));
+        }
+
     }
 
 
-
-    public void setupPubPrivSpinner(){
+    public void setupPubPrivSpinner() {
         List<String> pubpriList = new ArrayList<>();
 
         pubpriList.add("Public");
@@ -221,7 +355,7 @@ public class ExpressActivity extends AppCompatActivity {
     }
 
     AttachMediaAdapter attachMediaAdapter;
-    List<String> attachPathString=new ArrayList<>();
+    List<MediaPOJO> attachPathString = new ArrayList<>();
 
     public void attachAdapter() {
         attachMediaAdapter = new AttachMediaAdapter(this, null, attachPathString);
@@ -230,6 +364,13 @@ public class ExpressActivity extends AppCompatActivity {
         rv_media.setAdapter(attachMediaAdapter);
         rv_media.setLayoutManager(linearLayoutManager);
         rv_media.setItemAnimator(new DefaultItemAnimator());
+
+        attachMediaAdapter.setOnItemChanged(new ItemSizeChangeListener() {
+            @Override
+            public void onItemSizeChanged() {
+                checkPostStatus();
+            }
+        });
 
     }
 
@@ -330,46 +471,65 @@ public class ExpressActivity extends AppCompatActivity {
             gps.showSettingsAlert();
         }
 
-        startActivityForResult(new Intent(this, CheckInActivity.class),Constants.ACTIVITY_LOCATION);
+        startActivityForResult(new Intent(this, CheckInActivity.class), Constants.ACTIVITY_LOCATION);
+    }
+
+    public boolean isImagePresent(String path) {
+        for (MediaPOJO mediaPOJO : attachPathString) {
+            if (mediaPOJO.getPath().equalsIgnoreCase(path)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        boolean isFragAvailable = false;
         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-            fragment.onActivityResult(requestCode, resultCode, data);
+            if (fragment != null) {
+                isFragAvailable = true;
+                fragment.onActivityResult(requestCode, resultCode, data);
+            }
         }
-        if (requestCode == ImagePicker.IMAGE_PICKER_REQUEST_CODE && resultCode == RESULT_OK) {
-            List<String> mPaths = (List<String>) data.getSerializableExtra(ImagePicker.EXTRA_IMAGE_PATH);
-            if(mPaths.size()>0){
-                for(String path:mPaths){
-                    if(!attachPathString.contains(path)){
-                        attachPathString.add(path);
+        Log.d(TagUtils.getTag(), "frag available:-" + isFragAvailable);
+        if (!isFragAvailable) {
+            if (requestCode == ImagePicker.IMAGE_PICKER_REQUEST_CODE && resultCode == RESULT_OK) {
+                List<String> mPaths = (List<String>) data.getSerializableExtra(ImagePicker.EXTRA_IMAGE_PATH);
+                if (mPaths.size() > 0) {
+                    for (String path : mPaths) {
+                        if (!isImagePresent(path)) {
+                            MediaPOJO mediaPOJO = new MediaPOJO();
+                            mediaPOJO.setPath(path);
+                            attachPathString.add(mediaPOJO);
+                        }
                     }
+                    attachMediaAdapter.notifyDataSetChanged();
                 }
-                attachMediaAdapter.notifyDataSetChanged();
-            }
-        }else if (requestCode == Constants.ACTIVITY_TAG_PEOPLE) {
-            if (resultCode == Activity.RESULT_OK) {
-                taggeduserInfoPOJOS = (List<UserProfilePOJO>) data.getSerializableExtra("taggedpeople");
 
-                tagging_description = getTaggedDescription(taggeduserInfoPOJOS);
-                updateProfileStatus();
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                //Write your code if there's no result
-            }
-        }else if (requestCode == Constants.ACTIVITY_LOCATION) {
-            if (resultCode == Activity.RESULT_OK) {
-                newLocationPOJO= (NewLocationPOJO) data.getSerializableExtra("location");
-                place_description=" - at <b>" + newLocationPOJO.getMain_text() + "</b>";
-                updateProfileStatus();
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                //Write your code if there's no result
-                newLocationPOJO=null;
+            } else if (requestCode == Constants.ACTIVITY_TAG_PEOPLE) {
+                if (resultCode == Activity.RESULT_OK) {
+                    taggeduserInfoPOJOS = (List<UserProfilePOJO>) data.getSerializableExtra("taggedpeople");
+                    tagging_description = getTaggedDescription(taggeduserInfoPOJOS);
+                    updateProfileStatus();
+                }
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    //Write your code if there's no result
+                }
+            } else if (requestCode == Constants.ACTIVITY_LOCATION) {
+                if (resultCode == Activity.RESULT_OK) {
+                    locationPOJO = (LocationPOJO) data.getSerializableExtra("location");
+                    place_description = " - at <b>" + locationPOJO.getFormatted_address() + "</b>";
+                    updateProfileStatus();
+                }
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    //Write your code if there's no result
+                    locationPOJO = null;
+                }
             }
         }
+        checkPostStatus();
     }
 
 
@@ -408,15 +568,23 @@ public class ExpressActivity extends AppCompatActivity {
 
             String activity = "";
 
-            ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
-            nameValuePairs.add(new BasicNameValuePair("", ""));
             reqEntity.addPart("user_profile_id", new StringBody(Constants.userProfilePOJO.getUserProfileId()));
             reqEntity.addPart("title", new StringBody(et_whats_new.getText().toString()));
-            if(newLocationPOJO!=null) {
-                reqEntity.addPart("location", new StringBody(newLocationPOJO.getMain_text()+","+newLocationPOJO.getSecondary_text()));
-            }else{
-                reqEntity.addPart("location", new StringBody(""));
+
+            if (locationPOJO != null) {
+                try {
+                    reqEntity.addPart("location_detail[place_id]", new StringBody(locationPOJO.getPlaceId()));
+                    reqEntity.addPart("location_detail[location_name]", new StringBody(locationPOJO.getFormatted_address()));
+                    reqEntity.addPart("location_detail[location_lant]", new StringBody(String.valueOf(locationPOJO.getGeometry().getLocation().getLat())));
+                    reqEntity.addPart("location_detail[location_long]", new StringBody(String.valueOf(locationPOJO.getGeometry().getLocation().getLng())));
+                    reqEntity.addPart("location_detail[location_url]", new StringBody(locationPOJO.getUrl()));
+                    reqEntity.addPart("location_detail[location_address]", new StringBody(locationPOJO.getAdr_address()));
+                    reqEntity.addPart("location_detail[location_vicinity]", new StringBody(locationPOJO.getVicinity()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+
             reqEntity.addPart("description", new StringBody(et_whats_new.getText().toString()));
             reqEntity.addPart("url", new StringBody(""));
             reqEntity.addPart("feeling", new StringBody(activity));
@@ -426,24 +594,43 @@ public class ExpressActivity extends AppCompatActivity {
             }
 
             int count = 0;
-            if(spinner_pubpri.getSelectedItemPosition()==0){
+            if (spinner_pubpri.getSelectedItemPosition() == 0) {
                 reqEntity.addPart("privacy", new StringBody("1"));
-            }else{
+            } else {
                 reqEntity.addPart("privacy", new StringBody("0"));
             }
 
-            for (String file_path : attachPathString) {
-                if (file_path.contains(".mp4")
-                        || file_path.contains(".MP4")) {
-                    reqEntity.addPart("file[" + (count) + "]", new FileBody(new File(file_path)));
-                    reqEntity.addPart("thumb[" + (count) + "]", new FileBody(new File(UtilityFunction.saveThumbFile(new File(file_path)))));
-                }else{
-                    reqEntity.addPart("file[" + (count) + "]", new FileBody(new File(file_path)));
-                    reqEntity.addPart("thumb[" + (count) + "]", new StringBody(""));
+            for (MediaPOJO mediaPOJO : attachPathString) {
+                if (!mediaPOJO.isIs_server()) {
+                    if (mediaPOJO.getPath().contains(".mp4")
+                            || mediaPOJO.getPath().contains(".MP4")) {
+                        reqEntity.addPart("file[" + (count) + "]", new FileBody(new File(mediaPOJO.getPath())));
+//                    reqEntity.addPart("thumb[" + (count) + "]", new FileBody(new File(UtilityFunction.saveThumbFile(new File(file_path)))));
+                    } else {
+                        reqEntity.addPart("file[" + (count) + "]", new FileBody(new File(mediaPOJO.getPath())));
+                        reqEntity.addPart("thumb[" + (count) + "]", new StringBody(""));
+                    }
+                    count++;
                 }
-                count++;
+            }
+            String url = "";
+            if (postPOJO != null) {
+                reqEntity.addPart("post_id", new StringBody(postPOJO.getPostId()));
+                reqEntity.addPart("status", new StringBody("1"));
+                url = WebServicesUrls.UPDATE_POST;
+            } else {
+                url = WebServicesUrls.SAVE_POST;
             }
 
+            if (deleteServerFiles.size() > 0) {
+                int delete_count = 0;
+                for (String str : deleteServerFiles) {
+                    reqEntity.addPart("delete_image[" + delete_count + "]", new StringBody(str));
+                    delete_count++;
+                }
+            }
+
+            printData();
             new WebUploadService(reqEntity, this, new WebServicesCallBack() {
                 @Override
                 public void onGetMsg(String apicall, String response) {
@@ -460,11 +647,79 @@ public class ExpressActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-            }, "CREATE_POST", true).execute(WebServicesUrls.SAVE_POST);
+            }, "CREATE_POST", true).execute(url);
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
 
+
+    public void printData() {
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+        nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("title", et_whats_new.getText().toString()));
+
+        if (locationPOJO != null) {
+            try {
+                nameValuePairs.add(new BasicNameValuePair("location_detail[place_id]", locationPOJO.getPlaceId()));
+                nameValuePairs.add(new BasicNameValuePair("location_detail[location_name]", locationPOJO.getFormatted_address()));
+                nameValuePairs.add(new BasicNameValuePair("location_detail[location_lant]", String.valueOf(locationPOJO.getGeometry().getLocation().getLat())));
+                nameValuePairs.add(new BasicNameValuePair("location_detail[location_long]", String.valueOf(locationPOJO.getGeometry().getLocation().getLng())));
+                nameValuePairs.add(new BasicNameValuePair("location_detail[location_url]", locationPOJO.getUrl()));
+                nameValuePairs.add(new BasicNameValuePair("location_detail[location_address]", locationPOJO.getAdr_address()));
+                nameValuePairs.add(new BasicNameValuePair("location_detail[location_vicinity]", locationPOJO.getVicinity()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        nameValuePairs.add(new BasicNameValuePair("description", et_whats_new.getText().toString()));
+        nameValuePairs.add(new BasicNameValuePair("url", ""));
+
+        for (int i = 0; i < taggeduserInfoPOJOS.size(); i++) {
+            nameValuePairs.add(new BasicNameValuePair("post_tag[" + i + "]", taggeduserInfoPOJOS.get(i).getUserProfileId()));
+        }
+
+        int count = 0;
+        if (spinner_pubpri.getSelectedItemPosition() == 0) {
+            nameValuePairs.add(new BasicNameValuePair("privacy", "1"));
+        } else {
+            nameValuePairs.add(new BasicNameValuePair("privacy", "0"));
+        }
+
+        for (MediaPOJO mediaPOJO : attachPathString) {
+            if (mediaPOJO.getPath().contains(".mp4")
+                    || mediaPOJO.getPath().contains(".MP4")) {
+                nameValuePairs.add(new BasicNameValuePair("file[" + (count) + "]", mediaPOJO.getPath()));
+//                nameValuePairs.add(new BasicNameValuePair("thumb[" + (count) + "]", UtilityFunction.saveThumbFile(new File(file_path))));
+            } else {
+                nameValuePairs.add(new BasicNameValuePair("file[" + (count) + "]", mediaPOJO.getPath()));
+                nameValuePairs.add(new BasicNameValuePair("thumb[" + (count) + "]", ""));
+            }
+            count++;
+        }
+
+        if (deleteServerFiles.size() > 0) {
+            int delete_count = 0;
+            for (String str : deleteServerFiles) {
+                nameValuePairs.add(new BasicNameValuePair("delete_image[" + delete_count + "]", str));
+                delete_count++;
+            }
+        }
+
+        String nmv = "";
+        for (NameValuePair nameValuePair : nameValuePairs) {
+            nmv = nmv + nameValuePair.getName() + " : " + nameValuePair.getValue() + "\n";
+        }
+        Log.d(TagUtils.getTag(), "nmv:-" + nmv);
+    }
+
+    public void removePosition(MediaPOJO mediaPOJO, int position) {
+        if (mediaPOJO.isIs_server()) {
+            deleteServerFiles.add(mediaPOJO.getId());
+        }
+        attachPathString.remove(position);
+        attachMediaAdapter.notifyDataSetChanged();
+    }
 }

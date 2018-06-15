@@ -14,6 +14,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +29,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.ritvi.kaajneeti.R;
@@ -37,9 +40,13 @@ import com.ritvi.kaajneeti.Util.UtilityFunction;
 import com.ritvi.kaajneeti.activity.express.CheckInActivity;
 import com.ritvi.kaajneeti.adapter.HomeFeedAdapter;
 import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
+import com.ritvi.kaajneeti.pojo.ResponsePOJO;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
 import com.ritvi.kaajneeti.pojo.location.NewLocationPOJO;
+import com.ritvi.kaajneeti.pojo.search.AllSearchPOJO;
+import com.ritvi.kaajneeti.webservice.ResponseCallBack;
 import com.ritvi.kaajneeti.webservice.ResponseListCallback;
+import com.ritvi.kaajneeti.webservice.WebServiceBaseResponse;
 import com.ritvi.kaajneeti.webservice.WebServiceBaseResponseList;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
 import com.savvi.rangedatepicker.CalendarPickerView;
@@ -77,6 +84,8 @@ public class AllEventFragment extends Fragment {
     CheckBox check_participated;
     @BindView(R.id.ll_interested)
     LinearLayout ll_interested;
+    @BindView(R.id.rg_interested)
+    RadioGroup rg_interested;
     @BindView(R.id.rb_interested)
     RadioButton rb_interested;
     @BindView(R.id.rb_not_interested)
@@ -105,6 +114,13 @@ public class AllEventFragment extends Fragment {
     Button btn_apply;
     @BindView(R.id.iv_location)
     ImageView iv_location;
+    @BindView(R.id.et_search)
+    EditText et_search;
+    @BindView(R.id.tv_title)
+    TextView tv_title;
+
+    boolean is_search=false;
+    String search_text="";
 
     @Nullable
     @Override
@@ -118,6 +134,20 @@ public class AllEventFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        if(getArguments()!=null){
+            is_search=getArguments().getBoolean(Constants.IS_SEARCH);
+            search_text=getArguments().getString(Constants.SEARCH_TEXT);
+            et_search.setText(search_text);
+
+            if(is_search){
+                et_search.setVisibility(View.VISIBLE);
+                tv_title.setVisibility(View.GONE);
+            }else{
+                et_search.setVisibility(View.GONE);
+                tv_title.setVisibility(View.VISIBLE);
+            }
+        }
+
         attachAdapter();
         callAPI();
 
@@ -128,6 +158,22 @@ public class AllEventFragment extends Fragment {
             }
         });
         checkfilters();
+        et_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                callAPI();
+            }
+        });
     }
 
     String date_start_range = "";
@@ -184,10 +230,13 @@ public class AllEventFragment extends Fragment {
         check_participated.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     ll_interested.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     ll_interested.setVisibility(View.GONE);
+                    rb_interested.setChecked(false);
+                    rb_not_interested.setChecked(false);
+                    rb_may_be.setChecked(false);
                 }
             }
         });
@@ -231,26 +280,54 @@ public class AllEventFragment extends Fragment {
                 } else {
                     event_tagged = "";
                 }
-                if(rb_interested.isChecked()){
-                    event_interested="1";
-                }else{
-                    event_interested="0";
-                }
-                if(rb_not_interested.isChecked()){
-                    event_not_interested="1";
-                }else{
-                    event_not_interested="0";
-                }
-                if(rb_may_be.isChecked()){
-                    event_may_be="1";
-                }else{
-                    event_may_be="0";
+                switch (rg_interested.getCheckedRadioButtonId()) {
+                    case R.id.rb_interested:
+                        event_interested = "1";
+                        event_not_interested = "0";
+                        event_may_be = "0";
+                        event_interest_type="1";
+                        break;
+                    case R.id.rb_not_interested:
+                        event_interested = "0";
+                        event_not_interested = "1";
+                        event_may_be = "0";
+                        event_interest_type="2";
+                        break;
+                    case R.id.rb_may_be:
+                        event_interested = "0";
+                        event_not_interested = "0";
+                        event_may_be = "1";
+                        event_interest_type="3";
+                        break;
+                    default:
+                        event_interested = "0";
+                        event_not_interested = "0";
+                        event_may_be = "0";
+                        event_interest_type="0";
+                        break;
+
                 }
 
-                if(!check_participated.isChecked()){
-                    event_interested="0";
-                    event_not_interested="0";
-                    event_may_be="0";
+                if (rb_interested.isChecked()) {
+                    event_interested = "1";
+                } else {
+                    event_interested = "0";
+                }
+                if (rb_not_interested.isChecked()) {
+                    event_not_interested = "1";
+                } else {
+                    event_not_interested = "0";
+                }
+                if (rb_may_be.isChecked()) {
+                    event_may_be = "1";
+                } else {
+                    event_may_be = "0";
+                }
+
+                if (!check_participated.isChecked()) {
+                    event_interested = "0";
+                    event_not_interested = "0";
+                    event_may_be = "0";
                 }
 
                 iv_filter.callOnClick();
@@ -274,6 +351,7 @@ public class AllEventFragment extends Fragment {
     String posted_by_me = "";
     String event_tagged = "";
     String event_interested = "";
+    String event_interest_type = "";
     String event_not_interested = "";
     String event_may_be = "";
 
@@ -353,25 +431,71 @@ public class AllEventFragment extends Fragment {
 
 
     public void callAPI() {
+
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
         nameValuePairs.add(new BasicNameValuePair("friend_profile_id", Constants.userProfilePOJO.getUserProfileId()));
-        new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
-            @Override
-            public void onGetMsg(ResponseListPOJO responseListPOJO) {
-                feedPOJOS.clear();
-                try {
-                    if (responseListPOJO.isSuccess()) {
-                        feedPOJOS.addAll(responseListPOJO.getResultList());
-                    } else {
-                        ToastClass.showShortToast(getActivity().getApplicationContext(), responseListPOJO.getMessage());
+        nameValuePairs.add(new BasicNameValuePair("search_in", "event"));
+        nameValuePairs.add(new BasicNameValuePair("posted_by_me", posted_by_me));
+        nameValuePairs.add(new BasicNameValuePair("myself_tagged", event_tagged));
+        nameValuePairs.add(new BasicNameValuePair("date_from", date_start_range));
+        nameValuePairs.add(new BasicNameValuePair("date_to", date_end_range));
+        if(check_participated.isChecked()){
+            nameValuePairs.add(new BasicNameValuePair("participated", "1"));
+        }else{
+            nameValuePairs.add(new BasicNameValuePair("participated", "0"));
+        }
+        if (newLocationPOJO != null) {
+            nameValuePairs.add(new BasicNameValuePair("location", newLocationPOJO.getMain_text()));
+        } else {
+            nameValuePairs.add(new BasicNameValuePair("location", ""));
+        }
+        nameValuePairs.add(new BasicNameValuePair("participated_type", event_interest_type));
+
+        String url="";
+        if(is_search){
+            nameValuePairs.add(new BasicNameValuePair("q", et_search.getText().toString()));
+            nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
+            url=WebServicesUrls.ALL_SEARCH_API;
+
+            new WebServiceBaseResponse<AllSearchPOJO>(nameValuePairs, getActivity(), new ResponseCallBack<AllSearchPOJO>() {
+
+                @Override
+                public void onGetMsg(ResponsePOJO<AllSearchPOJO> responsePOJO) {
+                    feedPOJOS.clear();
+                    try {
+                        if (responsePOJO.isSuccess()) {
+                            feedPOJOS.addAll(responsePOJO.getResult().getEventFeeds());
+                        } else {
+                            ToastClass.showShortToast(getActivity().getApplicationContext(), responsePOJO.getMessage());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    homeFeedAdapter.notifyDataSetChanged();
                 }
-                homeFeedAdapter.notifyDataSetChanged();
-            }
-        }, FeedPOJO.class, "call_complaint_list_api", true).execute(WebServicesUrls.ALL_EVENT);
+            }, AllSearchPOJO.class, "ALL_SEARCH_API", false).execute(url);
+        }else{
+            url=WebServicesUrls.ALL_EVENT;
+            new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
+                @Override
+                public void onGetMsg(ResponseListPOJO responseListPOJO) {
+                    feedPOJOS.clear();
+                    try {
+                        if (responseListPOJO.isSuccess()) {
+                            feedPOJOS.addAll(responseListPOJO.getResultList());
+                        } else {
+                            ToastClass.showShortToast(getActivity().getApplicationContext(), responseListPOJO.getMessage());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    homeFeedAdapter.notifyDataSetChanged();
+                }
+            }, FeedPOJO.class, "get_all_events", true).execute(url);
+        }
+
+
     }
 
 

@@ -22,6 +22,7 @@ import com.ritvi.kaajneeti.adapter.FriendAdapter;
 import com.ritvi.kaajneeti.adapter.HomeFeedAdapter;
 import com.ritvi.kaajneeti.adapter.IncomingRequestAdapter;
 import com.ritvi.kaajneeti.adapter.TagPeopleAdapter;
+import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
 import com.ritvi.kaajneeti.pojo.ResponsePOJO;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
 import com.ritvi.kaajneeti.pojo.connection.ConnectionIncomingPOJO;
@@ -39,7 +40,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ConnectionsFragment extends Fragment {
+public class ConnectionsFragment extends FragmentController {
 
     @BindView(R.id.rv_incoming_request)
     RecyclerView rv_incoming_request;
@@ -55,6 +56,8 @@ public class ConnectionsFragment extends Fragment {
     LinearLayout ll_incoming;
     @BindView(R.id.ll_connections)
     LinearLayout ll_connections;
+    @BindView(R.id.ll_view_all_connection)
+    LinearLayout ll_view_all_connection;
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.pb_loader)
@@ -63,7 +66,7 @@ public class ConnectionsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_connections, container, false);
-        ButterKnife.bind(this, view);
+        setUpView(getActivity(),this,view);
         return view;
     }
 
@@ -88,6 +91,13 @@ public class ConnectionsFragment extends Fragment {
             }
         });
         getAllData();
+
+        ll_view_all_connection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityManager.startFragment(R.id.frame_home,new FriendFragment());
+            }
+        });
     }
 
 
@@ -121,6 +131,12 @@ public class ConnectionsFragment extends Fragment {
 
                         tv_connected.setText("Connected ("+responsePOJO.getResult().getTotalConnection()+")");
                         tv_added_me.setText("Added Me ("+responsePOJO.getResult().getTotalRequest()+")");
+
+                        if(responsePOJO.getResult().getTotalConnection()>3){
+                            ll_view_all_connection.setVisibility(View.VISIBLE);
+                        }else{
+                            ll_view_all_connection.setVisibility(View.GONE);
+                        }
 
                         incomingUserPOJOS.addAll(responsePOJO.getResult().getRequestConnectionPOJOS());
                         friendUserPOJOS.addAll(responsePOJO.getResult().getConnection());

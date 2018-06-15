@@ -9,6 +9,7 @@ public class WebServicesUrls {
     //    public static final String BASE_URL = "http://10.0.2.2/ritvigroup.com/ritvigroup/api/V1/";
 //    public static final String BASE_URL = "http://rajesh1may.000webhostapp.com/ritvigroup/api_old/V1/";
     public static final String BASE_URL = "http://ritvigroup.com/ritvigroup.com/ritvigroup/api/V1/";
+
 //    public static final String BASE_URL = "http://192.168.0.100:81/ritvigroup.com/ritvigroup/api/V1/";
 
     public static String getLocationAPI(String key,String lat,String longitude,String keywork){
@@ -79,6 +80,8 @@ public class WebServicesUrls {
     public static final String UPDATE_COMPLAINT_INVITATION = BASE_URL + "complaint/updateComplaintInvitations";
     public static final String DELETE_COMPLAINT_INVITATION = BASE_URL + "complaint/rejectComplaintInvitations";
     public static final String GET_COMPLAINT_DETAIL = BASE_URL + "complaint/getComplaintDetail";
+    public static final String GET_SUGGESTION_DETAIL = BASE_URL + "suggestion/getSuggestionDetail";
+    public static final String GET_INFORMATION_DETAIL = BASE_URL + "information/getInformationDetail";
     public static final String SAVE_POLL_ANS = BASE_URL + "poll/participatePollWithAnswer";
     public static final String FULL_PROFILE_URL = BASE_URL + "userprofile/getMoreDetailAboutFriendUserProfile";
     public static final String REMOVE_PROFILE_PIC = BASE_URL + "userprofile/removeUserProfilePicture";
@@ -105,4 +108,36 @@ public class WebServicesUrls {
     public static final String EVENT_DETAIL = BASE_URL + "event/getEventDetail";
     public static final String PAYMENT_AND_PAINT_TRANS_LOG= BASE_URL + "payment/getMyAllPaymentAndPointTransactionLog";
     public static final String CONNECTION_WITH_INCOMING_REQUEST= BASE_URL + "userconnect/getMyConnectionWithIncomingRequest";
+    public static final String GET_MY_FOLLOWERS= BASE_URL + "userconnect/getMyAllFollowers";
+    public static final String GET_MY_FOLLOWINGS= BASE_URL + "userconnect/getMyAllFollowings";
+
+    public static final String POST_LIKE= BASE_URL + "post/likePost";
+    public static final String POST_COMMENTS= BASE_URL + "post/savePostComment";
+    public static final String GET_ALL_POST_COMMENTS= BASE_URL + "post/getAllPostComment";
+
+    public static final String LIKE_UNLIKE_POLL= BASE_URL + "poll/likePoll";
+    public static final String ALL_POLL_COMMENTS= BASE_URL + "poll/getAllPollComment";
+    public static final String SAVE_POLL_COMMENTS= BASE_URL + "poll/savePollComment";
+
+    public static final String EVENT_LIKE_UNLIKE= BASE_URL + "event/likeEvent";
+    public static final String ALL_EVENT_COMMENT= BASE_URL + "event/getAllEventComment";
+    public static final String SAVE_EVENT_COMMENT= BASE_URL + "event/saveEventComment";
+
+    public static final String COMPLAINT_LIKE_UNLIKE= BASE_URL + "complaint/likeComplaint";
+    public static final String ALL_COMPLAINT_COMMENT= BASE_URL + "complaint/getAllComplaintComment";
+    public static final String SAVE_COMPLAINT_COMMENT= BASE_URL + "complaint/saveComplaintComment";
+
+    public static final String DELETE_POST= BASE_URL + "post/deleteMyPostStatus";
+    public static final String DELETE_COMPLAINT= BASE_URL + "complaint/deleteMyComplaint";
+    public static final String DELETE_SUGGESTION= BASE_URL + "suggestion/deleteMySuggestion";
+    public static final String DELETE_INFORMATION= BASE_URL + "post/deleteMyPostStatus";
+    public static final String DELETE_POLL= BASE_URL + "poll/deleteMyPoll";
+    public static final String DELETE_EVENT= BASE_URL + "event/deleteMyEvent";
+
+
+    public static final String UPDATE_POST= BASE_URL + "post/updateMyPostStatus";
+    public static final String UPDATE_COMPLAINT= BASE_URL + "complaint/updateMyComplaint";
+
+    public static final String GET_POLL_DETAIL= BASE_URL + "poll/getPollDetail";
+    public static final String UPDATE_EVENT = BASE_URL + "event/updateMyEvent";
 }

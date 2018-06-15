@@ -8,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,6 +20,7 @@ import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
 import com.ritvi.kaajneeti.Util.Pref;
 import com.ritvi.kaajneeti.Util.StringUtils;
+import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.activity.SplashActivity;
 import com.ritvi.kaajneeti.activity.express.ExpressActivity;
 import com.ritvi.kaajneeti.activity.loginregistration.LoginActivity;
@@ -29,13 +31,15 @@ import com.ritvi.kaajneeti.fragment.home.ConnectFragment;
 import com.ritvi.kaajneeti.fragment.home.FavoriteFragment;
 import com.ritvi.kaajneeti.fragment.home.HomeFragment;
 import com.ritvi.kaajneeti.fragment.home.MyConnectionFragment;
+import com.ritvi.kaajneeti.fragment.search.SearchAllFragment;
 import com.ritvi.kaajneeti.fragment.search.SearchFragment;
+import com.ritvi.kaajneeti.fragmentcontroller.ActivityManager;
 import com.ritvi.kaajneeti.view.CustomViewPager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends ActivityManager {
 
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
@@ -105,7 +109,8 @@ public class HomeActivity extends AppCompatActivity {
         ll_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addFragmentinFrameHome(new SearchFragment(), "SearchFragment");
+//                addFragmentinFrameHome(new SearchAllFragment(), "SearchFragment");
+                startFragment(R.id.frame_home,new SearchAllFragment());
             }
         });
 
@@ -191,6 +196,7 @@ public class HomeActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
 
@@ -233,7 +239,6 @@ public class HomeActivity extends AppCompatActivity {
                 .addToBackStack(fragment_name)
                 .commit();
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

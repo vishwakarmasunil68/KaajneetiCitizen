@@ -2,7 +2,9 @@ package com.ritvi.kaajneeti.pojo.event;
 
 import com.google.gson.annotations.SerializedName;
 
-public class EventInterestPOJO {
+import java.io.Serializable;
+
+public class EventInterestPOJO implements Serializable {
     @SerializedName("EventInterestTypeId")
     private String eventInterestTypeId;
     @SerializedName("EventInterestTypeName")

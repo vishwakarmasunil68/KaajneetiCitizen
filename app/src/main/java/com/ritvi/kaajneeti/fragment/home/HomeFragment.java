@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -46,6 +47,8 @@ public class HomeFragment extends Fragment {
     TextView tv_profile_name;
     @BindView(R.id.tv_what)
     TextView tv_what;
+    @BindView(R.id.card_profile_header)
+    CardView card_profile_header;
 //    @BindView(R.id.cv_express)
 //    ImageView cv_express;
 
@@ -68,6 +71,13 @@ public class HomeFragment extends Fragment {
                 startActivity(new Intent(getActivity(), ExpressActivity.class));
             }
         });
+        card_profile_header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tv_what.callOnClick();
+            }
+        });
+
         setUpViewPager();
 
 //        cv_express.setOnClickListener(new View.OnClickListener() {
@@ -91,12 +101,12 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
-        tv_profile_name.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cv_profile_pic.callOnClick();
-            }
-        });
+//        tv_profile_name.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                cv_profile_pic.callOnClick();
+//            }
+//        });
     }
 
     public void setUpViewPager() {

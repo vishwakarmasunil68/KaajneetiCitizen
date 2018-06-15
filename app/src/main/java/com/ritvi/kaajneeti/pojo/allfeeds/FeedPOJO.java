@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.ritvi.kaajneeti.pojo.complaint.ComplaintPOJO;
 import com.ritvi.kaajneeti.pojo.event.EventPOJO;
 import com.ritvi.kaajneeti.pojo.information.InformationPOJO;
+import com.ritvi.kaajneeti.pojo.payment.PaymentDataPOJO;
 import com.ritvi.kaajneeti.pojo.poll.PollPOJO;
 import com.ritvi.kaajneeti.pojo.post.PostPOJO;
 import com.ritvi.kaajneeti.pojo.suggestion.SuggestionPOJO;
@@ -34,6 +35,8 @@ public class FeedPOJO implements Serializable{
     SuggestionPOJO suggestiondata;
     @SerializedName("informationdata")
     InformationPOJO informationPOJO;
+    @SerializedName("paymentdata")
+    PaymentDataPOJO paymentDataPOJO;
 
     public String getFeedtype() {
         return feedtype;
@@ -97,5 +100,13 @@ public class FeedPOJO implements Serializable{
 
     public void setInformationPOJO(InformationPOJO informationPOJO) {
         this.informationPOJO = informationPOJO;
+    }
+
+    public PaymentDataPOJO getPaymentDataPOJO() {
+        return paymentDataPOJO;
+    }
+
+    public void setPaymentDataPOJO(PaymentDataPOJO paymentDataPOJO) {
+        this.paymentDataPOJO = paymentDataPOJO;
     }
 }

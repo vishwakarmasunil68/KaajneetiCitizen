@@ -1,8 +1,10 @@
 package com.ritvi.kaajneeti.pojo.event;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.ritvi.kaajneeti.pojo.event.EventAttachmentPOJO;
 import com.ritvi.kaajneeti.pojo.event.EventInterestPOJO;
+import com.ritvi.kaajneeti.pojo.location.ServerLocationPOJO;
 import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
 
 import java.io.Serializable;
@@ -19,6 +21,8 @@ public class EventPOJO implements Serializable {
     private String eventUniqueId;
     @SerializedName("EventName")
     private String eventName;
+    @SerializedName("EventCoverPhoto")
+    private String eventCoverPhoto;
     @SerializedName("EventDescription")
     private String eventDescription;
     @SerializedName("EventLocation")
@@ -41,16 +45,35 @@ public class EventPOJO implements Serializable {
     private String updatedOn;
     @SerializedName("UpdatedOnTime")
     private String updatedOnTime;
+    @SerializedName("EventInterestTotal")
+    private String eventInterestTotal;
     @SerializedName("EventProfile")
     private UserProfilePOJO eventProfile;
     @SerializedName("EventAttendee")
-    private List<Object> eventAttendee;
+    private List<UserProfilePOJO> eventAttendee;
     @SerializedName("EventAttachment")
     private List<EventAttachmentPOJO> eventAttachment;
     @SerializedName("TotalEventInterest")
     private List<EventInterestPOJO> TotalEventInterestList;
     @SerializedName("MeInterested")
     private Integer MeInterested;
+    @SerializedName("TotalLikes")
+    @Expose
+    private Integer totalLikes;
+    @SerializedName("TotalUnLikes")
+    @Expose
+    private Integer totalUnLikes;
+    @SerializedName("MeLike")
+    @Expose
+    private Integer meLike;
+    @SerializedName("MeUnLike")
+    @Expose
+    private Integer meUnLike;
+    @SerializedName("TotalComment")
+    @Expose
+    private Integer totalComment;
+    @SerializedName("LocationDetail")
+    private ServerLocationPOJO serverLocationPOJO;
 
     public String getEventId() {
         return eventId;
@@ -172,11 +195,11 @@ public class EventPOJO implements Serializable {
         this.eventProfile = eventProfile;
     }
 
-    public List<Object> getEventAttendee() {
+    public List<UserProfilePOJO> getEventAttendee() {
         return eventAttendee;
     }
 
-    public void setEventAttendee(List<Object> eventAttendee) {
+    public void setEventAttendee(List<UserProfilePOJO> eventAttendee) {
         this.eventAttendee = eventAttendee;
     }
 
@@ -202,5 +225,69 @@ public class EventPOJO implements Serializable {
 
     public void setTotalEventInterestList(List<EventInterestPOJO> totalEventInterestList) {
         TotalEventInterestList = totalEventInterestList;
+    }
+
+    public Integer getTotalLikes() {
+        return totalLikes;
+    }
+
+    public void setTotalLikes(Integer totalLikes) {
+        this.totalLikes = totalLikes;
+    }
+
+    public Integer getTotalUnLikes() {
+        return totalUnLikes;
+    }
+
+    public void setTotalUnLikes(Integer totalUnLikes) {
+        this.totalUnLikes = totalUnLikes;
+    }
+
+    public Integer getMeLike() {
+        return meLike;
+    }
+
+    public void setMeLike(Integer meLike) {
+        this.meLike = meLike;
+    }
+
+    public Integer getMeUnLike() {
+        return meUnLike;
+    }
+
+    public void setMeUnLike(Integer meUnLike) {
+        this.meUnLike = meUnLike;
+    }
+
+    public Integer getTotalComment() {
+        return totalComment;
+    }
+
+    public void setTotalComment(Integer totalComment) {
+        this.totalComment = totalComment;
+    }
+
+    public ServerLocationPOJO getServerLocationPOJO() {
+        return serverLocationPOJO;
+    }
+
+    public void setServerLocationPOJO(ServerLocationPOJO serverLocationPOJO) {
+        this.serverLocationPOJO = serverLocationPOJO;
+    }
+
+    public String getEventInterestTotal() {
+        return eventInterestTotal;
+    }
+
+    public void setEventInterestTotal(String eventInterestTotal) {
+        this.eventInterestTotal = eventInterestTotal;
+    }
+
+    public String getEventCoverPhoto() {
+        return eventCoverPhoto;
+    }
+
+    public void setEventCoverPhoto(String eventCoverPhoto) {
+        this.eventCoverPhoto = eventCoverPhoto;
     }
 }

@@ -1,5 +1,6 @@
 package com.ritvi.kaajneeti.pojo.poll;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
 
@@ -43,6 +44,21 @@ public class PollPOJO implements Serializable {
     private List<PollAnsPOJO> pollAnsPOJOS;
     @SerializedName("MeParticipated")
     private Integer meParticipated;
+    @SerializedName("TotalLikes")
+    @Expose
+    private String totalLikes;
+    @SerializedName("TotalUnLikes")
+    @Expose
+    private Integer totalUnLikes;
+    @SerializedName("MeLike")
+    @Expose
+    private Integer meLike;
+    @SerializedName("MeUnLike")
+    @Expose
+    private Integer meUnLike;
+    @SerializedName("TotalComment")
+    @Expose
+    private Integer totalComment;
 
     public String getPollId() {
         return pollId;
@@ -170,5 +186,45 @@ public class PollPOJO implements Serializable {
 
     public void setMeParticipated(Integer meParticipated) {
         this.meParticipated = meParticipated;
+    }
+
+    public String getTotalLikes() {
+        return totalLikes;
+    }
+
+    public void setTotalLikes(String totalLikes) {
+        this.totalLikes = totalLikes;
+    }
+
+    public Integer getTotalUnLikes() {
+        return totalUnLikes;
+    }
+
+    public void setTotalUnLikes(Integer totalUnLikes) {
+        this.totalUnLikes = totalUnLikes;
+    }
+
+    public Integer getMeLike() {
+        return meLike;
+    }
+
+    public void setMeLike(Integer meLike) {
+        this.meLike = meLike;
+    }
+
+    public Integer getMeUnLike() {
+        return meUnLike;
+    }
+
+    public void setMeUnLike(Integer meUnLike) {
+        this.meUnLike = meUnLike;
+    }
+
+    public Integer getTotalComment() {
+        return totalComment;
+    }
+
+    public void setTotalComment(Integer totalComment) {
+        this.totalComment = totalComment;
     }
 }

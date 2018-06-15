@@ -1,8 +1,14 @@
 package com.ritvi.kaajneeti.fragment.user;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -20,7 +27,10 @@ import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
 import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.Util.UtilityFunction;
+import com.ritvi.kaajneeti.activity.express.CheckInActivity;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
+import com.ritvi.kaajneeti.fragment.Express.CreateEventFragment;
+import com.ritvi.kaajneeti.pojo.location.LocationPOJO;
 import com.ritvi.kaajneeti.pojo.user.AddressPOJO;
 import com.ritvi.kaajneeti.pojo.user.WorkPOJO;
 import com.ritvi.kaajneeti.webservice.WebServiceBase;
@@ -62,6 +72,10 @@ public class UpdateWorkFragment extends Fragment implements DatePickerDialog.OnD
     ImageView iv_start_date;
     @BindView(R.id.tv_done)
     TextView tv_done;
+    @BindView(R.id.frame_location)
+    FrameLayout frame_location;
+    @BindView(R.id.iv_location)
+    ImageView iv_location;
 
     boolean is_start_date=false;
 
@@ -141,7 +155,38 @@ public class UpdateWorkFragment extends Fragment implements DatePickerDialog.OnD
                 }
             }
         });
+
+        iv_location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkLocation();
+            }
+        });
     }
+
+
+    public void checkLocation() {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkLocationPermission();
+        } else {
+            UtilityFunction.getLocation(getActivity().getApplicationContext());
+            startActivityForResult(new Intent(getActivity(), CheckInActivity.class), Constants.ACTIVITY_LOCATION);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void checkLocationPermission() {
+        if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    Constants.ACCESS_LOCATION);
+            return;
+        } else {
+            UtilityFunction.getLocation(getActivity().getApplicationContext());
+            startActivityForResult(new Intent(getActivity(), CheckInActivity.class), Constants.ACTIVITY_LOCATION);
+        }
+    }
+
 
     public void saveWork(){
 
@@ -156,8 +201,11 @@ public class UpdateWorkFragment extends Fragment implements DatePickerDialog.OnD
         nameValuePairs.add(new BasicNameValuePair("work", et_work.getText().toString()));
         nameValuePairs.add(new BasicNameValuePair("place", et_position.getText().toString()));
         nameValuePairs.add(new BasicNameValuePair("location", et_location.getText().toString()));
-        nameValuePairs.add(new BasicNameValuePair("from", tv_start_date.getText().toString()));
-        nameValuePairs.add(new BasicNameValuePair("to", tv_end_date.getText().toString()));
+
+        String start_date=UtilityFunction.getConvertedDate(tv_start_date.getText().toString());
+        String end_date=UtilityFunction.getConvertedDate(tv_end_date.getText().toString());
+        nameValuePairs.add(new BasicNameValuePair("from", start_date));
+        nameValuePairs.add(new BasicNameValuePair("to", end_date));
         if (check_work.isChecked()) {
             nameValuePairs.add(new BasicNameValuePair("currently", "1"));
         } else {
@@ -207,6 +255,20 @@ public class UpdateWorkFragment extends Fragment implements DatePickerDialog.OnD
             tv_start_date.setText(date);
         } else {
             tv_end_date.setText(date);
+        }
+    }
+    LocationPOJO locationPOJO;
+    String check_in="";
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Constants.ACTIVITY_LOCATION) {
+            if (resultCode == Activity.RESULT_OK) {
+                LocationPOJO locationPOJO = (LocationPOJO) data.getSerializableExtra("location");
+                this.locationPOJO = locationPOJO;
+                check_in = locationPOJO.getFormatted_address();
+                et_location.setText(check_in);
+            }
         }
     }
 }

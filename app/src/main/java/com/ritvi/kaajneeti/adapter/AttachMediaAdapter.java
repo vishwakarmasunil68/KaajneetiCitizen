@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +17,15 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
+import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.Util.ToastClass;
+import com.ritvi.kaajneeti.activity.express.ExpressActivity;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
+import com.ritvi.kaajneeti.fragment.Express.CreateComplaintFragment;
 import com.ritvi.kaajneeti.fragment.user.UpdateAddressFragment;
+import com.ritvi.kaajneeti.interfaces.ItemSizeChangeListener;
+import com.ritvi.kaajneeti.interfaces.PollAnsClickInterface;
+import com.ritvi.kaajneeti.pojo.allfeeds.MediaPOJO;
 import com.ritvi.kaajneeti.pojo.user.AddressPOJO;
 import com.ritvi.kaajneeti.webservice.WebServiceBase;
 import com.ritvi.kaajneeti.webservice.WebServicesCallBack;
@@ -36,14 +43,19 @@ import java.util.List;
  */
 
 public class AttachMediaAdapter extends RecyclerView.Adapter<AttachMediaAdapter.ViewHolder>{
-    private List<String> items;
+    private List<MediaPOJO> items;
     Activity activity;
     Fragment fragment;
+    ItemSizeChangeListener itemSizeChangeListener;
 
-    public AttachMediaAdapter(Activity activity, Fragment fragment, List<String> items) {
+    public AttachMediaAdapter(Activity activity, Fragment fragment, List<MediaPOJO> items) {
         this.items = items;
         this.activity = activity;
         this.fragment = fragment;
+    }
+
+    public void setOnItemChanged(ItemSizeChangeListener itemSizeChangeListener){
+        this.itemSizeChangeListener=itemSizeChangeListener;
     }
 
     @Override
@@ -56,22 +68,36 @@ public class AttachMediaAdapter extends RecyclerView.Adapter<AttachMediaAdapter.
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
         Glide.with(activity.getApplicationContext())
-                .load(items.get(position))
+                .load(items.get(position).getPath())
                 .into(holder.iv_image);
 
         holder.iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                items.remove(position);
-                notifyDataSetChanged();
+                if(fragment==null&&activity instanceof ExpressActivity) {
+                    ExpressActivity expressActivity= (ExpressActivity) activity;
+                    expressActivity.removePosition(items.get(position),position);
+                }else if(fragment instanceof CreateComplaintFragment){
+                    CreateComplaintFragment createComplaintFragment= (CreateComplaintFragment) fragment;
+                    createComplaintFragment.removePosition(items.get(position),position);
+                }else{
+                    items.remove(position);
+                    notifyDataSetChanged();
+                }
             }
         });
 
         holder.itemView.setTag(items.get(position));
     }
 
+
+
     @Override
     public int getItemCount() {
+//        Log.d(TagUtils.getTag(),"item count:-"+items.size());
+        if(itemSizeChangeListener!=null) {
+            itemSizeChangeListener.onItemSizeChanged();
+        }
         return items.size();
     }
 

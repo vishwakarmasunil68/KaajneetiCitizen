@@ -15,15 +15,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
 import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.adapter.HomeFeedAdapter;
+import com.ritvi.kaajneeti.fragment.feed.CommentFragment;
+import com.ritvi.kaajneeti.fragment.feed.ComplaintCommentFragment;
+import com.ritvi.kaajneeti.fragment.feed.EventCommentFragment;
+import com.ritvi.kaajneeti.fragment.feed.PollCommentFragment;
+import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
 import com.ritvi.kaajneeti.interfaces.OnLoadMoreListener;
 import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
+import com.ritvi.kaajneeti.pojo.complaint.ComplaintPOJO;
+import com.ritvi.kaajneeti.pojo.event.EventPOJO;
+import com.ritvi.kaajneeti.pojo.poll.PollPOJO;
+import com.ritvi.kaajneeti.pojo.post.PostPOJO;
 import com.ritvi.kaajneeti.webservice.ResponseListCallback;
 import com.ritvi.kaajneeti.webservice.WebServiceBaseResponseList;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
@@ -38,7 +48,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 @SuppressLint("ValidFragment")
-public class AllFeedsFragment extends Fragment{
+public class AllFeedsFragment extends FragmentController{
 
     int range = 10;
     @BindView(R.id.rv_feeds)
@@ -56,7 +66,7 @@ public class AllFeedsFragment extends Fragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.frag_all_feeds,container,false);
-        ButterKnife.bind(this,view);
+        setUpView(getActivity(),this,view);
         return view;
     }
 
@@ -162,5 +172,55 @@ public class AllFeedsFragment extends Fragment{
         }
     }
 
+    TextView tv_comments;
+    public void showComment(TextView tv_comments, PostPOJO postPOJO) {
+        this.tv_comments=tv_comments;
+        CommentFragment commentFragment=new CommentFragment();
+        Bundle bundle=new Bundle();
+        bundle.putString("post_id",postPOJO.getPostId());
+        commentFragment.setArguments(bundle);
+        activityManager.startFragmentForResult(R.id.frame_home,AllFeedsFragment.this,commentFragment,101);
+    }
 
+    @Override
+    public void onFragmentResult(int requestCode, int resultCode, Bundle data) {
+        super.onFragmentResult(requestCode, resultCode, data);
+        if(requestCode==101){
+            try {
+                int count = data.getInt("total_comments_added");
+                Log.d(TagUtils.getTag(),"count added:-"+count);
+                count=count+Integer.parseInt(tv_comments.getText().toString());
+                tv_comments.setText(String.valueOf(count));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void showPollComments(TextView tv_comments, PollPOJO pollPOJO) {
+        this.tv_comments=tv_comments;
+        PollCommentFragment commentFragment=new PollCommentFragment();
+        Bundle bundle=new Bundle();
+        bundle.putString("poll_id",pollPOJO.getPollId());
+        commentFragment.setArguments(bundle);
+        activityManager.startFragmentForResult(R.id.frame_home,AllFeedsFragment.this,commentFragment,101);
+    }
+
+    public void showEventComment(TextView tv_comments, EventPOJO eventPOJO) {
+        this.tv_comments=tv_comments;
+        EventCommentFragment commentFragment=new EventCommentFragment();
+        Bundle bundle=new Bundle();
+        bundle.putString("event_id",eventPOJO.getEventId());
+        commentFragment.setArguments(bundle);
+        activityManager.startFragmentForResult(R.id.frame_home,AllFeedsFragment.this,commentFragment,101);
+    }
+
+    public void showComplaintComments(TextView tv_comments, ComplaintPOJO complaintPOJO) {
+        this.tv_comments=tv_comments;
+        ComplaintCommentFragment commentFragment=new ComplaintCommentFragment();
+        Bundle bundle=new Bundle();
+        bundle.putString("complaint_id",complaintPOJO.getComplaintId());
+        commentFragment.setArguments(bundle);
+        activityManager.startFragmentForResult(R.id.frame_home,AllFeedsFragment.this,commentFragment,101);
+    }
 }

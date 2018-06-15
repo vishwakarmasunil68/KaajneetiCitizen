@@ -3,7 +3,6 @@ package com.ritvi.kaajneeti.fragment.home;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,13 +13,15 @@ import android.widget.TextView;
 
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
-import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.fragment.analyze.AllComplaintFragment;
 import com.ritvi.kaajneeti.fragment.analyze.AllEventFragment;
 import com.ritvi.kaajneeti.fragment.analyze.AllInformationFragment;
 import com.ritvi.kaajneeti.fragment.analyze.AllPollFragment;
 import com.ritvi.kaajneeti.fragment.analyze.AllPostFragment;
 import com.ritvi.kaajneeti.fragment.analyze.AllSuggestionFragment;
+import com.ritvi.kaajneeti.fragment.myconnection.FriendFragment;
+import com.ritvi.kaajneeti.fragment.user.FollowerFragment;
+import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
 import com.ritvi.kaajneeti.webservice.WebServiceBase;
 import com.ritvi.kaajneeti.webservice.WebServicesCallBack;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
@@ -32,9 +33,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
-public class AnalyzeFragment extends Fragment {
+public class AnalyzeFragment extends FragmentController {
 
     @BindView(R.id.ll_feeds)
     LinearLayout ll_feeds;
@@ -65,12 +65,16 @@ public class AnalyzeFragment extends Fragment {
     TextView tv_followers;
     @BindView(R.id.tv_followings)
     TextView tv_followings;
+
+
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.pb_loader)
     ProgressBar pb_loader;
     @BindView(R.id.ll_post)
     LinearLayout ll_post;
+    @BindView(R.id.ll_friends)
+    LinearLayout ll_friends;
     @BindView(R.id.ll_event)
     LinearLayout ll_event;
     @BindView(R.id.ll_poll)
@@ -81,12 +85,16 @@ public class AnalyzeFragment extends Fragment {
     LinearLayout ll_complaint;
     @BindView(R.id.ll_information)
     LinearLayout ll_information;
+    @BindView(R.id.ll_follower)
+    LinearLayout ll_follower;
+    @BindView(R.id.ll_following)
+    LinearLayout ll_following;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_analyze, container, false);
-        ButterKnife.bind(this, view);
+        setUpView(getActivity(), this, view);
         return view;
     }
 
@@ -125,60 +133,115 @@ public class AnalyzeFragment extends Fragment {
         ll_post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(getActivity() instanceof HomeActivity){
-                    HomeActivity homeActivity= (HomeActivity) getActivity();
-                    homeActivity.replaceFragmentinFrameHome(new AllPostFragment(),"AllPostFragment");
-                }
+                AllPostFragment allPostFragment = new AllPostFragment();
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(Constants.IS_SEARCH, false);
+                bundle.putString(Constants.SEARCH_TEXT, "");
+                allPostFragment.setArguments(bundle);
+
+                activityManager.startFragment(R.id.frame_home, allPostFragment);
+
             }
         });
 
         ll_event.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(getActivity() instanceof HomeActivity){
-                    HomeActivity homeActivity= (HomeActivity) getActivity();
-                    homeActivity.replaceFragmentinFrameHome(new AllEventFragment(),"AllEventFragment");
-                }
+                AllEventFragment allEventFragment = new AllEventFragment();
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(Constants.IS_SEARCH, false);
+                bundle.putString(Constants.SEARCH_TEXT, "");
+                allEventFragment.setArguments(bundle);
+
+                activityManager.startFragment(R.id.frame_home, allEventFragment);
             }
         });
 
         ll_complaint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(getActivity() instanceof HomeActivity){
-                    HomeActivity homeActivity= (HomeActivity) getActivity();
-                    homeActivity.replaceFragmentinFrameHome(new AllComplaintFragment(),"AllComplaintFragment");
-                }
+                AllComplaintFragment allComplaintFragment = new AllComplaintFragment();
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(Constants.IS_SEARCH, false);
+                bundle.putString(Constants.SEARCH_TEXT, "");
+                allComplaintFragment.setArguments(bundle);
+
+                activityManager.startFragment(R.id.frame_home, allComplaintFragment);
             }
         });
 
         ll_poll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(getActivity() instanceof HomeActivity){
-                    HomeActivity homeActivity= (HomeActivity) getActivity();
-                    homeActivity.replaceFragmentinFrameHome(new AllPollFragment(),"AllPollFragment");
-                }
+                AllPollFragment allPollFragment = new AllPollFragment();
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(Constants.IS_SEARCH, false);
+                bundle.putString(Constants.SEARCH_TEXT, "");
+                allPollFragment.setArguments(bundle);
+
+                activityManager.startFragment(R.id.frame_home, allPollFragment);
             }
         });
 
         ll_suggestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(getActivity() instanceof HomeActivity){
-                    HomeActivity homeActivity= (HomeActivity) getActivity();
-                    homeActivity.replaceFragmentinFrameHome(new AllSuggestionFragment(),"AllSuggestionFragment");
-                }
+                AllSuggestionFragment allSuggestionFragment = new AllSuggestionFragment();
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(Constants.IS_SEARCH, false);
+                bundle.putString(Constants.SEARCH_TEXT, "");
+                allSuggestionFragment.setArguments(bundle);
+
+                activityManager.startFragment(R.id.frame_home, allSuggestionFragment);
             }
         });
 
         ll_information.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(getActivity() instanceof HomeActivity){
-                    HomeActivity homeActivity= (HomeActivity) getActivity();
-                    homeActivity.replaceFragmentinFrameHome(new AllInformationFragment(),"AllInformationFragment");
-                }
+                AllInformationFragment allInformationFragment = new AllInformationFragment();
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(Constants.IS_SEARCH, false);
+                bundle.putString(Constants.SEARCH_TEXT, "");
+                allInformationFragment.setArguments(bundle);
+
+                activityManager.startFragment(R.id.frame_home, allInformationFragment);
+            }
+        });
+
+        ll_friends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FriendFragment friendFragment= new FriendFragment();
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(Constants.IS_SEARCH, false);
+                bundle.putString(Constants.SEARCH_TEXT, "");
+                friendFragment.setArguments(bundle);
+
+                activityManager.startFragment(R.id.frame_home, friendFragment);
+            }
+        });
+
+        ll_follower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FollowerFragment followerFragment= new FollowerFragment();
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("is_follower", true);
+                followerFragment.setArguments(bundle);
+
+                activityManager.startFragment(R.id.frame_home, followerFragment);
+            }
+        });
+        ll_following.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FollowerFragment followerFragment= new FollowerFragment();
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("is_follower", false);
+                followerFragment.setArguments(bundle);
+
+                activityManager.startFragment(R.id.frame_home, followerFragment);
             }
         });
 
@@ -214,6 +277,10 @@ public class AnalyzeFragment extends Fragment {
                         String TotalSuggestion = resultJsonObject.optString("TotalSuggestion");
                         String TotalInformation = resultJsonObject.optString("TotalInformation");
                         String TotalComplaint = resultJsonObject.optString("TotalComplaint");
+                        String TotalConnect = resultJsonObject.optString("TotalConnect");
+                        String TotalFavLeader = resultJsonObject.optString("TotalFavLeader");
+                        String TotalFollower = resultJsonObject.optString("TotalFollower");
+                        String TotalFollowing = resultJsonObject.optString("TotalFollowing");
 
                         tv_poll.setText("Poll ( " + TotalPoll + " )");
                         tv_event.setText("Event ( " + TotalEvent + " )");
@@ -221,6 +288,10 @@ public class AnalyzeFragment extends Fragment {
                         tv_suggestion.setText("Suggestion ( " + TotalSuggestion + " )");
                         tv_information.setText("Information ( " + TotalInformation + " )");
                         tv_complaint.setText("Complaint ( " + TotalComplaint + " )");
+                        tv_friends.setText(String.valueOf(TotalConnect));
+                        tv_favorite_leader.setText(String.valueOf(TotalFavLeader));
+                        tv_followers.setText(String.valueOf(TotalFollower));
+                        tv_followings.setText(String.valueOf(TotalFollowing));
 
 
                     }

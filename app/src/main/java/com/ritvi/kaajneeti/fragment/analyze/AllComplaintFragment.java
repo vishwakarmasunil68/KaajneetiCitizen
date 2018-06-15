@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,8 +31,12 @@ import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.Util.UtilityFunction;
 import com.ritvi.kaajneeti.adapter.HomeFeedAdapter;
 import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
+import com.ritvi.kaajneeti.pojo.ResponsePOJO;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
+import com.ritvi.kaajneeti.pojo.search.AllSearchPOJO;
+import com.ritvi.kaajneeti.webservice.ResponseCallBack;
 import com.ritvi.kaajneeti.webservice.ResponseListCallback;
+import com.ritvi.kaajneeti.webservice.WebServiceBaseResponse;
 import com.ritvi.kaajneeti.webservice.WebServiceBaseResponseList;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
 import com.savvi.rangedatepicker.CalendarPickerView;
@@ -81,6 +88,13 @@ public class AllComplaintFragment extends Fragment {
     Button btn_apply;
     @BindView(R.id.sliding_layout)
     SlidingUpPanelLayout sliding_layout;
+    @BindView(R.id.et_search)
+    EditText et_search;
+    @BindView(R.id.tv_title)
+    TextView tv_title;
+
+    boolean is_search=false;
+    String search_text="";
 
     @Nullable
     @Override
@@ -94,6 +108,20 @@ public class AllComplaintFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        if(getArguments()!=null){
+            is_search=getArguments().getBoolean(Constants.IS_SEARCH);
+            search_text=getArguments().getString(Constants.SEARCH_TEXT);
+            et_search.setText(search_text);
+
+            if(is_search){
+                et_search.setVisibility(View.VISIBLE);
+                tv_title.setVisibility(View.GONE);
+            }else{
+                et_search.setVisibility(View.GONE);
+                tv_title.setVisibility(View.VISIBLE);
+            }
+        }
+
         attachAdapter();
         callAPI();
 
@@ -103,8 +131,24 @@ public class AllComplaintFragment extends Fragment {
                 getActivity().onBackPressed();
             }
         });
-
         checkfilters();
+        et_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                callAPI();
+            }
+        });
+
     }
 
     String date_start_range = "";
@@ -286,23 +330,51 @@ public class AllComplaintFragment extends Fragment {
         nameValuePairs.add(new BasicNameValuePair("date_from", UtilityFunction.getConvertedDate(date_start_range)));
         nameValuePairs.add(new BasicNameValuePair("date_to", UtilityFunction.getConvertedDate(date_end_range)));
 
-        new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
+        String url="";
+        if(is_search){
+            nameValuePairs.add(new BasicNameValuePair("q", et_search.getText().toString()));
+            nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
+            url=WebServicesUrls.ALL_SEARCH_API;
 
-            @Override
-            public void onGetMsg(ResponseListPOJO<FeedPOJO> responseListPOJO) {
-                complaintPOJOS.clear();
-                try {
-                    if (responseListPOJO.isSuccess()) {
-                        complaintPOJOS.addAll(responseListPOJO.getResultList());
-                    } else {
-                        ToastClass.showShortToast(getActivity().getApplicationContext(), responseListPOJO.getMessage());
+            new WebServiceBaseResponse<AllSearchPOJO>(nameValuePairs, getActivity(), new ResponseCallBack<AllSearchPOJO>() {
+
+                @Override
+                public void onGetMsg(ResponsePOJO<AllSearchPOJO> responsePOJO) {
+                    complaintPOJOS.clear();
+                    try {
+                        if (responsePOJO.isSuccess()) {
+                            complaintPOJOS.addAll(responsePOJO.getResult().getComplaintFeeds());
+                        } else {
+                            ToastClass.showShortToast(getActivity().getApplicationContext(), responsePOJO.getMessage());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    homeFeedAdapter.notifyDataSetChanged();
                 }
-                homeFeedAdapter.notifyDataSetChanged();
-            }
-        }, FeedPOJO.class, "call_complaint_list_api", true).execute(WebServicesUrls.COMPLAINT_LIST);
+            }, AllSearchPOJO.class, "ALL_SEARCH_API", false).execute(url);
+        }else{
+            url=WebServicesUrls.COMPLAINT_LIST;
+            new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
+
+                @Override
+                public void onGetMsg(ResponseListPOJO<FeedPOJO> responseListPOJO) {
+                    complaintPOJOS.clear();
+                    try {
+                        if (responseListPOJO.isSuccess()) {
+                            complaintPOJOS.addAll(responseListPOJO.getResultList());
+                        } else {
+                            ToastClass.showShortToast(getActivity().getApplicationContext(), responseListPOJO.getMessage());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    homeFeedAdapter.notifyDataSetChanged();
+                }
+            }, FeedPOJO.class, "call_complaint_list_api", true).execute(url);
+        }
+
+
     }
 
 

@@ -53,9 +53,9 @@
                 android:id="@+id/iv_edit"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
+                android:layout_gravity="center_vertical"
                 android:layout_marginRight="22dp"
-                android:src="@drawable/ic_edit_profile"
-                android:layout_gravity="center_vertical"/>
+                android:src="@drawable/ic_edit_profile" />
 
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
@@ -93,10 +93,10 @@
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:background="@drawable/btn_add_friend"
                     android:gravity="center"
                     android:minHeight="30dp"
                     android:text="+ Add"
-                    android:background="@drawable/btn_add_friend"
                     android:textColor="@color/header_text"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -117,10 +117,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="15dp"
-                android:textSize="13sp"
-                android:visibility="gone"
                 android:text=""
-                android:textColor="#50000000" />
+                android:textColor="#50000000"
+                android:textSize="13sp"
+                android:visibility="gone" />
 
             <com.ritvi.kaajneeti.view.SourceSansProTextView
                 android:id="@+id/tv_bio"
@@ -129,9 +129,9 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="13dp"
-                android:textSize="13sp"
                 android:text=""
-                android:textColor="#50000000" />
+                android:textColor="#50000000"
+                android:textSize="13sp" />
 
             <LinearLayout
                 android:id="@+id/ll_user_info"
@@ -157,8 +157,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:textSize="13sp"
-                        android:text="" />
+                        android:text=""
+                        android:textSize="13sp" />
 
                 </LinearLayout>
 
@@ -180,8 +180,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:textSize="13sp"
-                        android:text="" />
+                        android:text=""
+                        android:textSize="13sp" />
 
                 </LinearLayout>
 
@@ -203,8 +203,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:textSize="13sp"
-                        android:text="" />
+                        android:text=""
+                        android:textSize="13sp" />
 
                 </LinearLayout>
 
@@ -226,8 +226,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:textSize="13sp"
-                        android:text="" />
+                        android:text=""
+                        android:textSize="13sp" />
 
                 </LinearLayout>
 
@@ -249,8 +249,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:textSize="13sp"
-                        android:text="" />
+                        android:text=""
+                        android:textSize="13sp" />
 
                 </LinearLayout>
 
@@ -277,38 +277,44 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="17dp"
                 android:layout_marginRight="20dp"
-                android:textSize="16sp"
+                android:layout_marginTop="17dp"
                 android:text="Connects"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_friends"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"></android.support.v7.widget.RecyclerView>
-
-
-            <com.ritvi.kaajneeti.view.SourceSansProTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="17dp"
                 android:layout_marginRight="20dp"
-                android:textSize="16sp"
-                android:text="Feeds"
-                android:textStyle="bold" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_feeds"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"></android.support.v7.widget.RecyclerView>
 
 
+            <LinearLayout
+                android:id="@+id/ll_feeds"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.ritvi.kaajneeti.view.SourceSansProTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="17dp"
+                    android:text="Feeds"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_feeds"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"></android.support.v7.widget.RecyclerView>
+
+            </LinearLayout>
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>

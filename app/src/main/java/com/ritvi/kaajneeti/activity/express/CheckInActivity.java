@@ -2,8 +2,8 @@ package com.ritvi.kaajneeti.activity.express;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,28 +14,22 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Pref;
 import com.ritvi.kaajneeti.Util.StringUtils;
 import com.ritvi.kaajneeti.Util.TagUtils;
-import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.adapter.LocationAdapter;
-import com.ritvi.kaajneeti.adapter.TagPeopleAdapter;
-import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
 import com.ritvi.kaajneeti.pojo.location.LocationPOJO;
 import com.ritvi.kaajneeti.pojo.location.LocationResponseListPOJO;
 import com.ritvi.kaajneeti.pojo.location.NewLocationPOJO;
 import com.ritvi.kaajneeti.webservice.GetWebServices;
 import com.ritvi.kaajneeti.webservice.LocationResponseListCallback;
 import com.ritvi.kaajneeti.webservice.LocationWebservice;
-import com.ritvi.kaajneeti.webservice.ResponseListCallback;
 import com.ritvi.kaajneeti.webservice.WebServicesCallBack;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +81,7 @@ public class CheckInActivity extends AppCompatActivity {
         new LocationWebservice(this, new LocationResponseListCallback() {
             @Override
             public void onGetMsg(LocationResponseListPOJO locationResponseListPOJO) {
-                Log.d(TagUtils.getTag(),"location callback:-"+locationResponseListPOJO.isSuccess());
+                Log.d(TagUtils.getTag(), "location callback:-" + locationResponseListPOJO.isSuccess());
                 if (locationResponseListPOJO.isSuccess()) {
 
                     locationPOJOS.clear();
@@ -115,15 +109,45 @@ public class CheckInActivity extends AppCompatActivity {
     }
 
     public void setActivityLocation(NewLocationPOJO newLocationPOJO) {
-        if(newLocationPOJO!=null){
-            Intent returnIntent = new Intent();
-            returnIntent.putExtra("location",newLocationPOJO);
-            setResult(Activity.RESULT_OK,returnIntent);
-            finish();
-        }else{
-            Intent returnIntent = new Intent();
-            setResult(Activity.RESULT_CANCELED, returnIntent);
-            finish();
+        if (newLocationPOJO != null) {
+            getLocationInfo(newLocationPOJO.getPlace_id());
         }
+//        if(newLocationPOJO!=null){
+//            Intent returnIntent = new Intent();
+//            returnIntent.putExtra("location",newLocationPOJO);
+//            setResult(Activity.RESULT_OK,returnIntent);
+//            finish();
+//        }else{
+//            Intent returnIntent = new Intent();
+//            setResult(Activity.RESULT_CANCELED, returnIntent);
+//            finish();
+//        }
+    }
+
+    public void getLocationInfo(String place_id) {
+        String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid=" + place_id + "&key=" + getResources().getString(R.string.google_places_api_key);
+        new GetWebServices(this, new WebServicesCallBack() {
+            @Override
+            public void onGetMsg(String apicall, String response) {
+                try {
+                    Log.d(TagUtils.getTag(), "location received:-" + response);
+                    JSONObject jsonObject = new JSONObject(response);
+                    String locationString = jsonObject.optJSONObject("result").toString();
+                    LocationPOJO locationPOJO = new Gson().fromJson(locationString, LocationPOJO.class);
+                    if (locationPOJO != null) {
+                        Intent returnIntent = new Intent();
+                        returnIntent.putExtra("location", locationPOJO);
+                        setResult(Activity.RESULT_OK, returnIntent);
+                        finish();
+                    } else {
+                        Intent returnIntent = new Intent();
+                        setResult(Activity.RESULT_CANCELED, returnIntent);
+                        finish();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "GET_LOCATION_DETAIL", true).execute(url);
     }
 }

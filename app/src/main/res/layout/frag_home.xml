@@ -21,6 +21,7 @@
                 android:background="@color/colorPrimary"></LinearLayout>
 
             <android.support.v7.widget.CardView
+                android:id="@+id/card_profile_header"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginLeft="12dp"
@@ -81,23 +82,23 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <android.support.design.widget.TabLayout
-                android:id="@+id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#FFFFFF"
-                android:scrollbars="horizontal"
-                app:tabGravity="fill"
-                app:tabIndicatorColor="@color/colorPrimary"
-                app:tabIndicatorHeight="3dp"
-                app:tabMode="scrollable"
-                app:tabSelectedTextColor="@color/colorPrimary"
-                app:tabTextColor="#757575" />
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FFFFFF"
+                    android:scrollbars="horizontal"
+                    app:tabGravity="fill"
+                    app:tabIndicatorColor="@color/colorPrimary"
+                    app:tabIndicatorHeight="3dp"
+                    app:tabMode="scrollable"
+                    app:tabSelectedTextColor="@color/colorPrimary"
+                    app:tabTextColor="#757575" />
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/viewPager"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"></android.support.v4.view.ViewPager>
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/viewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"></android.support.v4.view.ViewPager>
 
         </LinearLayout>
     </LinearLayout>

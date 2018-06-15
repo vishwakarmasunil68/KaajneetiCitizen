@@ -62,6 +62,19 @@
                         android:textColor="#FFFFFF"
                         android:textStyle="bold" />
 
+                    <TextView
+                        android:id="@+id/tv_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:text="Posts"
+                        android:visibility="gone"
+                        android:textSize="20sp"
+                        android:gravity="center_vertical"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold" />
+
                     <ImageView
                         android:id="@+id/iv_filter"
                         android:layout_width="30dp"

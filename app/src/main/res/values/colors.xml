@@ -6,6 +6,7 @@
 
     <color name="header_text">#59C3FF</color>
     <color name="btn_text">#E3D56D</color>
+    <color name="txt_highlight">#656363</color>
 
 
     <array name="reds">

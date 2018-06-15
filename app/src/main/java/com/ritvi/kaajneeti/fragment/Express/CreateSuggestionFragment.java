@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,7 +14,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +42,9 @@ import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.activity.user.SelectFavoriteLeaderActivity;
 import com.ritvi.kaajneeti.adapter.AttachMediaAdapter;
 import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
+import com.ritvi.kaajneeti.pojo.allfeeds.MediaPOJO;
 import com.ritvi.kaajneeti.pojo.express.complaint.DepartmentPOJO;
+import com.ritvi.kaajneeti.pojo.location.LocationPOJO;
 import com.ritvi.kaajneeti.pojo.location.NewLocationPOJO;
 import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
 import com.ritvi.kaajneeti.webservice.ResponseListCallback;
@@ -104,9 +109,11 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
     EditText et_description;
     @BindView(R.id.cv_profile_pic)
     CircleImageView cv_profile_pic;
+    @BindView(R.id.frame_schedule)
+    FrameLayout frame_schedule;
 
     UserProfilePOJO leaderUserProfilePOJO;
-    NewLocationPOJO newLocationPOJO;
+    LocationPOJO locationPOJO;
     List<UserProfilePOJO> taggeduserInfoPOJOS = new ArrayList<>();
 
     String tagging_description="";
@@ -124,7 +131,7 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getAllDepartment();
+//        getAllDepartment();
         attachMediaAdapter();
         setupPubPrivSpinner();
 
@@ -149,6 +156,12 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
                         now.get(Calendar.DAY_OF_MONTH)
                 );
                 dpd.show(getActivity().getFragmentManager(), "Datepickerdialog");
+            }
+        });
+        frame_schedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                iv_schedule_date.callOnClick();
             }
         });
         tv_date.setText(UtilityFunction.getCurrentDate());
@@ -217,9 +230,9 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
                 } else {
                     reqEntity.addPart("privacy", new StringBody("0"));
                 }
-                if(newLocationPOJO!=null) {
-                    reqEntity.addPart("address", new StringBody(newLocationPOJO.getDescription()));
-                    reqEntity.addPart("place", new StringBody(newLocationPOJO.getMain_text()));
+                if(locationPOJO!=null) {
+                    reqEntity.addPart("address", new StringBody(locationPOJO.getFormatted_address()));
+                    reqEntity.addPart("place", new StringBody(locationPOJO.getVicinity()));
                 }
 //                if (latLong != null) {
 //                    reqEntity.addPart("latitude", new StringBody(String.valueOf(latLong.latitude)));
@@ -229,17 +242,18 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
 //                    reqEntity.addPart("longitude", new StringBody(""));
 //                }
 
-                if (departmentPOJOS.size() > 0) {
-                    reqEntity.addPart("department", new StringBody(departmentPOJOS.get(spinner_department.getSelectedItemPosition()).getDepartmentId()));
-                } else {
-                    reqEntity.addPart("department", new StringBody(""));
-                }
+//                if (departmentPOJOS.size() > 0) {
+//                    reqEntity.addPart("department", new StringBody(departmentPOJOS.get(spinner_department.getSelectedItemPosition()).getDepartmentId()));
+//                } else {
+//                    reqEntity.addPart("department", new StringBody(""));
+//                }
 
                 int count = 0;
 
-                for (String file_path : attachPathString) {
-                    reqEntity.addPart("file[" + (count) + "]", new FileBody(new File(file_path)));
+                for (MediaPOJO mediaPOJO: attachPathString) {
+                    reqEntity.addPart("file[" + (count) + "]", new FileBody(new File(mediaPOJO.getPath())));
                     reqEntity.addPart("thumb[" + (count) + "]", new StringBody(""));
+                    count++;
                 }
 
                 new WebUploadService(reqEntity, getActivity(), new WebServicesCallBack() {
@@ -264,7 +278,67 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
+        checkPostStatus();
+
+        et_subject.addTextChangedListener(textWatcher);
+        tv_leader_name.addTextChangedListener(textWatcher);
+        et_description.addTextChangedListener(textWatcher);
+        tv_date.addTextChangedListener(textWatcher);
     }
+
+
+    TextWatcher textWatcher=new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            checkPostStatus();
+        }
+    };
+
+    public void checkPostStatus() {
+        boolean enable_post = true;
+
+
+        if (et_subject.getText().toString().length() > 0) {
+//            enable_post = true;
+        } else {
+            enable_post = false;
+        }
+
+        if (tv_date.getText().toString().length() > 0) {
+//            enable_post = true;
+        } else {
+            enable_post = false;
+        }
+
+        if(et_description.getText().toString().length()==0){
+            enable_post=false;
+        }
+
+        if(leaderUserProfilePOJO==null){
+            enable_post=false;
+        }
+
+        if (enable_post) {
+            tv_post.setEnabled(true);
+            tv_post.setTextColor(Color.parseColor("#FFFFFF"));
+        } else {
+            tv_post.setEnabled(false);
+            tv_post.setTextColor(Color.parseColor("#90FFFFFF"));
+        }
+
+    }
+
 
 
     public void initiateGalleryPicker() {
@@ -345,7 +419,7 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
     }
 
     AttachMediaAdapter attachMediaAdapter;
-    List<String> attachPathString = new ArrayList<>();
+    List<MediaPOJO> attachPathString = new ArrayList<>();
 
     public void attachMediaAdapter() {
         attachMediaAdapter = new AttachMediaAdapter(getActivity(), this, attachPathString);
@@ -402,25 +476,30 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
             }
         } else if (requestCode == Constants.ACTIVITY_LOCATION) {
             if (resultCode == Activity.RESULT_OK) {
-                newLocationPOJO= (NewLocationPOJO) data.getSerializableExtra("location");
-                place_description=" - at <b>" + newLocationPOJO.getMain_text() + "</b>";
-                updateProfileStatus();
+                if (resultCode == Activity.RESULT_OK) {
+                    LocationPOJO locationPOJO = (LocationPOJO) data.getSerializableExtra("location");
+                    this.locationPOJO = locationPOJO;
+                    String check_in = locationPOJO.getFormatted_address();
+                    place_description=" - at <b>" + locationPOJO.getFormatted_address() + "</b>";
+                    updateProfileStatus();
+                }
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
-                newLocationPOJO=null;
+                locationPOJO=null;
             }
         } else if (requestCode == ImagePicker.IMAGE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             List<String> mPaths = (List<String>) data.getSerializableExtra(ImagePicker.EXTRA_IMAGE_PATH);
             if (mPaths.size() > 0) {
                 for (String path : mPaths) {
-                    if (!attachPathString.contains(path)) {
-                        attachPathString.add(path);
-                    }
+//                    if (!attachPathString.contains(path)) {
+//                        attachPathString.add(path);
+//                    }
                 }
                 attachMediaAdapter.notifyDataSetChanged();
             }
         }
+        checkPostStatus();
     }
 
 

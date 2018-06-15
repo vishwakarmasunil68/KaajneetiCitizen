@@ -2,6 +2,7 @@ package com.ritvi.kaajneeti.pojo.post;
 
 import com.google.gson.annotations.SerializedName;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeelingDataPOJO;
+import com.ritvi.kaajneeti.pojo.location.ServerLocationPOJO;
 import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
 
 import java.io.Serializable;
@@ -22,6 +23,8 @@ public class PostPOJO implements Serializable {
     private String postStatus;
     @SerializedName("PostLocation")
     private String postLocation;
+    @SerializedName("LocationDetail")
+    private ServerLocationPOJO serverLocationPOJO;
     @SerializedName("PostDescription")
     private String postDescription;
     @SerializedName("PostURL")
@@ -34,6 +37,14 @@ public class PostPOJO implements Serializable {
     private String updatedOn;
     @SerializedName("UpdatedOnTime")
     private String updatedOnTime;
+    @SerializedName("TotalLikes")
+    private String TotalLikes;
+    @SerializedName("MeLike")
+    private String MeLike;
+    @SerializedName("PostPrivacy")
+    private String postPrivacy;
+    @SerializedName("TotalComment")
+    private String TotalComment;
     @SerializedName("FeelingData")
     private List<FeelingDataPOJO> feelingDataPOJOS;
     @SerializedName("PostProfile")
@@ -161,5 +172,45 @@ public class PostPOJO implements Serializable {
 
     public void setPostAttachment(List<PostAttachmentPOJO> postAttachment) {
         this.postAttachment = postAttachment;
+    }
+
+    public String getTotalLikes() {
+        return TotalLikes;
+    }
+
+    public void setTotalLikes(String totalLikes) {
+        TotalLikes = totalLikes;
+    }
+
+    public String getMeLike() {
+        return MeLike;
+    }
+
+    public void setMeLike(String meLike) {
+        MeLike = meLike;
+    }
+
+    public String getTotalComment() {
+        return TotalComment;
+    }
+
+    public void setTotalComment(String totalComment) {
+        TotalComment = totalComment;
+    }
+
+    public String getPostPrivacy() {
+        return postPrivacy;
+    }
+
+    public void setPostPrivacy(String postPrivacy) {
+        this.postPrivacy = postPrivacy;
+    }
+
+    public ServerLocationPOJO getServerLocationPOJO() {
+        return serverLocationPOJO;
+    }
+
+    public void setServerLocationPOJO(ServerLocationPOJO serverLocationPOJO) {
+        this.serverLocationPOJO = serverLocationPOJO;
     }
 }

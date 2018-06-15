@@ -120,7 +120,7 @@
                            android:layout_marginLeft="10dp"
                            android:orientation="vertical">
 
-                           <TextView
+                           <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                                android:id="@+id/tv_profile_name"
                                android:layout_width="wrap_content"
                                android:layout_height="wrap_content"
@@ -205,6 +205,7 @@
                                 android:background="@drawable/et_search_back"
                                 android:minHeight="45dp"
                                 android:orientation="horizontal"
+                                android:visibility="gone"
                                 android:padding="5dp">
 
                                 <Spinner
@@ -224,7 +225,7 @@
                                 android:layout_marginTop="10dp"
                                 android:text="Subject" />
 
-                            <EditText
+                            <com.ritvi.kaajneeti.view.EditTextProximaNovaLight
                                 android:id="@+id/et_subject"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -241,11 +242,12 @@
                                 android:text="Schedule Date" />
 
                             <FrameLayout
+                                android:id="@+id/frame_schedule"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="7dp">
 
-                                <TextView
+                                <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                                     android:id="@+id/tv_date"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -274,14 +276,14 @@
                                 android:layout_marginTop="10dp"
                                 android:text="Description" />
 
-                            <EditText
+                            <com.ritvi.kaajneeti.view.EditTextProximaNovaLight
                                 android:id="@+id/et_description"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="7dp"
                                 android:background="@drawable/ic_edit_full"
                                 android:hint="Add Description"
-                                android:minHeight="90dp"
+                                android:minHeight="45dp"
                                 android:paddingLeft="7dp" />
 
                             <LinearLayout
@@ -324,6 +326,7 @@
                                 android:layout_width="27dp"
                                 android:layout_height="27dp"
                                 android:layout_marginLeft="10dp"
+                                android:visibility="gone"
                                 android:layout_marginRight="10dp"
                                 android:src="@drawable/ic_tag_attach" />
 
@@ -332,6 +335,7 @@
                                 android:layout_height="27dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="10dp"
+                                android:visibility="gone"
                                 android:src="@drawable/ic_activity" />
 
                             <ImageView
@@ -340,6 +344,7 @@
                                 android:layout_height="27dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="10dp"
+                                android:visibility="gone"
                                 android:src="@drawable/ic_location_attach" />
 
                         </LinearLayout>
