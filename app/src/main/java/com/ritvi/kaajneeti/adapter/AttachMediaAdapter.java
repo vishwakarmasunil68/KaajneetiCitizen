@@ -16,26 +16,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.ritvi.kaajneeti.R;
-import com.ritvi.kaajneeti.Util.Constants;
-import com.ritvi.kaajneeti.Util.TagUtils;
-import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.activity.express.ExpressActivity;
-import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.fragment.Express.CreateComplaintFragment;
-import com.ritvi.kaajneeti.fragment.user.UpdateAddressFragment;
 import com.ritvi.kaajneeti.interfaces.ItemSizeChangeListener;
-import com.ritvi.kaajneeti.interfaces.PollAnsClickInterface;
 import com.ritvi.kaajneeti.pojo.allfeeds.MediaPOJO;
-import com.ritvi.kaajneeti.pojo.user.AddressPOJO;
-import com.ritvi.kaajneeti.webservice.WebServiceBase;
-import com.ritvi.kaajneeti.webservice.WebServicesCallBack;
-import com.ritvi.kaajneeti.webservice.WebServicesUrls;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**

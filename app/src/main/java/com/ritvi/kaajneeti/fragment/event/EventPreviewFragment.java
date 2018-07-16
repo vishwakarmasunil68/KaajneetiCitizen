@@ -3,6 +3,7 @@ package com.ritvi.kaajneeti.fragment.event;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,15 +20,24 @@ import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
 import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.Util.UtilityFunction;
+import com.ritvi.kaajneeti.fragment.NotificationFragment;
+import com.ritvi.kaajneeti.fragment.search.SearchAllFragment;
 import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
+import com.ritvi.kaajneeti.pojo.ResponsePOJO;
 import com.ritvi.kaajneeti.pojo.event.EventPOJO;
+import com.ritvi.kaajneeti.webservice.ResponseCallBack;
+import com.ritvi.kaajneeti.webservice.WebServiceBaseResponse;
+import com.ritvi.kaajneeti.webservice.WebServicesUrls;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 
 public class EventPreviewFragment extends FragmentController {
 
-    @BindView(R.id.tv_title)
-    TextView tv_title;
     @BindView(R.id.tv_starting_month)
     TextView tv_starting_month;
     @BindView(R.id.tv_start_date)
@@ -52,15 +62,20 @@ public class EventPreviewFragment extends FragmentController {
     TextView tv_description;
     @BindView(R.id.tv_event_name)
     TextView tv_event_name;
-    @BindView(R.id.ll_back)
-    LinearLayout ll_back;
     @BindView(R.id.iv_event)
     ImageView iv_event;
     @BindView(R.id.ll_select_interest_view)
     LinearLayout ll_select_interest_view;
-
+    @BindView(R.id.ll_back)
+    public LinearLayout ll_back;
+    @BindView(R.id.ll_search)
+    public LinearLayout ll_search;
+    @BindView(R.id.iv_notification)
+    public ImageView iv_notification;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
     EventPOJO eventPOJO;
-
+    String event_id;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -73,7 +88,7 @@ public class EventPreviewFragment extends FragmentController {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getArguments() != null) {
-            eventPOJO = (EventPOJO) getArguments().getSerializable("eventPOJO");
+            event_id = getArguments().getString("event_id");
         }
 
         ll_back.setOnClickListener(new View.OnClickListener() {
@@ -83,8 +98,56 @@ public class EventPreviewFragment extends FragmentController {
             }
         });
 
+        getEventDetail(true);
+
+        ll_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        iv_notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityManager.startFragment(R.id.frame_home, new NotificationFragment());
+            }
+        });
+        ll_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityManager.startFragment(R.id.frame_home, new SearchAllFragment());
+            }
+        });
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getEventDetail(true);
+            }
+        });
+    }
+
+    public void getEventDetail(boolean is_loading){
+        ArrayList<NameValuePair> nameValuePairs=new ArrayList<>();
+        nameValuePairs.add(new BasicNameValuePair("user_profile_id",Constants.userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("event_id",event_id));
+        new WebServiceBaseResponse<EventPOJO>(nameValuePairs, getActivity(), new ResponseCallBack<EventPOJO>() {
+            @Override
+            public void onGetMsg(ResponsePOJO<EventPOJO> responsePOJO) {
+                swipeRefreshLayout.setRefreshing(false);
+                try{
+                    if(responsePOJO.isSuccess()){
+                        loadEventDetail(responsePOJO.getResult());
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },EventPOJO.class,"GET_EVENT_DETAIL",is_loading).execute(WebServicesUrls.EVENT_DETAIL);
+    }
+
+
+    public void loadEventDetail(EventPOJO eventPOJO){
         if (eventPOJO != null) {
-            tv_title.setText(eventPOJO.getEventName());
             tv_event_name.setText(eventPOJO.getEventName());
             try {
                 String[] dateValues = UtilityFunction.getDateValues(eventPOJO.getStartDate());
@@ -144,7 +207,11 @@ public class EventPreviewFragment extends FragmentController {
             tv_timing.setText(UtilityFunction.convertServerDateFromDT(eventPOJO.getStartDate()) + " - " + UtilityFunction.convertServerDateFromDT(eventPOJO.getEndDate()));
             tv_description.setText(eventPOJO.getEventDescription());
         }
+    }
 
-
+    public void refreshOnIncomingNotification(String feedId) {
+        if(event_id.equalsIgnoreCase(feedId)){
+            getEventDetail(false);
+        }
     }
 }

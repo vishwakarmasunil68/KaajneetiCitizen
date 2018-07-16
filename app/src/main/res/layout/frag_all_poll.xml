@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:clickable="true"
+    android:orientation="vertical">
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/sliding_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:gravity="bottom"
+        android:visibility="visible"
+        sothree:umanoPanelHeight="0dp"
+        sothree:umanoShadowHeight="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/colorPrimary"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/ll_back"
+                        android:layout_width="35dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:id="@+id/iv_back"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/ic_login_back"
+                            android:tint="#FFFFFF" />
+
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/et_search"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold" />
+
+                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                        android:id="@+id/tv_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:text="Posts"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/iv_filter"
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="7dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/ic_filter"
+                        android:tint="#FFFFFF" />
+
+                </LinearLayout>
+            </android.support.v7.widget.Toolbar>
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+            </android.support.v4.widget.SwipeRefreshLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:background="#FFFFFF"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="27dp"
+                            android:orientation="horizontal">
+
+                            <com.ritvi.kaajneeti.view.SourceSansProBoldTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Filters"
+                                android:textSize="20sp" />
+
+                            <ImageView
+                                android:id="@+id/iv_delete_filter"
+                                android:layout_width="20dp"
+                                android:layout_height="wrap_content"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitXY"
+                                android:src="@drawable/ic_close"
+                                android:tint="#000000" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="25dp"
+                            android:orientation="horizontal">
+
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Posted By Me"
+                                android:textSize="20sp" />
+
+                            <CheckBox
+                                android:id="@+id/check_posted"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:background="#30000000" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:orientation="horizontal">
+
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Tagged in a poll"
+                                android:textSize="20sp" />
+
+                            <CheckBox
+                                android:id="@+id/check_tagged"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:background="#30000000" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:orientation="horizontal">
+
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Poll liked"
+                                android:textSize="20sp" />
+
+                            <CheckBox
+                                android:id="@+id/check_post_liked"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:background="#30000000" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:orientation="horizontal">
+
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Commented on Poll"
+                                android:textSize="20sp" />
+
+                            <CheckBox
+                                android:id="@+id/check_post_commented"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:background="#30000000" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:orientation="horizontal">
+
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Participated"
+                                android:textSize="20sp" />
+
+                            <CheckBox
+                                android:id="@+id/check_participated"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:background="#30000000" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:orientation="horizontal">
+
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Ongoing"
+                                android:textSize="20sp" />
+
+                            <CheckBox
+                                android:id="@+id/check_ongoing"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:background="#30000000" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:orientation="horizontal">
+
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Ended"
+                                android:textSize="20sp" />
+
+                            <CheckBox
+                                android:id="@+id/check_ended"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:background="#30000000" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:orientation="horizontal">
+
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Filter by Date"
+                                android:textSize="20sp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp">
+
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1">
+
+                                <Button
+                                    android:id="@+id/btn_today"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="35dp"
+                                    android:layout_margin="8dp"
+                                    android:background="@drawable/btn_resend"
+                                    android:text="Today"
+                                    android:textAllCaps="false"
+                                    android:textSize="9sp" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1">
+
+                                <Button
+                                    android:id="@+id/btn_last_week"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="35dp"
+                                    android:layout_margin="8dp"
+                                    android:background="@drawable/btn_resend"
+                                    android:text="Last Week"
+                                    android:textAllCaps="false"
+                                    android:textSize="9sp" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1">
+
+                                <Button
+                                    android:id="@+id/btn_last_month"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="35dp"
+                                    android:layout_margin="8dp"
+                                    android:background="@drawable/btn_resend"
+                                    android:text="Last Month"
+                                    android:textAllCaps="false"
+                                    android:textSize="9sp" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1">
+
+                                <Button
+                                    android:id="@+id/btn_custom"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="35dp"
+                                    android:layout_margin="8dp"
+                                    android:background="@drawable/btn_resend"
+                                    android:text="Custom"
+                                    android:textAllCaps="false"
+                                    android:textSize="9sp" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:id="@+id/frame_range"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:visibility="gone">
+
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                                android:id="@+id/tv_range"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:background="@drawable/ic_edit_full"
+                                android:gravity="center"
+                                android:textSize="17sp" />
+
+                            <ImageView
+                                android:id="@+id/iv_calendar"
+                                android:layout_width="30dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="right|center"
+                                android:layout_marginRight="13dp"
+                                android:adjustViewBounds="true"
+                                android:src="@drawable/ic_event_white"
+                                android:tint="@color/colorPrimary" />
+
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="25dp"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:gravity="center">
+
+                            <EditText
+                                android:id="@+id/et_city_filter"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:background="@drawable/ic_edit_full"
+                                android:hint="City"
+                                android:paddingLeft="7dp"
+                                android:paddingRight="27dp"
+                                android:textSize="13sp" />
+
+                            <ImageView
+                                android:id="@+id/iv_location"
+                                android:layout_width="20dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="right|center"
+                                android:layout_marginRight="7dp"
+                                android:adjustViewBounds="true"
+                                android:src="@drawable/ic_location_attach"
+                                android:tint="@color/colorPrimary" />
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="25dp"
+                            android:layout_marginLeft="33dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginTop="15dp"
+                            android:gravity="center">
+
+                            <Button
+                                android:id="@+id/btn_apply"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/btn_login"
+                                android:text="Apply"
+                                android:textAllCaps="false"
+                                android:textColor="#FFFFFF"
+                                android:textStyle="bold" />
+
+                            <Button
+                                android:id="@+id/btn_reset"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:background="@drawable/btn_reset"
+                                android:text="Reset"
+                                android:textAllCaps="false"
+                                android:textColor="#FFFFFF"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
+
+        </LinearLayout>
+
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+
+</LinearLayout>

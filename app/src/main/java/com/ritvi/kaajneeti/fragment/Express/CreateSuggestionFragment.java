@@ -131,7 +131,6 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        getAllDepartment();
         attachMediaAdapter();
         setupPubPrivSpinner();
 
@@ -147,7 +146,6 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
         iv_schedule_date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                showDateDialog();
                 Calendar now = Calendar.getInstance();
                 DatePickerDialog dpd = DatePickerDialog.newInstance(
                         CreateSuggestionFragment.this,
@@ -206,6 +204,13 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
                 saveSuggestion();
             }
         });
+
+        checkPostStatus();
+
+        et_subject.addTextChangedListener(textWatcher);
+        tv_leader_name.addTextChangedListener(textWatcher);
+        et_description.addTextChangedListener(textWatcher);
+        tv_date.addTextChangedListener(textWatcher);
     }
 
     private void saveSuggestion() {
@@ -278,13 +283,6 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
-        checkPostStatus();
-
-        et_subject.addTextChangedListener(textWatcher);
-        tv_leader_name.addTextChangedListener(textWatcher);
-        et_description.addTextChangedListener(textWatcher);
-        tv_date.addTextChangedListener(textWatcher);
     }
 
 
@@ -309,15 +307,11 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
         boolean enable_post = true;
 
 
-        if (et_subject.getText().toString().length() > 0) {
-//            enable_post = true;
-        } else {
+        if (et_subject.getText().toString().length() == 0) {
             enable_post = false;
         }
 
-        if (tv_date.getText().toString().length() > 0) {
-//            enable_post = true;
-        } else {
+        if (tv_date.getText().toString().length()== 0) {
             enable_post = false;
         }
 
@@ -328,7 +322,7 @@ public class CreateSuggestionFragment extends Fragment implements DatePickerDial
         if(leaderUserProfilePOJO==null){
             enable_post=false;
         }
-
+        Log.d(TagUtils.getTag(),"enable post:-"+enable_post);
         if (enable_post) {
             tv_post.setEnabled(true);
             tv_post.setTextColor(Color.parseColor("#FFFFFF"));

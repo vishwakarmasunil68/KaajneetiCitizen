@@ -1,6 +1,7 @@
 package com.ritvi.kaajneeti.fragment.home;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -94,19 +95,23 @@ public class HomeFragment extends Fragment {
                     HomeActivity homeActivity= (HomeActivity) getActivity();
                     UserProfileFragment userProfileFragment=new UserProfileFragment();
                     Bundle bundle=new Bundle();
-                    bundle.putSerializable("userProfile",Constants.userProfilePOJO);
+                    bundle.putSerializable("user_profile_id",Constants.userProfilePOJO.getUserProfileId());
                     userProfileFragment.setArguments(bundle);
 
                     homeActivity.replaceFragmentinFrameHome(userProfileFragment,"UserProfileFragment");
                 }
             }
         });
-//        tv_profile_name.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                cv_profile_pic.callOnClick();
-//            }
-//        });
+        tv_profile_name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(tv_profile_name.getText().toString().equalsIgnoreCase("Enter your name")){
+                    cv_profile_pic.callOnClick();
+                }else{
+                    card_profile_header.callOnClick();
+                }
+            }
+        });
     }
 
     public void setUpViewPager() {
@@ -155,7 +160,18 @@ public class HomeFragment extends Fragment {
 
             }
         });
+        setCustomFont();
+    }
 
+    public void setCustomFont(){
+        for (int i = 0; i < tabs.getTabCount(); i++) {
+            //noinspection ConstantConditions
+            TextView tv=(TextView)LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab,null);
+//            Typeface type = Typeface.createFromAsset(getActivity().getAssets(),"fonts/arial.ttf");
+//            tv.setTypeface(Typeface);
+            tabs.getTabAt(i).setCustomView(tv);
+
+        }
     }
 
 }

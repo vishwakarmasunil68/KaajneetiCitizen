@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,10 +40,11 @@ import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.Util.UtilityFunction;
 import com.ritvi.kaajneeti.activity.express.CheckInActivity;
 import com.ritvi.kaajneeti.adapter.HomeFeedAdapter;
+import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
 import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
 import com.ritvi.kaajneeti.pojo.ResponsePOJO;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
-import com.ritvi.kaajneeti.pojo.location.NewLocationPOJO;
+import com.ritvi.kaajneeti.pojo.location.LocationPOJO;
 import com.ritvi.kaajneeti.pojo.search.AllSearchPOJO;
 import com.ritvi.kaajneeti.webservice.ResponseCallBack;
 import com.ritvi.kaajneeti.webservice.ResponseListCallback;
@@ -65,7 +67,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AllEventFragment extends Fragment {
+public class AllEventFragment extends FragmentController {
 
     @BindView(R.id.rv_data)
     RecyclerView rv_data;
@@ -118,9 +120,15 @@ public class AllEventFragment extends Fragment {
     EditText et_search;
     @BindView(R.id.tv_title)
     TextView tv_title;
+    @BindView(R.id.btn_reset)
+    Button btn_reset;
 
-    boolean is_search=false;
-    String search_text="";
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
+    boolean is_search = false;
+    String search_text = "";
+
+    String friend_profile_id = "";
 
     @Nullable
     @Override
@@ -134,15 +142,16 @@ public class AllEventFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if(getArguments()!=null){
-            is_search=getArguments().getBoolean(Constants.IS_SEARCH);
-            search_text=getArguments().getString(Constants.SEARCH_TEXT);
+        if (getArguments() != null) {
+            is_search = getArguments().getBoolean(Constants.IS_SEARCH);
+            search_text = getArguments().getString(Constants.SEARCH_TEXT);
             et_search.setText(search_text);
+            friend_profile_id = getArguments().getString(Constants.FRIEND_USER_PROFILE_ID);
 
-            if(is_search){
+            if (is_search) {
                 et_search.setVisibility(View.VISIBLE);
                 tv_title.setVisibility(View.GONE);
-            }else{
+            } else {
                 et_search.setVisibility(View.GONE);
                 tv_title.setVisibility(View.VISIBLE);
             }
@@ -174,6 +183,15 @@ public class AllEventFragment extends Fragment {
                 callAPI();
             }
         });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                callAPI();
+            }
+        });
+
+        activityManager.focusKeyboard(et_search);
     }
 
     String date_start_range = "";
@@ -244,6 +262,30 @@ public class AllEventFragment extends Fragment {
         iv_delete_filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                check_posted.setChecked(false);
+//                check_participated.setChecked(false);
+//                rb_may_be.setChecked(false);
+//                rb_not_interested.setChecked(false);
+//                rb_interested.setChecked(false);
+//                check_tagged.setChecked(false);
+//
+//                date_start_range = "";
+//                date_end_range = "";
+//
+//                posted_by_me = "";
+//                event_tagged = "";
+//                event_interested = "";
+//                event_not_interested = "";
+//                event_may_be = "";
+//
+//                setRangeButtonBack();
+                iv_filter.callOnClick();
+            }
+        });
+
+        btn_reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 check_posted.setChecked(false);
                 check_participated.setChecked(false);
                 rb_may_be.setChecked(false);
@@ -261,6 +303,8 @@ public class AllEventFragment extends Fragment {
                 event_may_be = "";
 
                 setRangeButtonBack();
+                et_city_filter.setText("");
+                locationPOJO=null;
                 iv_filter.callOnClick();
             }
         });
@@ -285,25 +329,25 @@ public class AllEventFragment extends Fragment {
                         event_interested = "1";
                         event_not_interested = "0";
                         event_may_be = "0";
-                        event_interest_type="1";
+                        event_interest_type = "1";
                         break;
                     case R.id.rb_not_interested:
                         event_interested = "0";
                         event_not_interested = "1";
                         event_may_be = "0";
-                        event_interest_type="2";
+                        event_interest_type = "2";
                         break;
                     case R.id.rb_may_be:
                         event_interested = "0";
                         event_not_interested = "0";
                         event_may_be = "1";
-                        event_interest_type="3";
+                        event_interest_type = "3";
                         break;
                     default:
                         event_interested = "0";
                         event_not_interested = "0";
                         event_may_be = "0";
-                        event_interest_type="0";
+                        event_interest_type = "0";
                         break;
 
                 }
@@ -429,39 +473,40 @@ public class AllEventFragment extends Fragment {
         frame_range.setVisibility(View.GONE);
     }
 
-
     public void callAPI() {
 
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
-        nameValuePairs.add(new BasicNameValuePair("friend_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("friend_profile_id", friend_profile_id));
         nameValuePairs.add(new BasicNameValuePair("search_in", "event"));
         nameValuePairs.add(new BasicNameValuePair("posted_by_me", posted_by_me));
         nameValuePairs.add(new BasicNameValuePair("myself_tagged", event_tagged));
-        nameValuePairs.add(new BasicNameValuePair("date_from", date_start_range));
-        nameValuePairs.add(new BasicNameValuePair("date_to", date_end_range));
-        if(check_participated.isChecked()){
+        nameValuePairs.add(new BasicNameValuePair("date_from", UtilityFunction.getConvertedDate(date_start_range)));
+        nameValuePairs.add(new BasicNameValuePair("date_to", UtilityFunction.getConvertedDate(date_end_range)));
+        if (check_participated.isChecked()) {
             nameValuePairs.add(new BasicNameValuePair("participated", "1"));
-        }else{
+        } else {
             nameValuePairs.add(new BasicNameValuePair("participated", "0"));
         }
-        if (newLocationPOJO != null) {
-            nameValuePairs.add(new BasicNameValuePair("location", newLocationPOJO.getMain_text()));
+        if (locationPOJO != null) {
+            nameValuePairs.add(new BasicNameValuePair("location", locationPOJO.getFormatted_address()));
+            nameValuePairs.add(new BasicNameValuePair("location_place_id", locationPOJO.getPlaceId()));
         } else {
             nameValuePairs.add(new BasicNameValuePair("location", ""));
         }
         nameValuePairs.add(new BasicNameValuePair("participated_type", event_interest_type));
 
-        String url="";
-        if(is_search){
+        String url = "";
+        if (is_search) {
             nameValuePairs.add(new BasicNameValuePair("q", et_search.getText().toString()));
             nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
-            url=WebServicesUrls.ALL_SEARCH_API;
+            url = WebServicesUrls.ALL_SEARCH_API;
 
             new WebServiceBaseResponse<AllSearchPOJO>(nameValuePairs, getActivity(), new ResponseCallBack<AllSearchPOJO>() {
 
                 @Override
                 public void onGetMsg(ResponsePOJO<AllSearchPOJO> responsePOJO) {
+                    swipeRefreshLayout.setRefreshing(false);
                     feedPOJOS.clear();
                     try {
                         if (responsePOJO.isSuccess()) {
@@ -475,11 +520,12 @@ public class AllEventFragment extends Fragment {
                     homeFeedAdapter.notifyDataSetChanged();
                 }
             }, AllSearchPOJO.class, "ALL_SEARCH_API", false).execute(url);
-        }else{
-            url=WebServicesUrls.ALL_EVENT;
+        } else {
+            url = WebServicesUrls.ALL_EVENT_AND_WHERE_I_TAGGED;
             new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
                 @Override
                 public void onGetMsg(ResponseListPOJO responseListPOJO) {
+                    swipeRefreshLayout.setRefreshing(false);
                     feedPOJOS.clear();
                     try {
                         if (responseListPOJO.isSuccess()) {
@@ -534,18 +580,18 @@ public class AllEventFragment extends Fragment {
         }
     }
 
-    NewLocationPOJO newLocationPOJO;
+    LocationPOJO locationPOJO;
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.ACTIVITY_LOCATION) {
             if (resultCode == Activity.RESULT_OK) {
-                NewLocationPOJO newLocationPOJO = (NewLocationPOJO) data.getSerializableExtra("location");
-                et_city_filter.setText(newLocationPOJO.getMain_text() + "," + newLocationPOJO.getSecondary_text());
+                locationPOJO = (LocationPOJO) data.getSerializableExtra("location");
+                et_city_filter.setText(locationPOJO.getFormatted_address());
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                newLocationPOJO = null;
+                locationPOJO = null;
             }
         }
     }

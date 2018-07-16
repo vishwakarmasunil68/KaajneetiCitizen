@@ -8,15 +8,14 @@ public class WebServicesUrls {
 
     //    public static final String BASE_URL = "http://10.0.2.2/ritvigroup.com/ritvigroup/api/V1/";
 //    public static final String BASE_URL = "http://rajesh1may.000webhostapp.com/ritvigroup/api_old/V1/";
-    public static final String BASE_URL = "http://ritvigroup.com/ritvigroup.com/ritvigroup/api/V1/";
 
-//    public static final String BASE_URL = "http://192.168.0.100:81/ritvigroup.com/ritvigroup/api/V1/";
+    public static final String BASE_URL = "http://ritvigroup.com/ritvigroup.com/ritvigroup/api/V1/";
+//    public static final String BASE_URL = "http://192.168.1.10/ritvigroup.com/ritvigroup/api/V1/";
 
     public static String getLocationAPI(String key,String lat,String longitude,String keywork){
         String url="https://maps.googleapis.com/maps/api/place/autocomplete/json?location="+lat+","+longitude+"&radius=50000&input="+keywork+"&key="+key;
         return url;
     }
-
 
     public static final String NEWS_API = "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=311c1e78e72c4bb9a64542528d871871";
 
@@ -58,9 +57,12 @@ public class WebServicesUrls {
     public static final String COMPLAINT_LIST = BASE_URL + "complaint/getMyAllComplaint";
     public static final String SUGGESTION_LIST = BASE_URL + "suggestion/getMyAllSuggestion";
     public static final String INFORMATION_LIST = BASE_URL + "information/getMyAllInformation";
-    public static final String ALL_POST = BASE_URL + "post/getMyAllPost";
+//    public static final String ALL_POST = BASE_URL + "post/getMyAllPost";
+    public static final String ALL_POST = BASE_URL + "post/getMyAllPostAndWhereITagged";
     public static final String ALL_EVENT = BASE_URL + "event/getMyAllEvent";
+    public static final String ALL_EVENT_AND_WHERE_I_TAGGED = BASE_URL + "event/getMyAllEventAndWhereITagged";
     public static final String ALL_POLL = BASE_URL + "poll/getMyAllPoll";
+    public static final String ALL_POLL_AND_WHERE_I_TAGGED = BASE_URL + "poll/getMyAllPollAndWhereITagged";
     public static final String ALL_SUMMARY_DATA = BASE_URL + "citizen/getMyAllSummaryTotal";
     public static final String SAVE_COMPLAINT_HISTORY = BASE_URL + "complaint/saveComplaintHistory";
 
@@ -140,4 +142,11 @@ public class WebServicesUrls {
 
     public static final String GET_POLL_DETAIL= BASE_URL + "poll/getPollDetail";
     public static final String UPDATE_EVENT = BASE_URL + "event/updateMyEvent";
+    public static final String POST_DETAIL = BASE_URL + "post/getPostDetail";
+    public static final String GET_ALL_NOTIFICATIONS = BASE_URL + "notification/getMyAllNotification";
+    public static final String MARK_MY_NOTIFICATION_READ = BASE_URL + "notification/markMyNotificationRead";
+    public static final String GET_MY_TOTAL_AMOUNT = BASE_URL + "payment/getMyTotalWalletAmountAndPoints";
+    public static final String POLL_REPARTICIPATE = BASE_URL + "poll/reParticipatePollWithAnswer";
+    public static final String FOLLOW_UNFOLLOW_PEOPLE = BASE_URL + "userconnect/setFollowUnfollowUser";
+    public static final String UPDATE_MY_POLL = BASE_URL + "poll/updateMyPoll";
 }

@@ -62,18 +62,18 @@
                         android:textColor="#FFFFFF"
                         android:textStyle="bold" />
 
-                    <TextView
+                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                         android:id="@+id/tv_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
-                        android:text="Complaints"
-                        android:visibility="gone"
-                        android:textSize="20sp"
                         android:gravity="center_vertical"
+                        android:text="Complaints"
                         android:textColor="#FFFFFF"
-                        android:textStyle="bold" />
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
 
                     <ImageView
                         android:id="@+id/iv_filter"
@@ -87,11 +87,16 @@
                 </LinearLayout>
             </android.support.v7.widget.Toolbar>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_data"
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+                android:layout_height="match_parent">
 
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+            </android.support.v4.widget.SwipeRefreshLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -103,8 +108,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:orientation="vertical"
-                android:background="#FFFFFF">
+                android:background="#FFFFFF"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -293,18 +298,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="33dp"
-                    android:visibility="gone"
                     android:layout_marginRight="25dp"
-                    android:layout_marginTop="25dp">
+                    android:layout_marginTop="25dp"
+                    android:visibility="gone">
 
                     <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                         android:id="@+id/tv_range"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:background="@drawable/ic_edit_full"
                         android:gravity="center"
-                        android:textSize="17sp"
-                        android:background="@drawable/ic_edit_full" />
+                        android:textSize="17sp" />
 
                     <ImageView
                         android:id="@+id/iv_calendar"
@@ -321,11 +326,11 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="25dp"
                     android:layout_marginLeft="33dp"
                     android:layout_marginRight="25dp"
                     android:layout_marginTop="25dp"
-                    android:layout_marginBottom="25dp"
-                    android:layout_gravity="center"
                     android:gravity="center">
 
                     <Button
@@ -335,8 +340,19 @@
                         android:background="@drawable/btn_login"
                         android:text="Apply"
                         android:textAllCaps="false"
-                        android:textStyle="bold"
-                        android:textColor="#FFFFFF"/>
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/btn_reset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:background="@drawable/btn_reset"
+                        android:text="Reset"
+                        android:textAllCaps="false"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
             </LinearLayout>

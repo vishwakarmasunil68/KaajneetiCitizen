@@ -150,6 +150,7 @@
                         android:layout_gravity="center_vertical"
                         android:singleLine="true"
                         android:paddingLeft="10dp"
+                        android:paddingRight="25dp"
                         android:textSize="14sp" />
 
                     <ImageView

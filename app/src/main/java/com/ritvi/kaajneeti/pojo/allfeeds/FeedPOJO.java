@@ -37,6 +37,10 @@ public class FeedPOJO implements Serializable{
     InformationPOJO informationPOJO;
     @SerializedName("paymentdata")
     PaymentDataPOJO paymentDataPOJO;
+    @SerializedName("followerdata")
+    UserProfilePOJO followerdataUserProfilePOJO;
+    @SerializedName("followingdata")
+    UserProfilePOJO followingdataUserProfilePOJO;
 
     public String getFeedtype() {
         return feedtype;
@@ -108,5 +112,21 @@ public class FeedPOJO implements Serializable{
 
     public void setPaymentDataPOJO(PaymentDataPOJO paymentDataPOJO) {
         this.paymentDataPOJO = paymentDataPOJO;
+    }
+
+    public UserProfilePOJO getFollowerdataUserProfilePOJO() {
+        return followerdataUserProfilePOJO;
+    }
+
+    public void setFollowerdataUserProfilePOJO(UserProfilePOJO followerdataUserProfilePOJO) {
+        this.followerdataUserProfilePOJO = followerdataUserProfilePOJO;
+    }
+
+    public UserProfilePOJO getFollowingdataUserProfilePOJO() {
+        return followingdataUserProfilePOJO;
+    }
+
+    public void setFollowingdataUserProfilePOJO(UserProfilePOJO followingdataUserProfilePOJO) {
+        this.followingdataUserProfilePOJO = followingdataUserProfilePOJO;
     }
 }

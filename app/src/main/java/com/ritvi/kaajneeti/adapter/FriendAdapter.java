@@ -30,11 +30,13 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
     private List<FeedPOJO> items;
     Activity activity;
     Fragment fragment;
+    boolean is_contribute;
 
-    public FriendAdapter(Activity activity, Fragment fragment, List<FeedPOJO> items) {
+    public FriendAdapter(Activity activity, Fragment fragment, List<FeedPOJO> items,boolean is_contribute) {
         this.items = items;
         this.activity = activity;
         this.fragment = fragment;
+        this.is_contribute=is_contribute;
     }
 
     @Override
@@ -62,9 +64,18 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
                     SelectUserForContributionFragment selectUserForContributionFragment = (SelectUserForContributionFragment) fragment;
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("userProfilePOJO", items.get(position).getProfiledata());
-                    ContributeAmountFragment contributeAmountFragment = new ContributeAmountFragment();
-                    contributeAmountFragment.setArguments(bundle);
-                    selectUserForContributionFragment.activityManager.startFragmentForResult(R.id.frame_home, selectUserForContributionFragment,contributeAmountFragment,101);
+
+                    if(is_contribute){
+                        ContributeAmountFragment contributeAmountFragment = new ContributeAmountFragment();
+                        contributeAmountFragment.setArguments(bundle);
+                        selectUserForContributionFragment.activityManager.startFragmentForResult(R.id.frame_home, selectUserForContributionFragment,contributeAmountFragment,101);
+                    }else{
+//                        ContributeAmountFragment contributeAmountFragment = new ContributeAmountFragment();
+//                        contributeAmountFragment.setArguments(bundle);
+//                        selectUserForContributionFragment.activityManager.startFragmentForResult(R.id.frame_home, selectUserForContributionFragment,contributeAmountFragment,101);
+                        selectUserForContributionFragment.showPointSendDialog(items.get(position).getProfiledata());
+                    }
+
                 }
             }
         });

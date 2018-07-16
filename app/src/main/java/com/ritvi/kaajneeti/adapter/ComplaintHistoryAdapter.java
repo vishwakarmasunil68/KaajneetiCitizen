@@ -1,6 +1,7 @@
 package com.ritvi.kaajneeti.adapter;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -12,8 +13,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
+import com.ritvi.kaajneeti.fragment.AttachmentViewPagerFragment;
+import com.ritvi.kaajneeti.pojo.attachments.AttachmentPOJO;
+import com.ritvi.kaajneeti.pojo.complaint.ComplaintHistoryAttachmentPOJO;
 import com.ritvi.kaajneeti.pojo.complaint.ComplaintHistoryPOJO;
+import com.ritvi.kaajneeti.pojo.information.InformationAttachmentPOJO;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -69,6 +76,41 @@ public class ComplaintHistoryAdapter extends RecyclerView.Adapter<ComplaintHisto
             holder.view_bottom.setVisibility(View.VISIBLE);
         }
 
+        if(items.get(position).getComplaintHistoryAttachment()!=null&&items.get(position).getComplaintHistoryAttachment().size()>0) {
+            holder.tv_attachments.setVisibility(View.VISIBLE);
+            holder.tv_attachments.setText(items.get(position).getComplaintHistoryAttachment().size()+" Attachments");
+        }else{
+            holder.tv_attachments.setVisibility(View.GONE);
+        }
+
+        holder.tv_attachments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<AttachmentPOJO> attachmentPOJOS = new ArrayList<>();
+                for (ComplaintHistoryAttachmentPOJO complaintHistoryAttachmentPOJO: items.get(position).getComplaintHistoryAttachment()) {
+                    AttachmentPOJO attachmentPOJO = new AttachmentPOJO();
+                    attachmentPOJO.setFile_name(complaintHistoryAttachmentPOJO.getAttachmentFile());
+                    attachmentPOJO.setFile_path(complaintHistoryAttachmentPOJO.getAttachmentFile());
+                    attachmentPOJO.setFile_type(complaintHistoryAttachmentPOJO.getAttachmentFile());
+                    attachmentPOJO.setFeed_type("history");
+                    attachmentPOJO.setDescription(items.get(position).getHistoryDescription());
+
+                    attachmentPOJOS.add(attachmentPOJO);
+                }
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("attachments", (Serializable) attachmentPOJOS);
+
+                AttachmentViewPagerFragment attachmentViewPagerFragment = new AttachmentViewPagerFragment();
+                attachmentViewPagerFragment.setArguments(bundle);
+
+                if (activity instanceof HomeActivity) {
+                    HomeActivity homeActivity = (HomeActivity) activity;
+                    homeActivity.startFragment(R.id.frame_home, attachmentViewPagerFragment);
+                }
+            }
+        });
+
         holder.itemView.setTag(items.get(position));
     }
 
@@ -78,7 +120,7 @@ public class ComplaintHistoryAdapter extends RecyclerView.Adapter<ComplaintHisto
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView tv_description, tv_profile_user, tv_date;
+        public TextView tv_description, tv_profile_user, tv_date,tv_attachments;
         public CircleImageView cv_profile_pic;
         public View view_bottom;
 
@@ -86,6 +128,7 @@ public class ComplaintHistoryAdapter extends RecyclerView.Adapter<ComplaintHisto
             super(itemView);
             cv_profile_pic = itemView.findViewById(R.id.cv_profile_pic);
             tv_description = itemView.findViewById(R.id.tv_description);
+            tv_attachments = itemView.findViewById(R.id.tv_attachments);
             tv_profile_user = itemView.findViewById(R.id.tv_profile_user);
             tv_date = itemView.findViewById(R.id.tv_date);
             view_bottom = itemView.findViewById(R.id.view_bottom);

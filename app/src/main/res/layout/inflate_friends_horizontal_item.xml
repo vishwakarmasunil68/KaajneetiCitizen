@@ -22,4 +22,16 @@
         android:textSize="15dp"
         android:layout_marginTop="10dp"/>
 
+    <com.ritvi.kaajneeti.view.SourceSansProTextView
+        android:id="@+id/tv_complaint_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Accepted"
+        android:padding="7dp"
+        android:textColor="@color/complaint_accepted"
+        android:background="@drawable/complaint_accepter_back"
+        android:textSize="15dp"
+        android:layout_marginTop="10dp"/>
+
+
 </LinearLayout>

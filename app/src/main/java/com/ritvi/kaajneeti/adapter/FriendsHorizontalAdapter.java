@@ -15,7 +15,6 @@ import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.fragment.user.UserProfileFragment;
 import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
-import com.twitter.sdk.android.core.models.User;
 
 import java.util.List;
 
@@ -27,15 +26,17 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by sunil on 03-11-2017.
  */
 
-public class FriendsHorizontalAdapter extends RecyclerView.Adapter<FriendsHorizontalAdapter.ViewHolder>{
+public class FriendsHorizontalAdapter extends RecyclerView.Adapter<FriendsHorizontalAdapter.ViewHolder> {
     private List<UserProfilePOJO> items;
     Activity activity;
     Fragment fragment;
+    boolean is_complaint;
 
-    public FriendsHorizontalAdapter(Activity activity, Fragment fragment, List<UserProfilePOJO> items) {
+    public FriendsHorizontalAdapter(Activity activity, Fragment fragment, List<UserProfilePOJO> items, boolean is_complaint) {
         this.items = items;
         this.activity = activity;
         this.fragment = fragment;
+        this.is_complaint = is_complaint;
     }
 
     @Override
@@ -58,16 +59,36 @@ public class FriendsHorizontalAdapter extends RecyclerView.Adapter<FriendsHorizo
         holder.ll_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(activity instanceof HomeActivity){
+                if (activity instanceof HomeActivity) {
                     HomeActivity homeActivity = (HomeActivity) activity;
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("userProfile", items.get(position));
+                    bundle.putSerializable("user_profile_id", items.get(position).getUserProfileId());
                     UserProfileFragment userProfileFragment = new UserProfileFragment();
                     userProfileFragment.setArguments(bundle);
                     homeActivity.replaceFragmentinFrameHome(userProfileFragment, userProfileFragment.getClass().getSimpleName());
                 }
             }
         });
+
+        if (is_complaint) {
+            holder.tv_complaint_status.setVisibility(View.VISIBLE);
+            if (items.get(position).getAcceptedYesNo().equalsIgnoreCase("1")) {
+                holder.tv_complaint_status.setBackgroundResource(R.drawable.complaint_accepter_back);
+                holder.tv_complaint_status.setTextColor(activity.getResources().getColor(R.color.complaint_accepted));
+                holder.tv_complaint_status.setText("Accepted");
+            } else if (items.get(position).getAcceptedYesNo().equalsIgnoreCase("-1")) {
+                holder.tv_complaint_status.setBackgroundResource(R.drawable.complaint_rejected_back);
+                holder.tv_complaint_status.setTextColor(activity.getResources().getColor(R.color.complaint_rejected));
+                holder.tv_complaint_status.setText("Rejected");
+            } else {
+                holder.tv_complaint_status.setBackgroundResource(R.drawable.complaint_pending);
+                holder.tv_complaint_status.setTextColor(activity.getResources().getColor(R.color.colorPrimary));
+                holder.tv_complaint_status.setText("Pending");
+            }
+        } else {
+            holder.tv_complaint_status.setVisibility(View.GONE);
+        }
+
         holder.itemView.setTag(items.get(position));
     }
 
@@ -83,9 +104,12 @@ public class FriendsHorizontalAdapter extends RecyclerView.Adapter<FriendsHorizo
         public CircleImageView cv_profile_pic;
         @BindView(R.id.ll_profile)
         public LinearLayout ll_profile;
+        @BindView(R.id.tv_complaint_status)
+        public TextView tv_complaint_status;
+
         public ViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 }

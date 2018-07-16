@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#FFFFFF">
+    android:background="#FAFAFA"
+    android:orientation="vertical">
 
 
     <android.support.v7.widget.Toolbar
@@ -46,15 +44,14 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="10dp"
                 android:text="DONE"
-                android:visibility="gone"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
 
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -62,29 +59,45 @@
         android:orientation="vertical"
         android:padding="12dp">
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center">
 
-            <EditText
-                android:id="@+id/et_search"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/et_search_back"
-                android:minHeight="45dp"
-                android:hint="Search"
-                android:singleLine="true"
-                android:paddingRight="5dp"
-                android:paddingLeft="45dp"/>
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="wrap_content">
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="10dp"
-                android:src="@drawable/ic_search_icon"/>
+                <EditText
+                    android:id="@+id/et_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/et_search_back"
+                    android:hint="Search"
+                    android:minHeight="45dp"
+                    android:paddingLeft="45dp"
+                    android:paddingRight="5dp"
+                    android:singleLine="true" />
 
-        </FrameLayout>
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/ic_search_icon" />
+
+            </FrameLayout>
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/cv_current_location"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom|right"
+                android:src="@drawable/ic_default_location"/>
+        </LinearLayout>
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_location"

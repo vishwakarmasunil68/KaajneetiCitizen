@@ -1,6 +1,7 @@
 package com.ritvi.kaajneeti.adapter;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,8 +13,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ritvi.kaajneeti.R;
+import com.ritvi.kaajneeti.Util.Constants;
 import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
+import com.ritvi.kaajneeti.fragment.analyze.AllComplaintFragment;
+import com.ritvi.kaajneeti.fragment.analyze.AllEventFragment;
+import com.ritvi.kaajneeti.fragment.analyze.AllPollFragment;
+import com.ritvi.kaajneeti.fragment.analyze.AllPostFragment;
 import com.ritvi.kaajneeti.pojo.user.SummaryPOJO;
 
 import java.util.List;
@@ -52,36 +58,48 @@ public class SummaryAdapter extends RecyclerView.Adapter<SummaryAdapter.ViewHold
         holder.tv_type.setText(items.get(position).getType());
 
 
-//        holder.ll_item.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (activity instanceof HomeActivity) {
-//                    HomeActivity homeActivity = (HomeActivity) activity;
-//                    switch (items.get(position).getType().toLowerCase()) {
-//                        case "connect":
+        holder.ll_item.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(Constants.IS_SEARCH, false);
+                bundle.putString(Constants.SEARCH_TEXT, "");
+                bundle.putString(Constants.FRIEND_USER_PROFILE_ID, profile_id);
+                bundle.putString(Constants.FRIEND_USER_ID, user_id);
+
+                if (activity instanceof HomeActivity) {
+                    HomeActivity homeActivity = (HomeActivity) activity;
+                    switch (items.get(position).getType().toLowerCase()) {
+                        case "connect":
 //                            FriendsListFragment friendsListFragment = new FriendsListFragment(user_id,profile_id);
 //                            homeActivity.replaceFragmentinFrameHome(friendsListFragment,"friendsListFragment");
-//                            break;
-//                        case "event":
-//                            AllEventFragment allEventFragment = new AllEventFragment(user_id,profile_id);
-//                            homeActivity.replaceFragmentinFrameHome(allEventFragment,"allEventFragment");
-//                            break;
-//                        case "poll":
-//                            AllPollFragment allPollFragment = new AllPollFragment(user_id,profile_id);
-//                            homeActivity.replaceFragmentinFrameHome(allPollFragment,"allPollFragment");
-//                            break;
-//                        case "post":
-//                            ALLPostListFragment allPostListFragment = new ALLPostListFragment(user_id,profile_id);
-//                            homeActivity.replaceFragmentinFrameHome(allPostListFragment,"allPostListFragment");
-//                            break;
-//                        case "complaint":
-//                            AllComplaintsFragment complaintListFragment = new AllComplaintsFragment(user_id,profile_id);
-//                            homeActivity.replaceFragmentinFrameHome(complaintListFragment,"complaintListFragment");
-//                            break;
-//                    }
-//                }
-//            }
-//        });
+                            break;
+                        case "event":
+                            AllEventFragment allEventFragment = new AllEventFragment();
+                            allEventFragment.setArguments(bundle);
+                            homeActivity.startFragment(R.id.frame_home,allEventFragment);
+                            break;
+                        case "poll":
+                            AllPollFragment allPollFragment = new AllPollFragment();
+                            allPollFragment.setArguments(bundle);
+                            homeActivity.replaceFragmentinFrameHome(allPollFragment,"allPollFragment");
+                            break;
+                        case "post":
+                            AllPostFragment allPostListFragment = new AllPostFragment();
+                            allPostListFragment.setArguments(bundle);
+                            homeActivity.replaceFragmentinFrameHome(allPostListFragment,"allPostListFragment");
+                            break;
+                        case "complaint":
+                            AllComplaintFragment complaintListFragment = new AllComplaintFragment();
+                            complaintListFragment.setArguments(bundle);
+                            homeActivity.replaceFragmentinFrameHome(complaintListFragment,"complaintListFragment");
+                            break;
+                    }
+                }
+            }
+        });
 
 
         holder.itemView.setTag(items.get(position));

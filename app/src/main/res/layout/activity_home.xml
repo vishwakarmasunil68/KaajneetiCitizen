@@ -46,11 +46,20 @@
                             android:src="@drawable/ic_search_bar"/>
                     </LinearLayout>
 
-                    <ImageView
-                        android:layout_width="27dp"
-                        android:layout_height="27dp"
-                        android:layout_marginRight="23dp"
-                        android:src="@drawable/ic_notification"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/iv_notification"
+                            android:layout_width="27dp"
+                            android:layout_height="match_parent"
+                            android:adjustViewBounds="true"
+                            android:layout_marginRight="23dp"
+                            android:src="@drawable/ic_notification"/>
+
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <com.ritvi.kaajneeti.view.CustomViewPager

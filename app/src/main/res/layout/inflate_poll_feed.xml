@@ -37,15 +37,15 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <TextView
+                    <com.ritvi.kaajneeti.view.SourceSansProBoldTextView
                         android:id="@+id/tv_profile_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Profile Name1"
+                        android:text="Profile Name"
                         android:textColor="#000000"
                         android:textStyle="bold" />
 
-                    <TextView
+                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                         android:id="@+id/tv_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -57,11 +57,11 @@
                     android:id="@+id/iv_poll_menu"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/ic_action_navigation_more_vert"
+                    android:src="@drawable/ic_action_navigation_horizontal"
                     android:tint="#757575" />
             </LinearLayout>
 
-            <TextView
+            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                 android:id="@+id/tv_questions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -96,19 +96,12 @@
                 android:layout_margin="15dp"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                     android:id="@+id/tv_participated"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="You already participated in poll"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_revote"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Revote"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -118,14 +111,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                     android:id="@+id/tv_poll_ends_in"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="This poll ends in "
                     android:layout_marginLeft="15dp"/>
 
-                <TextView
+                <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="|"
@@ -133,7 +126,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"/>
 
-                <TextView
+                <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                     android:id="@+id/tv_total_votes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -143,11 +136,11 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="1px"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
-                android:layout_marginTop="5dp"
-                android:background="#BDBDBD" />
+                android:layout_marginTop="8dp"
+                android:background="#30000000" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -179,7 +172,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="7dp"
-                        android:text="10" />
+                        android:text="0" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -197,12 +190,12 @@
                         android:scaleType="fitXY"
                         android:src="@drawable/ic_comment" />
 
-                    <TextView
+                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                         android:id="@+id/tv_comments"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="7dp"
-                        android:text="3,490" />
+                        android:text="0" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -221,7 +214,7 @@
                         android:scaleType="fitXY"
                         android:src="@drawable/ic_chat_bubble" />
 
-                    <TextView
+                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="85" />

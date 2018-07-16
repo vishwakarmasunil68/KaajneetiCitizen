@@ -94,7 +94,7 @@
                                 android:layout_marginRight="15dp"
                                 android:background="#30000000" />
 
-                            <TextView
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="View ALL >"

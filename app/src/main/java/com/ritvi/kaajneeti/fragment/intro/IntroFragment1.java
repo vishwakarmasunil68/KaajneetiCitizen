@@ -1,4 +1,4 @@
-package com.ritvi.kaajneeti.fragment;
+package com.ritvi.kaajneeti.fragment.intro;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -16,14 +16,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 @SuppressLint("ValidFragment")
-public class IntroFragment extends Fragment{
+public class IntroFragment1 extends Fragment{
 
-    @BindView(R.id.tv_intro)
-    TextView tv_intro;
-    String intro_text="";
-    public IntroFragment(String intro_text){
-        this.intro_text=intro_text;
-    }
+
 
     @Nullable
     @Override
@@ -36,6 +31,5 @@ public class IntroFragment extends Fragment{
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        tv_intro.setText(intro_text);
     }
 }

@@ -29,7 +29,7 @@ public class ComplaintHistoryPOJO {
     @SerializedName("ComplaintHistoryProfile")
     private UserProfilePOJO complaintHistoryProfile;
     @SerializedName("ComplaintHistoryAttachment")
-    private List<Object> complaintHistoryAttachment = null;
+    private List<ComplaintHistoryAttachmentPOJO> complaintHistoryAttachment ;
     @SerializedName("ComplaintHistoryHistory")
     private List<Object> complaintHistoryHistory = null;
 
@@ -105,19 +105,19 @@ public class ComplaintHistoryPOJO {
         this.complaintHistoryProfile = complaintHistoryProfile;
     }
 
-    public List<Object> getComplaintHistoryAttachment() {
-        return complaintHistoryAttachment;
-    }
-
-    public void setComplaintHistoryAttachment(List<Object> complaintHistoryAttachment) {
-        this.complaintHistoryAttachment = complaintHistoryAttachment;
-    }
-
     public List<Object> getComplaintHistoryHistory() {
         return complaintHistoryHistory;
     }
 
     public void setComplaintHistoryHistory(List<Object> complaintHistoryHistory) {
         this.complaintHistoryHistory = complaintHistoryHistory;
+    }
+
+    public List<ComplaintHistoryAttachmentPOJO> getComplaintHistoryAttachment() {
+        return complaintHistoryAttachment;
+    }
+
+    public void setComplaintHistoryAttachment(List<ComplaintHistoryAttachmentPOJO> complaintHistoryAttachment) {
+        this.complaintHistoryAttachment = complaintHistoryAttachment;
     }
 }

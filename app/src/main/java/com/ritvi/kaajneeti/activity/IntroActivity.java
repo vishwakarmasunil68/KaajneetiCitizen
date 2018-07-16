@@ -15,11 +15,10 @@ import com.ritvi.kaajneeti.Util.StringUtils;
 import com.ritvi.kaajneeti.activity.loginregistration.EnterMobileNumberActivity;
 import com.ritvi.kaajneeti.activity.loginregistration.LoginActivity;
 import com.ritvi.kaajneeti.adapter.ViewPagerAdapter;
-import com.ritvi.kaajneeti.fragment.IntroFragment;
-import com.ritvi.kaajneeti.fragment.home.AnalyzeFragment;
-import com.ritvi.kaajneeti.fragment.home.FavoriteFragment;
-import com.ritvi.kaajneeti.fragment.home.HomeFragment;
-import com.ritvi.kaajneeti.fragment.home.MyConnectionFragment;
+import com.ritvi.kaajneeti.fragment.intro.IntroFragment1;
+import com.ritvi.kaajneeti.fragment.intro.IntroFragment2;
+import com.ritvi.kaajneeti.fragment.intro.IntroFragment3;
+import com.ritvi.kaajneeti.fragment.intro.IntroFragment4;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -74,14 +73,13 @@ public class IntroActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
 
-        IntroFragment introFragment=new IntroFragment("slider1");
-        IntroFragment introFragment2=new IntroFragment("slider2");
-        IntroFragment introFragment3=new IntroFragment("slider3");
+
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(introFragment, "intro1");
-        adapter.addFrag(introFragment2, "intro2");
-        adapter.addFrag(introFragment3, "intro3");
+        adapter.addFrag(new IntroFragment1(), "intro1");
+        adapter.addFrag(new IntroFragment2(), "intro2");
+        adapter.addFrag(new IntroFragment3(), "intro3");
+        adapter.addFrag(new IntroFragment4(), "intro4");
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(adapter.getCount());
 

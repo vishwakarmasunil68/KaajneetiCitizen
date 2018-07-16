@@ -12,9 +12,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.ritvi.kaajneeti.R;
-import com.ritvi.kaajneeti.fragment.wallet.ContributeAmountFragment;
-import com.ritvi.kaajneeti.fragment.wallet.SelectUserForContributionFragment;
-import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
 import com.ritvi.kaajneeti.pojo.post.PostCommentPOJO;
 
 import java.util.List;

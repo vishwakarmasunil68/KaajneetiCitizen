@@ -4,28 +4,34 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
 import com.ritvi.kaajneeti.Util.SetViews;
+import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.adapter.FriendsHorizontalAdapter;
 import com.ritvi.kaajneeti.adapter.HomeFeedAdapter;
 import com.ritvi.kaajneeti.adapter.SummaryAdapter;
+import com.ritvi.kaajneeti.fragment.myconnection.FriendFragment;
+import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
 import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
 import com.ritvi.kaajneeti.pojo.ResponsePOJO;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
@@ -51,10 +57,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class UserProfileFragment extends Fragment {
+public class UserProfileFragment extends FragmentController {
 
     @BindView(R.id.rv_activity)
     RecyclerView rv_activity;
@@ -96,21 +101,41 @@ public class UserProfileFragment extends Fragment {
     LinearLayout ll_user_info;
     @BindView(R.id.tv_addfriend)
     TextView tv_addfriend;
+    @BindView(R.id.tv_undo_request)
+    TextView tv_undo_request;
+    @BindView(R.id.tv_accept_friend)
+    TextView tv_accept_friend;
+    @BindView(R.id.tv_cancel_request)
+    TextView tv_cancel_request;
+    @BindView(R.id.tv_follow)
+    TextView tv_follow;
+    @BindView(R.id.tv_unfollow)
+    TextView tv_unfollow;
+    @BindView(R.id.iv_more_friend_action)
+    ImageView iv_more_friend_action;
     @BindView(R.id.tv_title)
     TextView tv_title;
     @BindView(R.id.rv_feeds)
     RecyclerView rv_feeds;
     @BindView(R.id.ll_feeds)
     LinearLayout ll_feeds;
+    @BindView(R.id.ll_friend_logic)
+    LinearLayout ll_friend_logic;
+    @BindView(R.id.tv_view_all)
+    TextView tv_view_all;
+    @BindView(R.id.ll_connects)
+    LinearLayout ll_connects;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
-    UserProfilePOJO userProfilePOJO;
+    String user_profile_id;
     List<UserProfilePOJO> friendProfilePOJOS = new ArrayList<>();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_user_profile, container, false);
-        ButterKnife.bind(this, view);
+        setUpView(getActivity(), this, view);
         return view;
     }
 
@@ -118,11 +143,11 @@ public class UserProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        userProfilePOJO = (UserProfilePOJO) getArguments().getSerializable("userProfile");
-        tv_title.setText(userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName());
-//        if(userProfilePOJO!=null&&userProfilePOJO.getUserProfileId().equals(Constants.userProfilePOJO.getProfilePhotoId())){
+        if (getArguments() != null) {
+            user_profile_id = getArguments().getString("user_profile_id");
+        }
+
         tv_addfriend.setVisibility(View.GONE);
-//        }
         attachAdapter();
 
         attachFriendsAdapter();
@@ -150,16 +175,13 @@ public class UserProfileFragment extends Fragment {
         });
 
 
-        if (userProfilePOJO != null) {
-            if (userProfilePOJO.getUserProfileId().equals(Constants.userProfilePOJO.getUserProfileId())) {
-                iv_edit.setVisibility(View.VISIBLE);
-            } else {
-                iv_edit.setVisibility(View.GONE);
-            }
-            getAllProfileData();
-            getFriendSummary();
-            getAllHomeData();
+        if (user_profile_id.equals(Constants.userProfilePOJO.getUserProfileId())) {
+            iv_edit.setVisibility(View.VISIBLE);
+        } else {
+            iv_edit.setVisibility(View.GONE);
         }
+
+        refreshPage();
 
         tv_view_less.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,17 +195,43 @@ public class UserProfileFragment extends Fragment {
                 }
             }
         });
+
+        tv_view_all.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(Constants.IS_SEARCH, false);
+                bundle.putString("friend_user_profile_id", user_profile_id);
+                FriendFragment friendFragment = new FriendFragment();
+                friendFragment.setArguments(bundle);
+                activityManager.startFragment(R.id.frame_home, friendFragment);
+            }
+        });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshPage();
+            }
+        });
+    }
+
+    public void refreshPage(){
+        getAllProfileData(true);
+        getFriendSummary();
+        getAllHomeData();
     }
 
     FullProfilePOJO fullProfilePOJO;
 
-    public void getAllProfileData() {
+    public void getAllProfileData(boolean is_loading) {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
-        nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", user_profile_id));
         new WebServiceBaseResponse<FullProfilePOJO>(nameValuePairs, getActivity(), new ResponseCallBack<FullProfilePOJO>() {
             @Override
             public void onGetMsg(ResponsePOJO<FullProfilePOJO> responsePOJO) {
+                swipeRefreshLayout.setRefreshing(false);
                 if (responsePOJO.isSuccess()) {
                     fullProfilePOJO = responsePOJO.getResult();
                     setUpProfileData(responsePOJO.getResult());
@@ -191,14 +239,14 @@ public class UserProfileFragment extends Fragment {
                     ToastClass.showShortToast(getActivity().getApplicationContext(), responsePOJO.getMessage());
                 }
             }
-        }, FullProfilePOJO.class, "CALL_PROFILE_API", true).execute(WebServicesUrls.FULL_PROFILE_URL);
+        }, FullProfilePOJO.class, "CALL_PROFILE_API", is_loading).execute(WebServicesUrls.FULL_PROFILE_URL);
     }
 
     public void getAllHomeData() {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
-        nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", user_profile_id));
 
         new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
             @Override
@@ -327,6 +375,7 @@ public class UserProfileFragment extends Fragment {
                     updateBIO(tv_bio.getText().toString());
                 }
             });
+
 //            ll_incoming_request.setVisibility(View.GONE);
 //            switch (fullProfilePOJO.getProfilePOJO().getMyFriend()) {
 //                case 0:
@@ -386,7 +435,267 @@ public class UserProfileFragment extends Fragment {
 //                }
 //            });
 
+            checkFriendLogic();
+
         }
+    }
+
+    public void checkFriendLogic() {
+        Log.d(TagUtils.getTag(), "my friend:-" + fullProfilePOJO.getProfilePOJO().getMyFriend());
+        ll_friend_logic.setVisibility(View.GONE);
+        tv_addfriend.setVisibility(View.GONE);
+        tv_undo_request.setVisibility(View.GONE);
+        tv_cancel_request.setVisibility(View.GONE);
+        tv_accept_friend.setVisibility(View.GONE);
+        iv_more_friend_action.setVisibility(View.GONE);
+        tv_follow.setVisibility(View.GONE);
+        tv_unfollow.setVisibility(View.GONE);
+        switch (fullProfilePOJO.getProfilePOJO().getMyFriend()) {
+            case 0:
+                ll_friend_logic.setVisibility(View.VISIBLE);
+                tv_addfriend.setVisibility(View.VISIBLE);
+                break;
+            case 1:
+                ll_friend_logic.setVisibility(View.VISIBLE);
+                tv_undo_request.setVisibility(View.VISIBLE);
+                break;
+            case 2:
+                ll_friend_logic.setVisibility(View.VISIBLE);
+                tv_accept_friend.setVisibility(View.VISIBLE);
+                tv_cancel_request.setVisibility(View.VISIBLE);
+                break;
+            case 3:
+                ll_friend_logic.setVisibility(View.VISIBLE);
+                iv_more_friend_action.setVisibility(View.VISIBLE);
+                break;
+            case 4:
+                ll_friend_logic.setVisibility(View.VISIBLE);
+                if (fullProfilePOJO.getProfilePOJO().getFollowing() == 1) {
+                    tv_unfollow.setVisibility(View.VISIBLE);
+                    tv_follow.setVisibility(View.GONE);
+                } else {
+                    tv_unfollow.setVisibility(View.GONE);
+                    tv_follow.setVisibility(View.VISIBLE);
+                }
+
+                break;
+            case -1:
+                ll_friend_logic.setVisibility(View.GONE);
+                break;
+        }
+
+        iv_more_friend_action.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final PopupMenu menu = new PopupMenu(getActivity(), v);
+
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuitem) {
+                        ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+                        nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
+                        nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+                        nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", user_profile_id));
+                        switch (menuitem.getItemId()) {
+                            case R.id.popup_follow:
+                                new WebServiceBase(nameValuePairs, getActivity(), new WebServicesCallBack() {
+                                    @Override
+                                    public void onGetMsg(String apicall, String response) {
+                                        try {
+                                            JSONObject jsonObject = new JSONObject(response);
+                                            if (jsonObject.optString("status").equalsIgnoreCase("success")) {
+                                                fullProfilePOJO.getProfilePOJO().setFollowing(jsonObject.optInt("follow"));
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }, "FOLLOW_UNFOLLOW", true).execute(WebServicesUrls.FOLLOW_UNFOLLOW_PEOPLE);
+                                break;
+                            case R.id.popup_unfollow:
+                                new WebServiceBase(nameValuePairs, getActivity(), new WebServicesCallBack() {
+                                    @Override
+                                    public void onGetMsg(String apicall, String response) {
+                                        try {
+                                            JSONObject jsonObject = new JSONObject(response);
+                                            if (jsonObject.optString("status").equalsIgnoreCase("success")) {
+                                                fullProfilePOJO.getProfilePOJO().setFollowing(jsonObject.optInt("follow"));
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }, "FOLLOW_UNFOLLOW", true).execute(WebServicesUrls.FOLLOW_UNFOLLOW_PEOPLE);
+                                break;
+                            case R.id.popup_unfriend:
+                                new WebServiceBase(nameValuePairs, getActivity(), new WebServicesCallBack() {
+                                    @Override
+                                    public void onGetMsg(String apicall, String response) {
+                                        try {
+                                            JSONObject jsonObject = new JSONObject(response);
+                                            if (jsonObject.optString("status").equalsIgnoreCase("success")) {
+                                                fullProfilePOJO.getProfilePOJO().setMyFriend(jsonObject.optInt("friend"));
+                                                checkFriendLogic();
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }, "CALL_ADD_FRIEND_API", true).execute(WebServicesUrls.SEND_FRIEND_REQUEST);
+                                break;
+                            case R.id.popup_block:
+                                break;
+                        }
+                        return false;
+                    }
+                });
+
+                menu.inflate(R.menu.menu_user_profile);
+
+                if (fullProfilePOJO.getProfilePOJO().getFollowing() == 1) {
+                    menu.getMenu().findItem(R.id.popup_follow).setVisible(false);
+                    menu.getMenu().findItem(R.id.popup_unfollow).setVisible(true);
+                } else {
+                    menu.getMenu().findItem(R.id.popup_follow).setVisible(true);
+                    menu.getMenu().findItem(R.id.popup_unfollow).setVisible(false);
+                }
+
+                menu.show();
+            }
+        });
+
+        tv_accept_friend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+                nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
+                nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+                nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", user_profile_id));
+                new WebServiceBase(nameValuePairs, getActivity(), new WebServicesCallBack() {
+                    @Override
+                    public void onGetMsg(String apicall, String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            if (jsonObject.optString("status").equalsIgnoreCase("success")) {
+                                fullProfilePOJO.getProfilePOJO().setMyFriend(jsonObject.optInt("friend"));
+                                checkFriendLogic();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, "CALL_ADD_FRIEND_API", true).execute(WebServicesUrls.SEND_FRIEND_REQUEST);
+            }
+        });
+
+        tv_follow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+                nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
+                nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+                nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", user_profile_id));
+                new WebServiceBase(nameValuePairs, getActivity(), new WebServicesCallBack() {
+                    @Override
+                    public void onGetMsg(String apicall, String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            if (jsonObject.optString("status").equalsIgnoreCase("success")) {
+                                fullProfilePOJO.getProfilePOJO().setFollowing(jsonObject.optInt("follow"));
+                                checkFriendLogic();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, "FOLLOW_UNFOLLOW", true).execute(WebServicesUrls.FOLLOW_UNFOLLOW_PEOPLE);
+            }
+        });
+
+        tv_unfollow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tv_follow.callOnClick();
+            }
+        });
+
+        tv_cancel_request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+                nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
+                nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+                nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", user_profile_id));
+                new WebServiceBase(nameValuePairs, getActivity(), new WebServicesCallBack() {
+                    @Override
+                    public void onGetMsg(String apicall, String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            if (jsonObject.optString("status").equalsIgnoreCase("success")) {
+                                fullProfilePOJO.getProfilePOJO().setMyFriend(jsonObject.optInt("friend"));
+                                checkFriendLogic();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, "CALL_ADD_FRIEND_API", true).execute(WebServicesUrls.CANCEL_FRIEND_REQUEST);
+            }
+        });
+
+        tv_undo_request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+                nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
+                nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+                nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", user_profile_id));
+                new WebServiceBase(nameValuePairs, getActivity(), new WebServicesCallBack() {
+                    @Override
+                    public void onGetMsg(String apicall, String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            if (jsonObject.optString("status").equalsIgnoreCase("success")) {
+                                fullProfilePOJO.getProfilePOJO().setMyFriend(jsonObject.optInt("friend"));
+                                checkFriendLogic();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, "CALL_ADD_FRIEND_API", true).execute(WebServicesUrls.UNDO_FRIEND_REQUEST);
+            }
+        });
+
+        tv_addfriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+                nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
+                nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+                nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", user_profile_id));
+                new WebServiceBase(nameValuePairs, getActivity(), new WebServicesCallBack() {
+                    @Override
+                    public void onGetMsg(String apicall, String response) {
+
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            if (jsonObject.optString("status").equalsIgnoreCase("success")) {
+                                fullProfilePOJO.getProfilePOJO().setMyFriend(jsonObject.optInt("friend"));
+                                checkFriendLogic();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, "CALL_ADD_FRIEND_API", true).execute(WebServicesUrls.SEND_FRIEND_REQUEST);
+            }
+        });
+
+
     }
 
     public void updateBIO(String bio) {
@@ -407,8 +716,7 @@ public class UserProfileFragment extends Fragment {
             public void onClick(View view) {
                 if (et_bio.getText().toString().length() > 0) {
                     ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
-                    nameValuePairs.add(new BasicNameValuePair("user_id", userProfilePOJO.getUserId()));
-                    nameValuePairs.add(new BasicNameValuePair("user_profile_id", userProfilePOJO.getUserProfileId()));
+                    nameValuePairs.add(new BasicNameValuePair("user_profile_id", user_profile_id));
                     nameValuePairs.add(new BasicNameValuePair("user_bio", et_bio.getText().toString()));
 
                     new WebServiceBase(nameValuePairs, getActivity(), new WebServicesCallBack() {
@@ -438,7 +746,7 @@ public class UserProfileFragment extends Fragment {
     public void getFriendSummary() {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
-        nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", user_profile_id));
         new WebServiceBaseResponseList<SummaryPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<SummaryPOJO>() {
             @Override
             public void onGetMsg(ResponseListPOJO<SummaryPOJO> responseListPOJO) {
@@ -450,6 +758,13 @@ public class UserProfileFragment extends Fragment {
                         rv_activity.setAdapter(summaryAdapter);
                         rv_activity.setLayoutManager(linearLayoutManager);
                         rv_activity.setItemAnimator(new DefaultItemAnimator());
+                        if(responseListPOJO.getResultList().size()>0){
+                            ll_connects.setVisibility(View.VISIBLE);
+                        }else{
+                            ll_connects.setVisibility(View.GONE);
+                        }
+                    }else{
+                        ll_connects.setVisibility(View.GONE);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -461,12 +776,17 @@ public class UserProfileFragment extends Fragment {
     FriendsHorizontalAdapter friendsHorizontalAdapter;
 
     public void attachFriendsAdapter() {
-
-        friendsHorizontalAdapter = new FriendsHorizontalAdapter(getActivity(), this, friendProfilePOJOS);
+        friendsHorizontalAdapter = new FriendsHorizontalAdapter(getActivity(), this, friendProfilePOJOS, false);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         rv_friends.setHasFixedSize(true);
         rv_friends.setAdapter(friendsHorizontalAdapter);
         rv_friends.setLayoutManager(linearLayoutManager);
         rv_friends.setItemAnimator(new DefaultItemAnimator());
+    }
+
+    public void refreshOnIncomingNotification(String feedId) {
+        if (user_profile_id.equalsIgnoreCase(feedId)) {
+            getAllProfileData(false);
+        }
     }
 }

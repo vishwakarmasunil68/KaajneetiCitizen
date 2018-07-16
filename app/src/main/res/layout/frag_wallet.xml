@@ -50,94 +50,99 @@
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
 
-    <LinearLayout
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <android.support.v4.widget.NestedScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <com.ritvi.kaajneeti.view.SourceSansProBoldTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Wallet Amount"
-                    android:textSize="16sp"
-                    android:layout_marginLeft="25dp"
-                    android:layout_marginTop="25dp" />
-
-                <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
-                    android:id="@+id/tv_wallet_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Rs. 0"
-                    android:layout_marginLeft="25dp"
-                    android:layout_marginTop="10dp"
-                    android:textSize="25sp"/>
+                android:layout_weight="1">
 
                 <LinearLayout
-                    android:id="@+id/ll_add_money"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:orientation="horizontal"
-                    android:layout_marginLeft="25dp"
-                    android:layout_marginRight="25dp"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="25dp">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                    <TextView
+                    <com.ritvi.kaajneeti.view.SourceSansProBoldTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Add Money"
-                        android:textSize="16sp"
-                        android:layout_weight="1"
-                        android:textColor="@color/colorPrimary" />
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginTop="25dp"
+                        android:text="Wallet Amount"
+                        android:textSize="16sp" />
 
-                    <ImageView
-                        android:layout_width="10dp"
+                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                        android:id="@+id/tv_wallet_amount"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:adjustViewBounds="true"
-                        android:src="@drawable/ic_right_arrow"
-                        android:tint="@color/colorPrimary" />
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginTop="10dp"
+                        android:text="Rs. 0"
+                        android:textSize="25sp" />
+
+                    <LinearLayout
+                        android:id="@+id/ll_add_money"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginRight="25dp"
+                        android:layout_marginTop="25dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Add Money"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="16sp" />
+
+                        <ImageView
+                            android:layout_width="10dp"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/ic_right_arrow"
+                            android:tint="@color/colorPrimary" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginRight="25dp"
+                        android:layout_marginTop="10dp"
+                        android:background="#30000000" />
+
+                    <com.ritvi.kaajneeti.view.SourceSansProBoldTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginRight="25dp"
+                        android:layout_marginTop="25dp"
+                        android:text="Recents"
+                        android:textSize="16sp" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_logs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"></android.support.v7.widget.RecyclerView>
 
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1px"
-                    android:background="#30000000"
-                    android:layout_marginLeft="25dp"
-                    android:layout_marginRight="25dp"
-                    android:layout_marginTop="10dp" />
+            </android.support.v4.widget.NestedScrollView>
 
-                <com.ritvi.kaajneeti.view.SourceSansProBoldTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Recents"
-                    android:textSize="16sp"
-                    android:layout_marginLeft="25dp"
-                    android:layout_marginRight="25dp"
-                    android:layout_marginTop="25dp" />
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rv_logs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"></android.support.v7.widget.RecyclerView>
-
-            </LinearLayout>
-
-        </android.support.v4.widget.NestedScrollView>
-
-    </LinearLayout>
-
+        </LinearLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

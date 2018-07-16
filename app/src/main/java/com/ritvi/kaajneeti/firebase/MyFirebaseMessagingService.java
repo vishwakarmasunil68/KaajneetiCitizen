@@ -12,8 +12,11 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.ritvi.kaajneeti.R;
+import com.ritvi.kaajneeti.Util.StringUtils;
 import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
+
+import org.json.JSONObject;
 
 /**
  * Created by sunil on 18-08-2017.
@@ -41,7 +44,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d(TagUtils.getTag(), "description:-" + description);
             Log.d(TagUtils.getTag(), "type:-" + type);
 
-            checkType(type, title, description, result);
+            checkType(type, result);
         } catch (Exception e) {
             Log.d(TAG, e.toString());
             try {
@@ -55,17 +58,39 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
 
-    public void checkType(String type, String title, String description, String result) {
-        if (type != null && title != null && description != null && result != null) {
-            sendLiveNot(title, description);
+    public void checkType(String type, String result) {
+        try {
+            Log.d(TagUtils.getTag(), "type:-" + type);
+            sendPostNotification("Kaajneeti",type, result);
+            updateChatActivity(getApplicationContext(),type,result);
+//            switch (type) {
+//                case "post-generated":
+//                    sendPostNotification("Kaajneeti",type, result);
+//                    break;
+//                case "complaint-tagged":
+//                    sendPostNotification("Kaajneeti",type, result);
+//                    break;
+//            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
 
-    public void sendLiveNot(String title, String message) {
+    public void sendPostNotification(String title,String type, String data) {
         try {
+            JSONObject jsonObject = new JSONObject(data);
+
+            String message = jsonObject.optString("FromUserProfileName") + " " + jsonObject.optString("NotificationMessage");
+
+            Log.d(TagUtils.getTag(),"notification message:-"+message);
+            Log.d(TagUtils.getTag(),"notification type:-"+type);
+
             Intent intent = new Intent(this, HomeActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.putExtra("type", type);
+            intent.putExtra("data", data);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                     PendingIntent.FLAG_ONE_SHOT);
 
@@ -85,6 +110,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateChatActivity(Context context,String type, String message) {
+        Intent intent = new Intent(StringUtils.UPDATE_NOTIFICATION);
+
+        //put whatever data you want to send, if any
+        intent.putExtra("type", type);
+        intent.putExtra("data", message);
+
+        //send broadcast
+        context.sendBroadcast(intent);
     }
 
 

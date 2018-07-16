@@ -1,5 +1,7 @@
 package com.ritvi.kaajneeti.interfaces;
 
+import com.ritvi.kaajneeti.pojo.poll.PollPOJO;
+
 public interface PollAnsClickInterface {
-    public void onAnsclicked(String ans_id);
+    public void onAnsclicked(PollPOJO pollPOJO);
 }

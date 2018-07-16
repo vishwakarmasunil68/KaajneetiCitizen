@@ -35,7 +35,7 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <TextView
+                    <com.ritvi.kaajneeti.view.SourceSansProBoldTextView
                         android:id="@+id/tv_profile_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
                     android:id="@+id/iv_event_menu"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/ic_action_navigation_more_vert"
+                    android:src="@drawable/ic_action_navigation_horizontal"
                     android:tint="#757575" />
             </LinearLayout>
 
@@ -207,7 +207,7 @@
                         android:id="@+id/tv_like"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="10"
+                        android:text="0"
                         android:layout_marginLeft="7dp"/>
                 </LinearLayout>
 
@@ -226,11 +226,11 @@
                         android:scaleType="fitXY"
                         android:src="@drawable/ic_comment" />
 
-                    <TextView
+                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                         android:id="@+id/tv_comments"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="3,490"
+                        android:text="0"
                         android:layout_marginLeft="7dp"/>
                 </LinearLayout>
 
@@ -250,7 +250,7 @@
                         android:scaleType="fitXY"
                         android:src="@drawable/ic_chat_bubble" />
 
-                    <TextView
+                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="85" />

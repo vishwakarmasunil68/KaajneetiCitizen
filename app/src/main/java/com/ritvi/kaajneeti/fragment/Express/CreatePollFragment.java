@@ -38,8 +38,9 @@ import com.ritvi.kaajneeti.activity.express.TagPeopleActivity;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.adapter.PollAnsAdapter;
 import com.ritvi.kaajneeti.pojo.location.LocationPOJO;
-import com.ritvi.kaajneeti.pojo.location.NewLocationPOJO;
+import com.ritvi.kaajneeti.pojo.poll.PollAnsPOJO;
 import com.ritvi.kaajneeti.pojo.poll.PollMediaAnsPOJO;
+import com.ritvi.kaajneeti.pojo.poll.PollPOJO;
 import com.ritvi.kaajneeti.pojo.user.UserProfilePOJO;
 import com.ritvi.kaajneeti.webservice.WebServicesCallBack;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
@@ -116,6 +117,7 @@ public class CreatePollFragment extends Fragment implements DatePickerDialog.OnD
     String profile_description = "";
     String place_description = "";
     boolean question_image = true;
+    PollPOJO pollPOJO;
 
     @Nullable
     @Override
@@ -134,6 +136,10 @@ public class CreatePollFragment extends Fragment implements DatePickerDialog.OnD
                 getActivity().onBackPressed();
             }
         });
+
+        if (getArguments() != null) {
+            pollPOJO = (PollPOJO) getArguments().getSerializable("pollPOJO");
+        }
 
         Glide.with(getActivity().getApplicationContext())
                 .load(Constants.userProfilePOJO.getProfilePhotoPath())
@@ -165,8 +171,7 @@ public class CreatePollFragment extends Fragment implements DatePickerDialog.OnD
 
         attachListAdapter();
 
-        addAns();
-        addAns();
+
         tv_add_option.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -265,6 +270,65 @@ public class CreatePollFragment extends Fragment implements DatePickerDialog.OnD
                 menu.show();
             }
         });
+
+        if (pollPOJO != null) {
+            Log.d(TagUtils.getTag(), "poll id:-" + pollPOJO.getPollId());
+            tv_profile_name.setText(pollPOJO.getProfileDetailPOJO().getFirstName() + " " + pollPOJO.getProfileDetailPOJO().getLastName());
+            tv_end_date.setText(pollPOJO.getValidEndDate());
+            tv_start_date.setText(pollPOJO.getValidFromDate());
+            if (pollPOJO.getPollPrivacy().equalsIgnoreCase("1")) {
+                spinner_pubpri.setSelection(1);
+            } else {
+                spinner_pubpri.setSelection(0);
+            }
+            et_question.setText(pollPOJO.getPollQuestion());
+            if (pollPOJO.getPollImage().length() > 0) {
+                iv_poll_image.setVisibility(View.VISIBLE);
+                Glide.with(getActivity().getApplicationContext())
+                        .load(pollPOJO.getPollImage())
+                        .placeholder(R.drawable.ic_default_pic)
+                        .error(R.drawable.ic_default_pic)
+                        .dontAnimate()
+                        .into(iv_poll_image);
+            } else {
+                iv_poll_image.setVisibility(View.GONE);
+            }
+
+            if (pollPOJO.getPollAnsPOJOS().size() > 0) {
+                for (PollAnsPOJO pollAnsPOJO : pollPOJO.getPollAnsPOJOS()) {
+                    PollMediaAnsPOJO pollMediaAnsPOJO = new PollMediaAnsPOJO();
+                    pollMediaAnsPOJO.setImage(pollAnsPOJO.getPollAnswerImage());
+                    pollMediaAnsPOJO.setAns(pollAnsPOJO.getPollAnswer());
+                    pollMediaAnsPOJO.setServer(true);
+
+                    pollMediaAnsPOJOS.add(pollMediaAnsPOJO);
+                }
+                pollAnsAdapter.notifyDataSetChanged();
+            }
+//            if (pollPOJO.getServerLocationPOJO() != null) {
+//                LocationPOJO locationPOJO = new LocationPOJO();
+//                locationPOJO.setPlaceId(eventPOJO.getServerLocationPOJO().getPlaceId());
+//                locationPOJO.setFormatted_address(eventPOJO.getServerLocationPOJO().getLocationAddress());
+//                locationPOJO.setUrl(eventPOJO.getServerLocationPOJO().getLocationUrl());
+//                locationPOJO.setAdr_address(eventPOJO.getServerLocationPOJO().getLocationAddress());
+//                locationPOJO.setVicinity(eventPOJO.getServerLocationPOJO().getLocationVicinity());
+//
+//                GeometryPOJO geometryPOJO = new GeometryPOJO();
+//                LatLongPOJO latLongPOJO = new LatLongPOJO();
+//                latLongPOJO.setLat(UtilityFunction.getFormattedValue(eventPOJO.getServerLocationPOJO().getLocationLattitude()));
+//                latLongPOJO.setLng(UtilityFunction.getFormattedValue(eventPOJO.getServerLocationPOJO().getLocationLongitude()));
+//
+//                geometryPOJO.setLocation(latLongPOJO);
+//                locationPOJO.setGeometry(geometryPOJO);
+//                this.locationPOJO = locationPOJO;
+//
+//                tv_event_location.setText(locationPOJO.getFormatted_address());
+//            }
+
+        } else {
+            addAns();
+            addAns();
+        }
     }
 
     public void getNextWeek() {
@@ -369,10 +433,14 @@ public class CreatePollFragment extends Fragment implements DatePickerDialog.OnD
 
             int count = 0;
             for (PollMediaAnsPOJO pollMediaAnsPOJO : pollMediaAnsPOJOS) {
-                if (pollMediaAnsPOJO.getImage().length() > 0 && new File(pollMediaAnsPOJO.getImage()).exists()) {
-                    reqEntity.addPart("file[" + count + "]", new FileBody(new File(pollMediaAnsPOJO.getImage())));
-                } else {
-                    reqEntity.addPart("file[" + count + "]", new StringBody(""));
+                if(pollMediaAnsPOJO.isServer()){
+                    reqEntity.addPart("file[" + count + "]", new StringBody(pollMediaAnsPOJO.getImage()));
+                }else {
+                    if (pollMediaAnsPOJO.getImage().length() > 0 && new File(pollMediaAnsPOJO.getImage()).exists()) {
+                        reqEntity.addPart("file[" + count + "]", new FileBody(new File(pollMediaAnsPOJO.getImage())));
+                    } else {
+                        reqEntity.addPart("file[" + count + "]", new StringBody(""));
+                    }
                 }
                 Log.d(TagUtils.getTag(), "poll ans:-" + pollMediaAnsPOJO.getAns());
                 reqEntity.addPart("poll_answer[" + count + "]", new StringBody(pollMediaAnsPOJO.getAns()));
@@ -396,11 +464,18 @@ public class CreatePollFragment extends Fragment implements DatePickerDialog.OnD
 //            reqEntity.addPart("poll_answer[" + 0 + "]", new StringBody(et_ans1.getText().toString()));
 //            reqEntity.addPart("poll_answer[" + 1 + "]", new StringBody(et_ans2.getText().toString()));
 //
-//            if (selected_question_image_path.length() > 0&&new File(selected_question_image_path).exists()) {
-//                reqEntity.addPart("question", new FileBody(new File(selected_question_image_path)));
-//            }else{
-            reqEntity.addPart("question", new StringBody(et_question.getText().toString()));
-//            }
+            if (question_image_path.length() > 0 && new File(question_image_path).exists()) {
+                reqEntity.addPart("question", new FileBody(new File(question_image_path)));
+            } else {
+                reqEntity.addPart("question", new StringBody(et_question.getText().toString()));
+            }
+            String url = "";
+            if (pollPOJO != null) {
+                reqEntity.addPart("poll_id", new StringBody(pollPOJO.getPollId()));
+                url = WebServicesUrls.UPDATE_MY_POLL;
+            } else {
+                url = WebServicesUrls.SAVE_MY_POLL;
+            }
 
             new WebUploadService(reqEntity, getActivity(), new WebServicesCallBack() {
                 @Override
@@ -419,7 +494,7 @@ public class CreatePollFragment extends Fragment implements DatePickerDialog.OnD
                         e.printStackTrace();
                     }
                 }
-            }, "CREATE_POLL", true).execute(WebServicesUrls.SAVE_MY_POLL);
+            }, "CREATE_POLL", true).execute(url);
         } catch (Exception e) {
             e.printStackTrace();
         }

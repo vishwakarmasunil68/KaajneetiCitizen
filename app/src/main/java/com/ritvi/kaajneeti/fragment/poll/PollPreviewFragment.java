@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,7 +30,9 @@ import com.ritvi.kaajneeti.Util.UtilityFunction;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.adapter.PollFeedAnalyzeAnsAdapter;
 import com.ritvi.kaajneeti.adapter.PollFeedAnsAdapter;
+import com.ritvi.kaajneeti.fragment.NotificationFragment;
 import com.ritvi.kaajneeti.fragment.home.AllFeedsFragment;
+import com.ritvi.kaajneeti.fragment.search.SearchAllFragment;
 import com.ritvi.kaajneeti.fragment.user.UserProfileFragment;
 import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
 import com.ritvi.kaajneeti.interfaces.PollAnsClickInterface;
@@ -82,15 +85,20 @@ public class PollPreviewFragment extends FragmentController{
     public TextView tv_comments;
     @BindView(R.id.ll_comment)
     public LinearLayout ll_comment;
-    @BindView(R.id.tv_revote)
-    public TextView tv_revote;
     @BindView(R.id.tv_poll_ends_in)
     public TextView tv_poll_ends_in;
     @BindView(R.id.tv_total_votes)
     public TextView tv_total_votes;
-
+    @BindView(R.id.ll_back)
+    public LinearLayout ll_back;
+    @BindView(R.id.ll_search)
+    public LinearLayout ll_search;
+    @BindView(R.id.iv_notification)
+    public ImageView iv_notification;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
     PollPOJO pollPOJO;
-
+    String poll_id="";
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -105,25 +113,50 @@ public class PollPreviewFragment extends FragmentController{
         super.onViewCreated(view, savedInstanceState);
 
         if(getArguments()!=null){
-            pollPOJO= (PollPOJO) getArguments().getSerializable("pollPOJO");
+//            pollPOJO= (PollPOJO) getArguments().getSerializable("pollPOJO");
+            poll_id=getArguments().getString("poll_id");
         }
 
-        getPollDetails();
+        getPollDetails(true);
 
-        if(pollPOJO!=null){
-            setPollData(pollPOJO);
-        }
-
+//        if(pollPOJO!=null){
+//            setPollData(pollPOJO);
+//        }
+        ll_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        iv_notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityManager.startFragment(R.id.frame_home, new NotificationFragment());
+            }
+        });
+        ll_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityManager.startFragment(R.id.frame_home, new SearchAllFragment());
+            }
+        });
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getPollDetails(true);
+            }
+        });
     }
 
-    public void getPollDetails(){
+    public void getPollDetails(boolean is_loading){
         ArrayList<NameValuePair> nameValuePairs=new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_profile_id",Constants.userProfilePOJO.getUserProfileId()));
-        nameValuePairs.add(new BasicNameValuePair("poll_id",pollPOJO.getPollId()));
+        nameValuePairs.add(new BasicNameValuePair("poll_id",poll_id));
 
         new WebServiceBaseResponse<PollPOJO>(nameValuePairs, getActivity(), new ResponseCallBack<PollPOJO>() {
             @Override
             public void onGetMsg(ResponsePOJO<PollPOJO> responsePOJO) {
+                swipeRefreshLayout.setRefreshing(false);
                 try{
                     if(responsePOJO.isSuccess()){
                         setPollData(responsePOJO.getResult());
@@ -132,7 +165,7 @@ public class PollPreviewFragment extends FragmentController{
                     e.printStackTrace();
                 }
             }
-        },PollPOJO.class,"GET_POLL_DETAILS",true).execute(WebServicesUrls.GET_POLL_DETAIL);
+        },PollPOJO.class,"GET_POLL_DETAILS",is_loading).execute(WebServicesUrls.GET_POLL_DETAIL);
 
     }
 
@@ -209,13 +242,13 @@ public class PollPreviewFragment extends FragmentController{
         }
 //
         pollFeedAnsAdapter.setOnAnsClicked(new PollAnsClickInterface() {
+
             @Override
-            public void onAnsclicked(String ans_id) {
-                Log.d(TagUtils.getTag(), "poll ans clicked:-" + ans_id);
+            public void onAnsclicked(final PollPOJO pollPOJO) {
                 ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
                 nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
                 nameValuePairs.add(new BasicNameValuePair("poll_id", pollPOJO.getPollId()));
-                nameValuePairs.add(new BasicNameValuePair("answer_id", ans_id));
+                nameValuePairs.add(new BasicNameValuePair("answer_id", pollPOJO.getPollId()));
                 new WebServiceBase(nameValuePairs, getActivity(), new WebServicesCallBack() {
                     @Override
                     public void onGetMsg(String apicall, String response) {
@@ -301,15 +334,15 @@ public class PollPreviewFragment extends FragmentController{
         tv_like.setText(String.valueOf(pollPOJO.getTotalLikes()));
         tv_comments.setText(String.valueOf(pollPOJO.getTotalComment()));
 
-//        ll_comment.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (fragment instanceof AllFeedsFragment) {
-//                    AllFeedsFragment allFeedsFragment = (AllFeedsFragment) fragment;
-//                    allFeedsFragment.showPollComments(tv_comments, pollPOJO);
-//                }
-//            }
-//        });
+        ll_comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() instanceof HomeActivity) {
+                    HomeActivity homeActivity= (HomeActivity) getActivity();
+                    homeActivity.showPollComments(tv_comments, pollPOJO);
+                }
+            }
+        });
 
         ll_like.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -349,5 +382,11 @@ public class PollPreviewFragment extends FragmentController{
                 }, "CALL_LIKE_API", false).execute(WebServicesUrls.LIKE_UNLIKE_POLL);
             }
         });
+    }
+
+    public void refreshOnIncomingNotification(String feedId) {
+        if(poll_id.equalsIgnoreCase(feedId)){
+            getPollDetails(false);
+        }
     }
 }

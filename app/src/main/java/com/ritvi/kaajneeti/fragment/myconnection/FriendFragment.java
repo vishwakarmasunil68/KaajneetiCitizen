@@ -60,6 +60,8 @@ public class FriendFragment extends FragmentController{
 
     boolean is_search=false;
     String search_text="";
+
+    String friend_user_profile_id="";
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -75,6 +77,7 @@ public class FriendFragment extends FragmentController{
         if(getArguments()!=null){
             is_search=getArguments().getBoolean(Constants.IS_SEARCH);
             search_text=getArguments().getString(Constants.SEARCH_TEXT);
+            friend_user_profile_id=getArguments().getString("friend_user_profile_id");
             et_search.setText(search_text);
 
             if(is_search){
@@ -117,13 +120,16 @@ public class FriendFragment extends FragmentController{
                 callAPI();
             }
         });
+
+        activityManager.focusKeyboard(et_search);
     }
 
     public void callAPI() {
 
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
-        nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
+        nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserProfileId()));
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", friend_user_profile_id));
 
         String url="";
         if(is_search){

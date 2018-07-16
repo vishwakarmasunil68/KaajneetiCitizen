@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -16,6 +15,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.TagUtils;
+import com.ritvi.kaajneeti.Util.UtilityFunction;
 import com.ritvi.kaajneeti.interfaces.PollAnsClickInterface;
 import com.ritvi.kaajneeti.pojo.poll.PollAnsPOJO;
 import com.ritvi.kaajneeti.pojo.poll.PollPOJO;
@@ -33,11 +33,11 @@ public class PollFeedAnalyzeAnsAdapter extends RecyclerView.Adapter<PollFeedAnal
         this.items = items;
         this.activity = activity;
         this.fragment = fragment;
-        this.pollPOJO=pollPOJO;
+        this.pollPOJO = pollPOJO;
     }
 
-    public void setOnAnsClicked(PollAnsClickInterface pollAnsClickInterface){
-        this.pollAnsClickInterface=pollAnsClickInterface;
+    public void setOnAnsClicked(PollAnsClickInterface pollAnsClickInterface) {
+        this.pollAnsClickInterface = pollAnsClickInterface;
     }
 
     @Override
@@ -49,16 +49,16 @@ public class PollFeedAnalyzeAnsAdapter extends RecyclerView.Adapter<PollFeedAnal
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-        boolean is_media=false;
-        for(PollAnsPOJO pollAnsPOJO:items){
-            if(pollAnsPOJO.getPollAnswerImage().length()>0){
-                is_media=true;
+        boolean is_media = false;
+        for (PollAnsPOJO pollAnsPOJO : items) {
+            if (pollAnsPOJO.getPollAnswerImage().length() > 0) {
+                is_media = true;
             }
         }
 
-        if(is_media){
+        if (is_media) {
             holder.iv_poll_image.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             holder.iv_poll_image.setVisibility(View.GONE);
         }
 
@@ -69,38 +69,54 @@ public class PollFeedAnalyzeAnsAdapter extends RecyclerView.Adapter<PollFeedAnal
                 .dontAnimate()
                 .into(holder.iv_poll_image);
 
-        if(items.get(position).getPollAnswer().length()>0){
+        if (items.get(position).getPollAnswer().length() > 0) {
 
-        }else{
+        } else {
             holder.tv_poll_media_ans.setVisibility(View.GONE);
         }
 
         holder.ll_poll_ans.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pollAnsClickInterface.onAnsclicked(items.get(position).getPollAnswerId());
+//                pollAnsClickInterface.onAnsclicked(items.get(position).getPollAnswerId());
             }
         });
 
-        if(items.get(position).getMeAnsweredYesNo()==1){
+        if (items.get(position).getMeAnsweredYesNo() == 1) {
             holder.iv_check.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             holder.iv_check.setVisibility(View.GONE);
         }
 
         holder.tv_poll_media_ans.setText(items.get(position).getPollAnswer());
 
-        int per=getPercentage(items.get(position).getTotalAnswerdMe(),pollPOJO.getPollTotalParticipation());
-        Log.d(TagUtils.getTag(),"percentage:-"+per);
-        holder.pb_ans.setProgress(per);
-        holder.tv_per.setText(" "+String.valueOf(per)+"%");
+//        double per=getPercentage(items.get(position).getTotalAnswerdMe(),pollPOJO.getPollTotalParticipation());
+        try {
+            double per = (((double) items.get(position).getTotalAnswerdMe() / (double) pollPOJO.getPollTotalParticipation()) * 100);
+            Log.d(TagUtils.getTag(), "percentage:-" + per);
+            holder.pb_ans.setProgress((int) per);
+            holder.tv_per.setText(" " + UtilityFunction.format2Decimal(per) + "%");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         holder.itemView.setTag(items.get(position));
 
     }
-    public int getPercentage(int voted,int totalParticipation){
-        int per=(voted/totalParticipation)*100;
-        return per;
+
+    public double getPercentage(int voted, int totalParticipation) {
+        Log.d(TagUtils.getTag(), "voted:-" + voted);
+        Log.d(TagUtils.getTag(), "total participation:-" + totalParticipation);
+        try {
+            double calc = voted / totalParticipation;
+            Log.d(TagUtils.getTag(), "calc:-" + calc);
+            double per = calc * 100;
+            Log.d(TagUtils.getTag(), "per:-" + per);
+            return per;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     @Override
@@ -115,14 +131,15 @@ public class PollFeedAnalyzeAnsAdapter extends RecyclerView.Adapter<PollFeedAnal
         public LinearLayout ll_poll_ans;
         public ImageView iv_check;
         public ProgressBar pb_ans;
+
         public ViewHolder(View itemView) {
             super(itemView);
-            ll_poll_ans=itemView.findViewById(R.id.ll_poll_ans);
-            tv_poll_media_ans=itemView.findViewById(R.id.tv_poll_media_ans);
-            tv_per=itemView.findViewById(R.id.tv_per);
-            iv_poll_image=itemView.findViewById(R.id.iv_poll_image);
-            iv_check=itemView.findViewById(R.id.iv_check);
-            pb_ans=itemView.findViewById(R.id.pb_ans);
+            ll_poll_ans = itemView.findViewById(R.id.ll_poll_ans);
+            tv_poll_media_ans = itemView.findViewById(R.id.tv_poll_media_ans);
+            tv_per = itemView.findViewById(R.id.tv_per);
+            iv_poll_image = itemView.findViewById(R.id.iv_poll_image);
+            iv_check = itemView.findViewById(R.id.iv_check);
+            pb_ans = itemView.findViewById(R.id.pb_ans);
         }
     }
 

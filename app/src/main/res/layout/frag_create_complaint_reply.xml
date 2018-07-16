@@ -97,6 +97,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"></android.support.v7.widget.RecyclerView>
+
+            <Spinner
+                android:id="@+id/spinner_complaint_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/complaint_status"></Spinner>
+
         </LinearLayout>
 
     </ScrollView>

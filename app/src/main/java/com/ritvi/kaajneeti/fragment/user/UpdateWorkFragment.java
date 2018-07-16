@@ -162,6 +162,25 @@ public class UpdateWorkFragment extends Fragment implements DatePickerDialog.OnD
                 checkLocation();
             }
         });
+
+        if(workPOJO!=null){
+            setUpViews();
+        }
+    }
+
+    public void setUpViews(){
+        et_work.setText(workPOJO.getWorkCompany());
+        et_position.setText(workPOJO.getWorkPosition());
+        et_location.setText(workPOJO.getWorkLocation());
+        tv_start_date.setText(UtilityFunction.getServerConvertedDate(workPOJO.getWorkFrom()));
+
+
+        if(workPOJO.getCurrentlyWorking().equalsIgnoreCase("1")){
+            check_work.setChecked(true);
+        }else{
+            check_work.setChecked(false);
+            tv_end_date.setText(UtilityFunction.getServerConvertedDate(workPOJO.getWorkTo()));
+        }
     }
 
 

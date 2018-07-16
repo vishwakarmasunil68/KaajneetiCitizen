@@ -17,7 +17,7 @@
         android:layout_margin="7dp"
         android:padding="5dp" />
 
-    <TextView
+    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
         android:id="@+id/btn_update"
         android:layout_width="80dp"
         android:layout_height="wrap_content"

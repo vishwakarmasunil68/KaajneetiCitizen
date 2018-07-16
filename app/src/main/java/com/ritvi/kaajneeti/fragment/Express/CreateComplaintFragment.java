@@ -363,56 +363,56 @@ public class CreateComplaintFragment extends Fragment implements DatePickerDialo
     };
 
     public void checkPostStatus() {
-        boolean enable_post = true;
-        if (spinner_comp_type.getSelectedItemPosition() == 1) {
-            if (taggeduserInfoPOJOS != null && taggeduserInfoPOJOS.size() > 0) {
-//                enable_post = true;
-            } else {
-                enable_post = false;
-            }
-        } else if (spinner_comp_type.getSelectedItemPosition() == 2) {
-            if(et_applicant_name.getText().toString().length()>0
-                    &&et_applicant_father_name.getText().toString().length()>0
-                    &&et_phone_number.getText().toString().length()>0){
-//                enable_post=true;
-            }else{
-                enable_post=false;
-            }
-        }
-
-        if (locationPOJO != null) {
-//            enable_post = true;
-        } else {
-            enable_post = false;
-        }
-
-        if (et_subject.getText().toString().length() > 0) {
-//            enable_post = true;
-        } else {
-            enable_post = false;
-        }
-
-        if (tv_date.getText().toString().length() > 0) {
-//            enable_post = true;
-        } else {
-            enable_post = false;
-        }
-
-        if(et_description.getText().toString().length()==0){
-            enable_post=false;
-        }
-
-        if(leaderUserProfilePOJO==null){
-            enable_post=false;
-        }
-
-        if (enable_post) {
-            tv_post.setEnabled(true);
-            tv_post.setTextColor(Color.parseColor("#FFFFFF"));
-        } else {
-            tv_post.setEnabled(false);
-            tv_post.setTextColor(Color.parseColor("#90FFFFFF"));
-        }
+//        boolean enable_post = true;
+//        if (spinner_comp_type.getSelectedItemPosition() == 1) {
+//            if (taggeduserInfoPOJOS != null && taggeduserInfoPOJOS.size() > 0) {
+////                enable_post = true;
+//            } else {
+//                enable_post = false;
+//            }
+//        } else if (spinner_comp_type.getSelectedItemPosition() == 2) {
+//            if(et_applicant_name.getText().toString().length()>0
+//                    &&et_applicant_father_name.getText().toString().length()>0
+//                    &&et_phone_number.getText().toString().length()>0){
+////                enable_post=true;
+//            }else{
+//                enable_post=false;
+//            }
+//        }
+//
+//        if (locationPOJO != null) {
+////            enable_post = true;
+//        } else {
+//            enable_post = false;
+//        }
+//
+//        if (et_subject.getText().toString().length() > 0) {
+////            enable_post = true;
+//        } else {
+//            enable_post = false;
+//        }
+//
+//        if (tv_date.getText().toString().length() > 0) {
+////            enable_post = true;
+//        } else {
+//            enable_post = false;
+//        }
+//
+//        if(et_description.getText().toString().length()==0){
+//            enable_post=false;
+//        }
+//
+//        if(leaderUserProfilePOJO==null){
+//            enable_post=false;
+//        }
+//
+//        if (enable_post) {
+//            tv_post.setEnabled(true);
+//            tv_post.setTextColor(Color.parseColor("#FFFFFF"));
+//        } else {
+//            tv_post.setEnabled(false);
+//            tv_post.setTextColor(Color.parseColor("#90FFFFFF"));
+//        }
 
     }
 

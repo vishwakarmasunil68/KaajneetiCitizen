@@ -16,6 +16,12 @@ public class Constants {
     public static final int ACTIVITY_TAG_PEOPLE = 101;
     public static final int ACTIVITY_LOCATION = 102;
     public static final int ACTIVITY_SELECT_LEADER = 103;
+    public static final int ACTIVITY_SIGNATURE= 104;
+    public static final int FRAG_FEED_COMMENT=105;
+    public static final int FRAG_POLL_COMMENT=106;
+    public static final int FRAG_EVENT_COMMENT=107;
+    public static final int FRAG_COMPLAINT_COMMENT=108;
+
 
     // Access permission
     public static final int ACCESS_CAMERA = 2001;
@@ -74,6 +80,8 @@ public class Constants {
 
     public static final String IS_SEARCH="is_search";
     public static final String SEARCH_TEXT="search_text";
+    public static final String FRIEND_USER_PROFILE_ID="friend_user_profile_id";
+    public static final String FRIEND_USER_ID="friend_user_id";
 
     //getstate list array
     public static List<String> setStateList() {

@@ -13,12 +13,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
 import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.interfaces.PollAnsClickInterface;
 import com.ritvi.kaajneeti.pojo.poll.PollAnsPOJO;
+import com.ritvi.kaajneeti.pojo.poll.PollPOJO;
 import com.ritvi.kaajneeti.webservice.WebServiceBase;
 import com.ritvi.kaajneeti.webservice.WebServicesCallBack;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
@@ -35,11 +37,13 @@ public class PollFeedAnsAdapter extends RecyclerView.Adapter<PollFeedAnsAdapter.
     Activity activity;
     Fragment fragment;
     PollAnsClickInterface pollAnsClickInterface;
+    PollPOJO pollPOJO;
 
-    public PollFeedAnsAdapter(Activity activity, Fragment fragment, List<PollAnsPOJO> items) {
+    public PollFeedAnsAdapter(Activity activity, Fragment fragment, List<PollAnsPOJO> items, PollPOJO pollPOJO) {
         this.items = items;
         this.activity = activity;
         this.fragment = fragment;
+        this.pollPOJO=pollPOJO;
     }
 
     public void setOnAnsClicked(PollAnsClickInterface pollAnsClickInterface){
@@ -85,6 +89,19 @@ public class PollFeedAnsAdapter extends RecyclerView.Adapter<PollFeedAnsAdapter.
             @Override
             public void onClick(View view) {
 //                pollAnsClickInterface.onAnsclicked(items.get(position).getPollAnswerId());
+                boolean me_participated=false;
+//                for(PollAnsPOJO pollAnsPOJO:items){
+//                    if(pollAnsPOJO.getMeAnsweredYesNo().equals("1")){
+//                        me_participated=true;
+//                    }
+//                }
+                String url="";
+                if(pollPOJO.getMeParticipated()==1){
+                    url=WebServicesUrls.POLL_REPARTICIPATE;
+                }else{
+                    url=WebServicesUrls.SAVE_POLL_ANS;
+                }
+
                 Log.d(TagUtils.getTag(), "poll ans clicked:-" + items.get(position).getPollAnswerId());
                 ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
                 nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
@@ -97,6 +114,10 @@ public class PollFeedAnsAdapter extends RecyclerView.Adapter<PollFeedAnsAdapter.
                             JSONObject jsonObject = new JSONObject(response);
                             if (jsonObject.optString("status").equalsIgnoreCase("success")) {
                                 holder.iv_check.setVisibility(View.VISIBLE);
+                                if(pollPOJO.getMeParticipated()==1){
+                                    PollPOJO pollPOJO=new Gson().fromJson(jsonObject.optJSONObject("result").toString(),PollPOJO.class);
+                                    pollAnsClickInterface.onAnsclicked(pollPOJO);
+                                }
                                 ToastClass.showShortToast(activity.getApplicationContext(), "Thanks for you participation");
                             } else {
                                 ToastClass.showShortToast(activity.getApplicationContext(), jsonObject.optString("message"));
@@ -105,7 +126,7 @@ public class PollFeedAnsAdapter extends RecyclerView.Adapter<PollFeedAnsAdapter.
                             e.printStackTrace();
                         }
                     }
-                }, "POLL_ANSWERED", true).execute(WebServicesUrls.SAVE_POLL_ANS);
+                }, "POLL_ANSWERED", true).execute(url);
             }
         });
 

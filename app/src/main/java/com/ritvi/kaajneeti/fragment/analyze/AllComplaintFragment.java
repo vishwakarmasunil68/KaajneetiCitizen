@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +31,7 @@ import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.Util.UtilityFunction;
 import com.ritvi.kaajneeti.adapter.HomeFeedAdapter;
+import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
 import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
 import com.ritvi.kaajneeti.pojo.ResponsePOJO;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
@@ -55,7 +57,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AllComplaintFragment extends Fragment {
+public class AllComplaintFragment extends FragmentController {
 
     @BindView(R.id.rv_data)
     RecyclerView rv_data;
@@ -92,21 +94,27 @@ public class AllComplaintFragment extends Fragment {
     EditText et_search;
     @BindView(R.id.tv_title)
     TextView tv_title;
-
+    @BindView(R.id.btn_reset)
+    TextView btn_reset;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
     boolean is_search=false;
     String search_text="";
+    String friend_profile_id="";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_all_complaint, container, false);
-        ButterKnife.bind(this, view);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setUpView(getActivity(),this,view);
+
+
 
         if(getArguments()!=null){
             is_search=getArguments().getBoolean(Constants.IS_SEARCH);
@@ -120,6 +128,7 @@ public class AllComplaintFragment extends Fragment {
                 et_search.setVisibility(View.GONE);
                 tv_title.setVisibility(View.VISIBLE);
             }
+            friend_profile_id=getArguments().getString(Constants.FRIEND_USER_PROFILE_ID);
         }
 
         attachAdapter();
@@ -148,7 +157,12 @@ public class AllComplaintFragment extends Fragment {
                 callAPI();
             }
         });
-
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                callAPI();
+            }
+        });
     }
 
     String date_start_range = "";
@@ -196,6 +210,12 @@ public class AllComplaintFragment extends Fragment {
         });
 
         iv_delete_filter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                iv_filter.callOnClick();
+            }
+        });
+        btn_reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 check_associated.setChecked(false);
@@ -323,7 +343,7 @@ public class AllComplaintFragment extends Fragment {
     public void callAPI() {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
-        nameValuePairs.add(new BasicNameValuePair("friend_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("friend_profile_id", friend_profile_id));
         nameValuePairs.add(new BasicNameValuePair("search_in", "complaint"));
         nameValuePairs.add(new BasicNameValuePair("posted_by_me", posted_by_me));
         nameValuePairs.add(new BasicNameValuePair("me_associated", me_associated));
@@ -340,6 +360,7 @@ public class AllComplaintFragment extends Fragment {
 
                 @Override
                 public void onGetMsg(ResponsePOJO<AllSearchPOJO> responsePOJO) {
+                    swipeRefreshLayout.setRefreshing(false);
                     complaintPOJOS.clear();
                     try {
                         if (responsePOJO.isSuccess()) {
@@ -359,6 +380,7 @@ public class AllComplaintFragment extends Fragment {
 
                 @Override
                 public void onGetMsg(ResponseListPOJO<FeedPOJO> responseListPOJO) {
+                    swipeRefreshLayout.setRefreshing(false);
                     complaintPOJOS.clear();
                     try {
                         if (responseListPOJO.isSuccess()) {

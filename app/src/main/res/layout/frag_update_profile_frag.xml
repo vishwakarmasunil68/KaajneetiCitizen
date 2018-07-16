@@ -373,12 +373,13 @@
                         android:text="Date Of Birth" />
 
                     <FrameLayout
+                        android:id="@+id/frame_dob"
                         android:layout_width="match_parent"
                         android:layout_height="42dp"
                         android:layout_marginTop="13dp"
                         android:layout_marginBottom="7dp">
 
-                        <TextView
+                        <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                             android:id="@+id/tv_dob"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -420,7 +421,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="13dp"
                         android:background="@drawable/ic_edit_full"
-                        android:minHeight="85dp"
+                        android:minHeight="45dp"
                         android:paddingLeft="5dp"
                         android:paddingRight="5dp"
                         android:singleLine="true"

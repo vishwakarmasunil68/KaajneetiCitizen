@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,11 +37,11 @@ import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.Util.UtilityFunction;
 import com.ritvi.kaajneeti.activity.express.CheckInActivity;
 import com.ritvi.kaajneeti.adapter.HomeFeedAdapter;
-import com.ritvi.kaajneeti.fragment.search.SearchAllFragment;
+import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
 import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
 import com.ritvi.kaajneeti.pojo.ResponsePOJO;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
-import com.ritvi.kaajneeti.pojo.location.NewLocationPOJO;
+import com.ritvi.kaajneeti.pojo.location.LocationPOJO;
 import com.ritvi.kaajneeti.pojo.search.AllSearchPOJO;
 import com.ritvi.kaajneeti.webservice.ResponseCallBack;
 import com.ritvi.kaajneeti.webservice.ResponseListCallback;
@@ -63,7 +64,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AllPostFragment extends Fragment {
+public class AllPostFragment extends FragmentController {
 
     @BindView(R.id.rv_data)
     RecyclerView rv_data;
@@ -110,14 +111,21 @@ public class AllPostFragment extends Fragment {
     ImageView iv_location;
     @BindView(R.id.tv_title)
     TextView tv_title;
+    @BindView(R.id.btn_reset)
+    Button btn_reset;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
+    boolean is_search = false;
+    String search_text = "";
 
-    boolean is_search=false;
-    String search_text="";
+    String friend_profile_id = "";
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_all_posts, container, false);
-        ButterKnife.bind(this, view);
+        setUpView(getActivity(),this,view);
         return view;
     }
 
@@ -125,15 +133,15 @@ public class AllPostFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if(getArguments()!=null){
-            is_search=getArguments().getBoolean(Constants.IS_SEARCH);
-            search_text=getArguments().getString(Constants.SEARCH_TEXT);
+        if (getArguments() != null) {
+            is_search = getArguments().getBoolean(Constants.IS_SEARCH);
+            search_text = getArguments().getString(Constants.SEARCH_TEXT);
             et_search.setText(search_text);
-
-            if(is_search){
+            friend_profile_id = getArguments().getString(Constants.FRIEND_USER_PROFILE_ID);
+            if (is_search) {
                 et_search.setVisibility(View.VISIBLE);
                 tv_title.setVisibility(View.GONE);
-            }else{
+            } else {
                 et_search.setVisibility(View.GONE);
                 tv_title.setVisibility(View.VISIBLE);
             }
@@ -166,8 +174,14 @@ public class AllPostFragment extends Fragment {
                 callAPI();
             }
         });
-
-
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                callAPI();
+            }
+        });
+        activityManager.focusKeyboard(et_search);
+//        activityManager.hideKeyboard(getActivity(),view);
     }
 
     String date_start_range = "";
@@ -224,6 +238,12 @@ public class AllPostFragment extends Fragment {
         iv_delete_filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                iv_filter.callOnClick();
+            }
+        });
+        btn_reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 check_posted.setChecked(false);
                 check_post_commented.setChecked(false);
                 check_post_liked.setChecked(false);
@@ -239,9 +259,12 @@ public class AllPostFragment extends Fragment {
                 post_tagged = "";
 
                 setRangeButtonBack();
+                et_city_filter.setText("");
+                locationPOJO = null;
                 iv_filter.callOnClick();
             }
         });
+
 
         btn_apply.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -269,17 +292,17 @@ public class AllPostFragment extends Fragment {
                     post_liked = "";
                 }
                 if (check_posted_by_friend.isChecked()) {
-                    post_by_friend= "1";
+                    post_by_friend = "1";
                 } else {
                     post_by_friend = "";
                 }
 
                 iv_filter.callOnClick();
-                if(is_search){
-
-                }else {
-                    callAPI();
-                }
+//                if (is_search) {
+//
+//                } else {
+                callAPI();
+//                }
             }
         });
 
@@ -379,7 +402,7 @@ public class AllPostFragment extends Fragment {
     public void callAPI() {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
-        nameValuePairs.add(new BasicNameValuePair("friend_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("friend_profile_id", friend_profile_id));
 
         nameValuePairs.add(new BasicNameValuePair("search_in", "post"));
         nameValuePairs.add(new BasicNameValuePair("posted_by_me", posted_by_me));
@@ -389,22 +412,24 @@ public class AllPostFragment extends Fragment {
         nameValuePairs.add(new BasicNameValuePair("me_commented", post_commented));
         nameValuePairs.add(new BasicNameValuePair("date_from", UtilityFunction.getConvertedDate(date_start_range)));
         nameValuePairs.add(new BasicNameValuePair("date_to", UtilityFunction.getConvertedDate(date_end_range)));
-        if(newLocationPOJO!=null){
-            nameValuePairs.add(new BasicNameValuePair("location", newLocationPOJO.getMain_text()));
-        }else{
+        if (locationPOJO != null) {
+            nameValuePairs.add(new BasicNameValuePair("location", locationPOJO.getFormatted_address()));
+            nameValuePairs.add(new BasicNameValuePair("location_place_id", locationPOJO.getPlaceId()));
+        } else {
             nameValuePairs.add(new BasicNameValuePair("location", ""));
         }
 
-        String url="";
-        if(is_search){
+        String url = "";
+        if (is_search) {
             nameValuePairs.add(new BasicNameValuePair("q", et_search.getText().toString()));
             nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
-            url=WebServicesUrls.ALL_SEARCH_API;
+            url = WebServicesUrls.ALL_SEARCH_API;
 
             new WebServiceBaseResponse<AllSearchPOJO>(nameValuePairs, getActivity(), new ResponseCallBack<AllSearchPOJO>() {
 
                 @Override
                 public void onGetMsg(ResponsePOJO<AllSearchPOJO> responsePOJO) {
+                    swipeRefreshLayout.setRefreshing(false);
                     feedPOJOS.clear();
                     try {
                         if (responsePOJO.isSuccess()) {
@@ -419,11 +444,12 @@ public class AllPostFragment extends Fragment {
                 }
             }, AllSearchPOJO.class, "ALL_SEARCH_API", false).execute(url);
 
-        }else{
-            url=WebServicesUrls.ALL_POST;
+        } else {
+            url = WebServicesUrls.ALL_POST;
             new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
                 @Override
                 public void onGetMsg(ResponseListPOJO responseListPOJO) {
+                    swipeRefreshLayout.setRefreshing(false);
                     feedPOJOS.clear();
                     try {
                         if (responseListPOJO.isSuccess()) {
@@ -438,7 +464,6 @@ public class AllPostFragment extends Fragment {
                 }
             }, FeedPOJO.class, "get_all_post", true).execute(url);
         }
-
 
 
     }
@@ -479,16 +504,18 @@ public class AllPostFragment extends Fragment {
         }
     }
 
-    NewLocationPOJO newLocationPOJO;
+    LocationPOJO locationPOJO;
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.ACTIVITY_LOCATION) {
             if (resultCode == Activity.RESULT_OK) {
-                NewLocationPOJO newLocationPOJO = (NewLocationPOJO) data.getSerializableExtra("location");
-                et_city_filter.setText(newLocationPOJO.getMain_text() + "," + newLocationPOJO.getSecondary_text());
-            }if (resultCode == Activity.RESULT_CANCELED) {
-                newLocationPOJO=null;
+                locationPOJO = (LocationPOJO) data.getSerializableExtra("location");
+                et_city_filter.setText(locationPOJO.getFormatted_address());
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                locationPOJO = null;
             }
         }
     }

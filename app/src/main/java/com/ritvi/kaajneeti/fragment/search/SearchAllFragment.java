@@ -121,6 +121,9 @@ public class SearchAllFragment extends FragmentController {
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(Constants.IS_SEARCH, true);
                 bundle.putString(Constants.SEARCH_TEXT, et_search.getText().toString());
+                bundle.putString("user_id", Constants.userProfilePOJO.getUserId());
+                bundle.putString("user_profile_id", Constants.userProfilePOJO.getUserProfileId());
+                bundle.putString("friend_user_profile_id", Constants.userProfilePOJO.getUserProfileId());
                 friendFragment.setArguments(bundle);
 
                 activityManager.startFragment(R.id.frame_home, friendFragment);
@@ -147,6 +150,8 @@ public class SearchAllFragment extends FragmentController {
                 AllEventFragment allEventFragment = new AllEventFragment();
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(Constants.IS_SEARCH, true);
+                bundle.putString(Constants.FRIEND_USER_PROFILE_ID, Constants.userProfilePOJO.getUserProfileId());
+                bundle.putString(Constants.FRIEND_USER_ID, Constants.userProfilePOJO.getUserId());
                 bundle.putString(Constants.SEARCH_TEXT, et_search.getText().toString());
                 allEventFragment.setArguments(bundle);
 
@@ -172,8 +177,10 @@ public class SearchAllFragment extends FragmentController {
                 if (responsePOJO.isSuccess()) {
                     SearchAllFragment.this.allSearchPOJO = responsePOJO.getResult();
                     showData(responsePOJO.getResult());
+                    rv_tags.setVisibility(View.VISIBLE);
                 } else {
                     ToastClass.showShortToast(getActivity().getApplicationContext(), responsePOJO.getMessage());
+                    rv_tags.setVisibility(View.GONE);
                 }
             }
         }, AllSearchPOJO.class, "ALL_SEARCH_API", false).execute(WebServicesUrls.ALL_SEARCH_API);
@@ -287,6 +294,9 @@ public class SearchAllFragment extends FragmentController {
             Bundle bundle = new Bundle();
             bundle.putBoolean(Constants.IS_SEARCH, true);
             bundle.putString(Constants.SEARCH_TEXT, et_search.getText().toString());
+            bundle.putString(Constants.FRIEND_USER_PROFILE_ID, Constants.userProfilePOJO.getUserProfileId());
+            bundle.putString(Constants.FRIEND_USER_ID, Constants.userProfilePOJO.getUserId());
+            bundle.putString("friend_user_profile_id", Constants.userProfilePOJO.getUserProfileId());
             switch (search_in.toLowerCase()) {
                 case Constants.SEARCH_IN_POST:
                     AllPostFragment allPostFragment = new AllPostFragment();
@@ -301,6 +311,7 @@ public class SearchAllFragment extends FragmentController {
                 case Constants.SEARCH_IN_EVENT:
                     AllEventFragment allEventFragment = new AllEventFragment();
                     allEventFragment.setArguments(bundle);
+
                     activityManager.startFragment(R.id.frame_home, allEventFragment);
                     break;
                 case Constants.SEARCH_IN_POLL:

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -34,6 +35,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
+import com.ritvi.kaajneeti.Util.FileUtils;
 import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.Util.ToastClass;
 import com.ritvi.kaajneeti.Util.UtilityFunction;
@@ -41,8 +43,6 @@ import com.ritvi.kaajneeti.activity.express.CheckInActivity;
 import com.ritvi.kaajneeti.activity.express.TagPeopleActivity;
 import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.adapter.TagShowAdapter;
-import com.ritvi.kaajneeti.pojo.allfeeds.MediaPOJO;
-import com.ritvi.kaajneeti.pojo.complaint.ComplaintAttachmentPOJO;
 import com.ritvi.kaajneeti.pojo.event.EventPOJO;
 import com.ritvi.kaajneeti.pojo.location.GeometryPOJO;
 import com.ritvi.kaajneeti.pojo.location.LatLongPOJO;
@@ -53,6 +53,7 @@ import com.ritvi.kaajneeti.webservice.WebServicesUrls;
 import com.ritvi.kaajneeti.webservice.WebUploadService;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
+import com.yalantis.ucrop.UCrop;
 
 import net.alhazmy13.mediapicker.Image.ImagePicker;
 
@@ -269,7 +270,7 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
                                 initiateGalleryPicker();
                                 break;
                             case R.id.popup_remove:
-                                delete_image="1";
+                                delete_image = "1";
                                 cover_image_path = "";
                                 Glide.with(getActivity().getApplicationContext())
                                         .load(R.drawable.ic_default_pic)
@@ -300,16 +301,16 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
             tv_end_date.setText(UtilityFunction.getServerConvertedDate(eventPOJO.getEndDate()));
 
 //            if (eventPOJO.getEventAttachment().size() > 0) {
-                Glide.with(getActivity().getApplicationContext())
-                        .load(eventPOJO.getEventCoverPhoto())
-                        .error(R.drawable.ic_default_profile_pic)
-                        .placeholder(R.drawable.ic_default_profile_pic)
-                        .dontAnimate()
-                        .into(iv_event_image);
+            Glide.with(getActivity().getApplicationContext())
+                    .load(eventPOJO.getEventCoverPhoto())
+                    .error(R.drawable.ic_default_profile_pic)
+                    .placeholder(R.drawable.ic_default_profile_pic)
+                    .dontAnimate()
+                    .into(iv_event_image);
 //            }
 
-            if(eventPOJO.getEventAttendee()!=null&&eventPOJO.getEventAttendee().size()>0){
-                taggeduserInfoPOJOS=eventPOJO.getEventAttendee();
+            if (eventPOJO.getEventAttendee() != null && eventPOJO.getEventAttendee().size() > 0) {
+                taggeduserInfoPOJOS = eventPOJO.getEventAttendee();
                 attachTagPeopleAdapter();
             }
 
@@ -374,7 +375,6 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
         boolean enable_post = true;
 
 
-
         if (et_event_name.getText().toString().length() == 0) {
             enable_post = false;
         }
@@ -414,7 +414,7 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
     }
 
 
-    String delete_image="0";
+    String delete_image = "0";
 
     public void initiateCameraPicker() {
         //0=camera,1=Gallery,2=Camera and gallery
@@ -525,13 +525,13 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
             reqEntity.addPart("EveryYear", new StringBody(""));
             reqEntity.addPart("EveryMonth", new StringBody(""));
 
-            int tagged_count=0;
-            for(UserProfilePOJO userProfilePOJO:taggeduserInfoPOJOS){
-                reqEntity.addPart("event_attendee["+tagged_count+"]", new StringBody(userProfilePOJO.getUserProfileId()));
+            int tagged_count = 0;
+            for (UserProfilePOJO userProfilePOJO : taggeduserInfoPOJOS) {
+                reqEntity.addPart("event_attendee[" + tagged_count + "]", new StringBody(userProfilePOJO.getUserProfileId()));
                 tagged_count++;
             }
 
-            Log.d(TagUtils.getTag(),"delete_image:-"+delete_image);
+            Log.d(TagUtils.getTag(), "delete_image:-" + delete_image);
             reqEntity.addPart("delete_image", new StringBody(delete_image));
 
             if (spinner_pubpri.getSelectedItemPosition() == 0) {
@@ -549,16 +549,15 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
                 count++;
             }
 
-            String url="";
-            if(eventPOJO!=null){
+            String url = "";
+            if (eventPOJO != null) {
                 reqEntity.addPart("event_id", new StringBody(eventPOJO.getEventId()));
-                url=WebServicesUrls.UPDATE_EVENT;
-            }else{
-                url=WebServicesUrls.SAVE_EVENT;
+                url = WebServicesUrls.UPDATE_EVENT;
+            } else {
+                url = WebServicesUrls.SAVE_EVENT;
             }
 
             printData();
-
 
 
             new WebUploadService(reqEntity, getActivity(), new WebServicesCallBack() {
@@ -581,27 +580,27 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
         }
     }
 
-    public void printData(){
-        try{
-            ArrayList<NameValuePair> nameValuePairs=new ArrayList<>();
-            nameValuePairs.add(new BasicNameValuePair("event_name",et_event_name.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("event_description",et_description.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("event_location",""));
+    public void printData() {
+        try {
+            ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+            nameValuePairs.add(new BasicNameValuePair("event_name", et_event_name.getText().toString()));
+            nameValuePairs.add(new BasicNameValuePair("event_description", et_description.getText().toString()));
+            nameValuePairs.add(new BasicNameValuePair("event_location", ""));
 
             if (locationPOJO != null) {
                 try {
-                    nameValuePairs.add(new BasicNameValuePair("location_detail[place_id]",locationPOJO.getPlaceId()));
-                    nameValuePairs.add(new BasicNameValuePair("location_detail[location_name]",locationPOJO.getFormatted_address()));
-                    nameValuePairs.add(new BasicNameValuePair("location_detail[location_lant]",String.valueOf(locationPOJO.getGeometry().getLocation().getLat())));
-                    nameValuePairs.add(new BasicNameValuePair("location_detail[location_long]",String.valueOf(locationPOJO.getGeometry().getLocation().getLng())));
-                    nameValuePairs.add(new BasicNameValuePair("location_detail[location_url]",locationPOJO.getUrl()));
-                    nameValuePairs.add(new BasicNameValuePair("location_detail[location_address]",locationPOJO.getAdr_address()));
-                    nameValuePairs.add(new BasicNameValuePair("location_detail[location_vicinity]",locationPOJO.getVicinity()));
+                    nameValuePairs.add(new BasicNameValuePair("location_detail[place_id]", locationPOJO.getPlaceId()));
+                    nameValuePairs.add(new BasicNameValuePair("location_detail[location_name]", locationPOJO.getFormatted_address()));
+                    nameValuePairs.add(new BasicNameValuePair("location_detail[location_lant]", String.valueOf(locationPOJO.getGeometry().getLocation().getLat())));
+                    nameValuePairs.add(new BasicNameValuePair("location_detail[location_long]", String.valueOf(locationPOJO.getGeometry().getLocation().getLng())));
+                    nameValuePairs.add(new BasicNameValuePair("location_detail[location_url]", locationPOJO.getUrl()));
+                    nameValuePairs.add(new BasicNameValuePair("location_detail[location_address]", locationPOJO.getAdr_address()));
+                    nameValuePairs.add(new BasicNameValuePair("location_detail[location_vicinity]", locationPOJO.getVicinity()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
-                nameValuePairs.add(new BasicNameValuePair("event_location",""));
+                nameValuePairs.add(new BasicNameValuePair("event_location", ""));
             }
 
             String start_date = getFormattedDate(tv_start_date.getText().toString());
@@ -610,36 +609,36 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
             Log.d(TagUtils.getTag(), "start_date:-" + start_date);
             Log.d(TagUtils.getTag(), "end_date:-" + end_date);
 
-            nameValuePairs.add(new BasicNameValuePair("start_date",start_date));
-            nameValuePairs.add(new BasicNameValuePair("end_date",end_date));
-            nameValuePairs.add(new BasicNameValuePair("EveryYear",""));
-            nameValuePairs.add(new BasicNameValuePair("EveryMonth",""));
+            nameValuePairs.add(new BasicNameValuePair("start_date", start_date));
+            nameValuePairs.add(new BasicNameValuePair("end_date", end_date));
+            nameValuePairs.add(new BasicNameValuePair("EveryYear", ""));
+            nameValuePairs.add(new BasicNameValuePair("EveryMonth", ""));
 
-            int tagged_count=0;
-            for(UserProfilePOJO userProfilePOJO:taggeduserInfoPOJOS){
-                nameValuePairs.add(new BasicNameValuePair("event_attendee["+tagged_count+"]",userProfilePOJO.getUserProfileId()));
+            int tagged_count = 0;
+            for (UserProfilePOJO userProfilePOJO : taggeduserInfoPOJOS) {
+                nameValuePairs.add(new BasicNameValuePair("event_attendee[" + tagged_count + "]", userProfilePOJO.getUserProfileId()));
                 tagged_count++;
             }
 
-            Log.d(TagUtils.getTag(),"delete_image:-"+delete_image);
-            nameValuePairs.add(new BasicNameValuePair("delete_image",delete_image));
+            Log.d(TagUtils.getTag(), "delete_image:-" + delete_image);
+            nameValuePairs.add(new BasicNameValuePair("delete_image", delete_image));
 
             if (spinner_pubpri.getSelectedItemPosition() == 0) {
-                nameValuePairs.add(new BasicNameValuePair("privacy","1"));
+                nameValuePairs.add(new BasicNameValuePair("privacy", "1"));
             } else {
-                nameValuePairs.add(new BasicNameValuePair("privacy","0"));
+                nameValuePairs.add(new BasicNameValuePair("privacy", "0"));
             }
             boolean is_cover_set = false;
             int count = 0;
             if (new File(cover_image_path).exists()) {
                 is_cover_set = true;
                 nameValuePairs.add(new BasicNameValuePair("file[0]", cover_image_path));
-                nameValuePairs.add(new BasicNameValuePair("thumb[0]",""));
+                nameValuePairs.add(new BasicNameValuePair("thumb[0]", ""));
                 count++;
             }
 
-            if(eventPOJO!=null){
-                nameValuePairs.add(new BasicNameValuePair("event_id",eventPOJO.getEventId()));
+            if (eventPOJO != null) {
+                nameValuePairs.add(new BasicNameValuePair("event_id", eventPOJO.getEventId()));
             }
 
             String nmv = "";
@@ -648,7 +647,7 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
             }
             Log.d(TagUtils.getTag(), "nmv:-" + nmv);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -674,9 +673,10 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
             List<String> mPaths = (List<String>) data.getSerializableExtra(ImagePicker.EXTRA_IMAGE_PATH);
             if (mPaths.size() > 0) {
                 cover_image_path = mPaths.get(0);
-                delete_image="1";
+                delete_image = "1";
                 Log.d(TagUtils.getTag(), "image paths:-" + mPaths.toString());
-                updateCoverImage(cover_image_path);
+                cropPic(cover_image_path);
+//                updateCoverImage(cover_image_path);
             }
         } else if (requestCode == Constants.ACTIVITY_LOCATION) {
             if (resultCode == Activity.RESULT_OK) {
@@ -690,8 +690,24 @@ public class CreateEventFragment extends Fragment implements DatePickerDialog.On
                 taggeduserInfoPOJOS = (List<UserProfilePOJO>) data.getSerializableExtra("taggedpeople");
                 attachTagPeopleAdapter();
             }
+        }else if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            final Uri resultUri = UCrop.getOutput(data);
+            cover_image_path=resultUri.getPath();
+            updateCoverImage(resultUri.getPath());
         }
         checkPostStatus();
+    }
+
+    public void cropPic(String source) {
+        if (new File(source).exists()) {
+            Uri uri = Uri.fromFile(new File(source));
+            String destPath = FileUtils.getPhotoFolder() + File.separator + System.currentTimeMillis() + ".png";
+            Uri destUri = Uri.fromFile(new File(destPath));
+            UCrop.of(uri, destUri)
+                    .start(getActivity());
+        } else {
+            ToastClass.showShortToast(getActivity().getApplicationContext(), "File is corrupted");
+        }
     }
 
     public void attachTagPeopleAdapter() {

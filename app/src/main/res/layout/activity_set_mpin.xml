@@ -59,7 +59,7 @@
                 </FrameLayout>
 
 
-                <TextView
+                <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
@@ -81,7 +81,7 @@
                     app:pinWidth="60dp"
                     app:splitWidth="10dp" />
 
-                <TextView
+                <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"

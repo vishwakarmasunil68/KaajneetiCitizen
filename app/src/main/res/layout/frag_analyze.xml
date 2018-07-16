@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ScrollView
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true">
@@ -38,9 +38,25 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_grid_feeds"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_feeds"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/ll_feeds"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="vertical">
 
                     <LinearLayout
@@ -222,10 +238,26 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_connection_feeds"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_connections"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/ll_connections"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:id="@+id/ll_friends"
@@ -244,11 +276,11 @@
                             android:background="@drawable/ic_ll_text_feed"
                             android:gravity="center">
 
-                            <TextView
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                                 android:id="@+id/tv_friends"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="45"
+                                android:text="0"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
 
@@ -258,7 +290,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="24dp"
-                            android:text="Friends"
+                            android:text="Connect"
                             android:textSize="18sp" />
 
                     </LinearLayout>
@@ -279,11 +311,11 @@
                             android:background="@drawable/ic_ll_text_feed"
                             android:gravity="center">
 
-                            <TextView
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                                 android:id="@+id/tv_favorite_leader"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="45"
+                                android:text="0"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
 
@@ -315,11 +347,11 @@
                             android:background="@drawable/ic_ll_text_feed"
                             android:gravity="center">
 
-                            <TextView
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                                 android:id="@+id/tv_followers"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="45"
+                                android:text="0"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
 
@@ -351,11 +383,11 @@
                             android:background="@drawable/ic_ll_text_feed"
                             android:gravity="center">
 
-                            <TextView
+                            <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                                 android:id="@+id/tv_followings"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="45"
+                                android:text="0"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
 
@@ -372,7 +404,7 @@
 
                 </LinearLayout>
             </LinearLayout>
-        </ScrollView>
+        </android.support.v4.widget.NestedScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <ProgressBar

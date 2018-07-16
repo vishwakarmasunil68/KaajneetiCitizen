@@ -78,7 +78,7 @@
                 android:minHeight="45dp"
                 android:orientation="vertical">
 
-                <TextView
+                <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -101,7 +101,7 @@
                 android:minHeight="45dp"
                 android:orientation="vertical">
 
-                <TextView
+                <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -125,7 +125,7 @@
                 android:minHeight="45dp"
                 android:orientation="vertical">
 
-                <TextView
+                <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"

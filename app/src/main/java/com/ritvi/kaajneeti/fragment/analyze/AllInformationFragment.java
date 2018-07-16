@@ -89,7 +89,7 @@ public class AllInformationFragment extends Fragment{
 
     boolean is_search=false;
     String search_text="";
-
+    String friend_profile_id="";
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -113,6 +113,7 @@ public class AllInformationFragment extends Fragment{
                 et_search.setVisibility(View.GONE);
                 tv_title.setVisibility(View.VISIBLE);
             }
+            friend_profile_id=getArguments().getString(Constants.FRIEND_USER_PROFILE_ID);
         }
         attachAdapter();
         callAPI();
@@ -299,7 +300,7 @@ public class AllInformationFragment extends Fragment{
     public void callAPI() {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
-        nameValuePairs.add(new BasicNameValuePair("friend_profile_id",Constants.userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("friend_profile_id", friend_profile_id));
         nameValuePairs.add(new BasicNameValuePair("date_from", UtilityFunction.getConvertedDate(date_start_range)));
         nameValuePairs.add(new BasicNameValuePair("date_to", UtilityFunction.getConvertedDate(date_end_range)));
 

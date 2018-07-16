@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -29,8 +30,11 @@ import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.adapter.AttachMediaAdapter;
 import com.ritvi.kaajneeti.fragmentcontroller.FragmentContants;
 import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
+import com.ritvi.kaajneeti.pojo.ResponsePOJO;
 import com.ritvi.kaajneeti.pojo.allfeeds.MediaPOJO;
 import com.ritvi.kaajneeti.pojo.complaint.ComplaintPOJO;
+import com.ritvi.kaajneeti.webservice.ResponseCallBack;
+import com.ritvi.kaajneeti.webservice.WebServiceBaseResponse;
 import com.ritvi.kaajneeti.webservice.WebServicesCallBack;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
 import com.ritvi.kaajneeti.webservice.WebUploadService;
@@ -71,10 +75,13 @@ public class CreateComplaintReplyFragment extends FragmentController {
     RecyclerView rv_attachments;
     @BindView(R.id.btn_post)
     Button btn_post;
+    @BindView(R.id.spinner_complaint_status)
+    Spinner spinner_complaint_status;
+    @BindView(R.id.ll_back)
+    LinearLayout ll_back;
 
-    List<String> mediaFiles=new ArrayList<>();
     String complaint_id="";
-
+    ComplaintPOJO complaintPOJO;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -89,6 +96,7 @@ public class CreateComplaintReplyFragment extends FragmentController {
         super.onViewCreated(view, savedInstanceState);
         if(getArguments()!=null) {
             complaint_id = getArguments().getString("complaint_id");
+            getComplaintDetail();
         }
         attachMediaAdapter();
 
@@ -105,6 +113,38 @@ public class CreateComplaintReplyFragment extends FragmentController {
                 saveComplaint();
             }
         });
+
+        ll_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+    }
+
+
+    public void getComplaintDetail(){
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+        nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("complaint_id", complaint_id));
+        new WebServiceBaseResponse<ComplaintPOJO>(nameValuePairs, getActivity(), new ResponseCallBack<ComplaintPOJO>() {
+            @Override
+            public void onGetMsg(ResponsePOJO<ComplaintPOJO> responsePOJO) {
+                try {
+                    if (responsePOJO.isSuccess()) {
+                        complaintPOJO = responsePOJO.getResult();
+                        if(complaintPOJO.getComplaintStatus().equalsIgnoreCase("4")){
+                            btn_post.setVisibility(View.GONE);
+                        }else{
+                            btn_post.setVisibility(View.VISIBLE);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, ComplaintPOJO.class, "COMPLAINT_DETAIL", false).execute(WebServicesUrls.GET_COMPLAINT_DETAIL);
     }
 
 
@@ -154,14 +194,18 @@ public class CreateComplaintReplyFragment extends FragmentController {
 //            }
 
             int count = 0;
-
-            for (String file_path : mediaFiles) {
-                reqEntity.addPart("file[" + (count) + "]", new FileBody(new File(file_path)));
-                reqEntity.addPart("thumb[" + (count) + "]", new StringBody(""));
+            if(spinner_complaint_status.getSelectedItemPosition()==1){
+                reqEntity.addPart("current_status", new StringBody("4"));
             }
 
-            for (int i = 0; i < mediaFiles.size(); i++) {
-                reqEntity.addPart("file[" + (i) + "]", new FileBody(new File(mediaFiles.get(i))));
+//
+//            for (String file_path : mediaFiles) {
+//                reqEntity.addPart("file[" + (count) + "]", new FileBody(new File(file_path)));
+//                reqEntity.addPart("thumb[" + (count) + "]", new StringBody(""));
+//            }
+
+            for (int i = 0; i < attachPathString.size(); i++) {
+                reqEntity.addPart("file[" + (i) + "]", new FileBody(new File(attachPathString.get(i).getPath())));
                 reqEntity.addPart("thumb[" + (i) + "]", new StringBody(""));
             }
 
@@ -180,7 +224,7 @@ public class CreateComplaintReplyFragment extends FragmentController {
                         e.printStackTrace();
                     }
                 }
-            }, "CREATE_EVENT", true).execute(WebServicesUrls.SAVE_COMPLAINT_HISTORY);
+            }, "CREATE COMPLAINT REPLY", true).execute(WebServicesUrls.SAVE_COMPLAINT_HISTORY);
         } catch (UnsupportedEncodingException e){
             e.printStackTrace();
         }
@@ -193,12 +237,24 @@ public class CreateComplaintReplyFragment extends FragmentController {
             List<String> mPaths = (List<String>) data.getSerializableExtra(ImagePicker.EXTRA_IMAGE_PATH);
             if (mPaths.size() > 0) {
                 for (String path : mPaths) {
-//                    if (!attachPathString.contains(path)) {
-//                        attachPathString.add(path);
-//                    }
+                    if (!isImagePresent(path)) {
+                        MediaPOJO mediaPOJO = new MediaPOJO();
+                        mediaPOJO.setPath(path);
+                        attachPathString.add(mediaPOJO);
+                    }
                 }
                 attachMediaAdapter.notifyDataSetChanged();
             }
         }
+    }
+
+
+    public boolean isImagePresent(String path) {
+        for (MediaPOJO mediaPOJO : attachPathString) {
+            if (mediaPOJO.getPath().equalsIgnoreCase(path)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

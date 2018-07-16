@@ -2,6 +2,8 @@ package com.ritvi.kaajneeti.activity.express;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -15,10 +17,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Pref;
 import com.ritvi.kaajneeti.Util.StringUtils;
 import com.ritvi.kaajneeti.Util.TagUtils;
+import com.ritvi.kaajneeti.Util.UtilityFunction;
 import com.ritvi.kaajneeti.adapter.LocationAdapter;
 import com.ritvi.kaajneeti.pojo.location.LocationPOJO;
 import com.ritvi.kaajneeti.pojo.location.LocationResponseListPOJO;
@@ -26,6 +30,7 @@ import com.ritvi.kaajneeti.pojo.location.NewLocationPOJO;
 import com.ritvi.kaajneeti.webservice.GetWebServices;
 import com.ritvi.kaajneeti.webservice.LocationResponseListCallback;
 import com.ritvi.kaajneeti.webservice.LocationWebservice;
+import com.ritvi.kaajneeti.webservice.WebServiceBase;
 import com.ritvi.kaajneeti.webservice.WebServicesCallBack;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
 
@@ -33,9 +38,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CheckInActivity extends AppCompatActivity {
 
@@ -45,6 +52,8 @@ public class CheckInActivity extends AppCompatActivity {
     RecyclerView rv_location;
     @BindView(R.id.ic_back)
     ImageView ic_back;
+    @BindView(R.id.cv_current_location)
+    CircleImageView cv_current_location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +84,42 @@ public class CheckInActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+        cv_current_location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getCurrentAddress();
+            }
+        });
+    }
+
+    public void getCurrentAddress(){
+        try{
+            double[] loc=UtilityFunction.getLocation(getApplicationContext());
+//
+            String location_url="https://maps.googleapis.com/maps/api/geocode/json?latlng="+
+                    String.valueOf(loc[0])+","+String.valueOf(loc[1])+"&key="+getResources().getString(R.string.google_places_api_key);
+
+//            String location_url="https://maps.googleapis.com/maps/api/geocode/json?latlng=28.6275378,77.3724907&key=AIzaSyD_0g_gaQzNYafcBCKn1ErgLePEp2d-OGU";
+            Log.d(TagUtils.getTag(),"location url:-"+location_url);
+
+            new GetWebServices(this, new WebServicesCallBack() {
+                @Override
+                public void onGetMsg(String apicall, String response) {
+                    try{
+                        JSONObject jsonObject=new JSONObject(response);
+                        String place_id=jsonObject.optJSONArray("results").optJSONObject(0).optString("place_id");
+                        getLocationInfo(place_id);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }, "GET_LOCATION", false).execute(location_url);
+
+//            Log.d(TagUtils.getTag(),"location:-"+getAddress(28.6275378,77.3724907));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void callAPI() {

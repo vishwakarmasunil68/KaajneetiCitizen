@@ -119,8 +119,8 @@ public class ExpressActivity extends ActivityManager {
     LocationPOJO locationPOJO;
     PostPOJO postPOJO;
     EventPOJO eventPOJO;
-    ComplaintPOJO complaintPOJO;
     PollPOJO pollPOJO;
+    ComplaintPOJO complaintPOJO;
     List<String> deleteServerFiles = new ArrayList<>();
 
     @Override
@@ -132,6 +132,7 @@ public class ExpressActivity extends ActivityManager {
         postPOJO = (PostPOJO) getIntent().getSerializableExtra("post");
         eventPOJO = (EventPOJO) getIntent().getSerializableExtra("eventPOJO");
         complaintPOJO = (ComplaintPOJO) getIntent().getSerializableExtra("complaintPOJO");
+        pollPOJO = (PollPOJO) getIntent().getSerializableExtra("pollPOJO");
 
         if (eventPOJO != null) {
             Bundle bundle = new Bundle();

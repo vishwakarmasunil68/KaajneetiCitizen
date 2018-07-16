@@ -197,8 +197,7 @@ public class CreateInformationFragment extends Fragment {
         boolean enable_post = true;
 
 
-        if (et_subject.getText().toString().length() > 0) {
-        } else {
+        if (et_subject.getText().toString().length() == 0) {
             enable_post = false;
         }
 

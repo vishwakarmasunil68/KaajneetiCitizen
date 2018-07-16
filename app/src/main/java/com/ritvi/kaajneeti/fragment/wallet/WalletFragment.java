@@ -3,6 +3,7 @@ package com.ritvi.kaajneeti.fragment.wallet;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.facebook.all.All;
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
 import com.ritvi.kaajneeti.Util.UtilityFunction;
@@ -22,7 +22,6 @@ import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
 import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
 import com.ritvi.kaajneeti.pojo.payment.PaymentDataPOJO;
-import com.ritvi.kaajneeti.pojo.payment.PaymentTransPOJO;
 import com.ritvi.kaajneeti.webservice.ResponseListCallback;
 import com.ritvi.kaajneeti.webservice.WebServiceBaseResponseList;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
@@ -35,9 +34,9 @@ import java.util.List;
 
 import butterknife.BindView;
 
-public class WalletFragment extends FragmentController{
+public class WalletFragment extends FragmentController {
 
-    private final static int PAYMENT_REQUEST=101;
+    private final static int PAYMENT_REQUEST = 101;
 
     @BindView(R.id.tv_wallet_amount)
     TextView tv_wallet_amount;
@@ -47,12 +46,14 @@ public class WalletFragment extends FragmentController{
     RecyclerView rv_logs;
     @BindView(R.id.ll_back)
     LinearLayout ll_back;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.frag_wallet,container,false);
-        setUpView(getActivity(),this,view);
+        View view = inflater.inflate(R.layout.frag_wallet, container, false);
+        setUpView(getActivity(), this, view);
         return view;
     }
 
@@ -70,16 +71,23 @@ public class WalletFragment extends FragmentController{
         ll_add_money.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                WalletAmountFragment walletAmountFragment=new WalletAmountFragment();
-                Bundle bundle=new Bundle();
-                bundle.putSerializable("userProfilePOJO",Constants.userProfilePOJO);
+                WalletAmountFragment walletAmountFragment = new WalletAmountFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("userProfilePOJO", Constants.userProfilePOJO);
                 walletAmountFragment.setArguments(bundle);
-                activityManager.startFragmentForResult(R.id.frame_home,WalletFragment.this,walletAmountFragment,PAYMENT_REQUEST);
+                activityManager.startFragmentForResult(R.id.frame_home, WalletFragment.this, walletAmountFragment, PAYMENT_REQUEST);
+            }
+        });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getPaymentLogs();
             }
         });
     }
 
-    double walletAmount=0.0;
+    double walletAmount = 0.0;
 
     public void getPaymentLogs() {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
@@ -89,6 +97,7 @@ public class WalletFragment extends FragmentController{
         new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
             @Override
             public void onGetMsg(ResponseListPOJO<FeedPOJO> responseListPOJO) {
+                swipeRefreshLayout.setRefreshing(false);
                 feedPOJOS.clear();
                 if (responseListPOJO.isSuccess()) {
                     feedPOJOS.addAll(responseListPOJO.getResultList());
@@ -98,7 +107,7 @@ public class WalletFragment extends FragmentController{
                             PaymentDataPOJO paymentDataPOJO = feedPOJO.getPaymentDataPOJO();
                             if (paymentDataPOJO.getPaymentTo().getUserProfileId().equals(Constants.userProfilePOJO.getUserProfileId())) {
                                 amount += UtilityFunction.getTransAmount(paymentDataPOJO.getTransactionAmount());
-                            } else if(paymentDataPOJO.getPaymentBy().getUserProfileId().equals(Constants.userProfilePOJO.getUserProfileId())){
+                            } else if (paymentDataPOJO.getPaymentBy().getUserProfileId().equals(Constants.userProfilePOJO.getUserProfileId())) {
                                 amount -= UtilityFunction.getTransAmount(paymentDataPOJO.getTransactionAmount());
                             }
                         }
@@ -116,15 +125,16 @@ public class WalletFragment extends FragmentController{
     @Override
     public void onFragmentResult(int requestCode, int resultCode, Bundle data) {
         super.onFragmentResult(requestCode, resultCode, data);
-        if(requestCode==PAYMENT_REQUEST){
-            if(resultCode== FragmentContants.RESULT_OK){
+        if (requestCode == PAYMENT_REQUEST) {
+            if (resultCode == FragmentContants.RESULT_OK) {
                 getPaymentLogs();
             }
         }
     }
 
     ContributeTransAdapter contributeTransAdapter;
-    List<FeedPOJO> feedPOJOS=new ArrayList<>();
+    List<FeedPOJO> feedPOJOS = new ArrayList<>();
+
     public void attachAdapter() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         rv_logs.setLayoutManager(linearLayoutManager);

@@ -7,6 +7,8 @@
     <color name="header_text">#59C3FF</color>
     <color name="btn_text">#E3D56D</color>
     <color name="txt_highlight">#656363</color>
+    <color name="complaint_accepted">#4CAF50</color>
+    <color name="complaint_rejected">#D32F2F</color>
 
 
     <array name="reds">

@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#FFFFFF"
-    android:clickable="true">
+    android:clickable="true"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
@@ -146,38 +146,39 @@
                         android:id="@+id/et_location"
                         android:layout_width="match_parent"
                         android:layout_height="42dp"
-                        android:background="@drawable/ic_edit_full"
                         android:layout_gravity="center_vertical"
-                        android:singleLine="true"
+                        android:background="@drawable/ic_edit_full"
                         android:paddingLeft="10dp"
+                        android:paddingRight="25dp"
+                        android:singleLine="true"
                         android:textSize="14sp" />
 
                     <ImageView
                         android:id="@+id/iv_location"
                         android:layout_width="wrap_content"
                         android:layout_height="22dp"
-                        android:adjustViewBounds="true"
                         android:layout_gravity="right|center"
                         android:layout_marginRight="7dp"
-                        android:src="@drawable/ic_location_attach"/>
-                    
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/ic_location_attach" />
+
                 </FrameLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginLeft="35dp"
                 android:layout_marginRight="35dp"
-                android:layout_gravity="center_vertical"
-                android:gravity="center_vertical"
                 android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                     android:layout_width="wrap_content"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="I currently work here" />
 
                 <CheckBox
@@ -190,8 +191,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:visibility="gone"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <RadioButton
                         android:layout_width="wrap_content"
@@ -201,10 +202,10 @@
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="No"
                         android:layout_marginLeft="27dp"
+                        android:layout_marginRight="10dp"
                         android:checked="true"
-                        android:layout_marginRight="10dp"/>
+                        android:text="No" />
 
                 </RadioGroup>
             </LinearLayout>
@@ -236,25 +237,25 @@
 
                         <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                             android:id="@+id/tv_start_date"
-                            android:layout_gravity="center_vertical"
-                            android:gravity="center_vertical"
                             android:layout_width="match_parent"
                             android:layout_height="42dp"
+                            android:layout_gravity="center_vertical"
                             android:background="@drawable/ic_edit_back"
+                            android:gravity="center_vertical"
                             android:paddingLeft="5dp"
                             android:paddingRight="5dp"
                             android:singleLine="true"
                             android:textSize="14sp" />
-                        
+
                         <ImageView
                             android:id="@+id/iv_start_date"
                             android:layout_width="wrap_content"
                             android:layout_height="18dp"
-                            android:adjustViewBounds="true"
-                            android:src="@drawable/ic_event_white"
                             android:layout_gravity="right|center_vertical"
                             android:layout_marginRight="7dp"
-                            android:tint="@color/colorPrimary"/>
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/ic_event_white"
+                            android:tint="@color/colorPrimary" />
 
                     </FrameLayout>
 
@@ -265,9 +266,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
-                    android:visibility="visible"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="visible">
 
                     <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                         android:layout_width="wrap_content"
@@ -281,11 +282,11 @@
 
                         <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                             android:id="@+id/tv_end_date"
-                            android:layout_gravity="center_vertical"
-                            android:gravity="center_vertical"
                             android:layout_width="match_parent"
                             android:layout_height="42dp"
+                            android:layout_gravity="center_vertical"
                             android:background="@drawable/ic_edit_back"
+                            android:gravity="center_vertical"
                             android:paddingLeft="5dp"
                             android:paddingRight="5dp"
                             android:singleLine="true"
@@ -295,11 +296,11 @@
                             android:id="@+id/iv_end_date"
                             android:layout_width="wrap_content"
                             android:layout_height="18dp"
-                            android:adjustViewBounds="true"
-                            android:src="@drawable/ic_event_white"
                             android:layout_gravity="right|center_vertical"
                             android:layout_marginRight="7dp"
-                            android:tint="@color/colorPrimary"/>
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/ic_event_white"
+                            android:tint="@color/colorPrimary" />
 
                     </FrameLayout>
 

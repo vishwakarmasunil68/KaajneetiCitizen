@@ -3,6 +3,7 @@ package com.ritvi.kaajneeti.fragment.suggestion;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +68,8 @@ public class SuggestionDetailFragment extends FragmentController {
     LinearLayout ll_image_3;
     @BindView(R.id.ll_back)
     LinearLayout ll_back;
-
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
     String suggestion_id = "";
 
     @Nullable
@@ -93,6 +95,13 @@ public class SuggestionDetailFragment extends FragmentController {
                 onBackPressed();
             }
         });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getSuggestionDetails();
+            }
+        });
     }
 
     SuggestionPOJO suggestionPOJO;
@@ -104,6 +113,7 @@ public class SuggestionDetailFragment extends FragmentController {
         new WebServiceBaseResponse<SuggestionPOJO>(nameValuePairs, getActivity(), new ResponseCallBack<SuggestionPOJO>() {
             @Override
             public void onGetMsg(ResponsePOJO<SuggestionPOJO> responsePOJO) {
+                swipeRefreshLayout.setRefreshing(false);
                 try {
                     if (responsePOJO.isSuccess()) {
                         suggestionPOJO = responsePOJO.getResult();

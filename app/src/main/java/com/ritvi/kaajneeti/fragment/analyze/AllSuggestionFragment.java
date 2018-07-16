@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -88,10 +89,11 @@ public class AllSuggestionFragment extends Fragment{
     EditText et_search;
     @BindView(R.id.tv_title)
     TextView tv_title;
-
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
     boolean is_search=false;
     String search_text="";
-
+    String friend_profile_id="";
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -115,6 +117,8 @@ public class AllSuggestionFragment extends Fragment{
                 et_search.setVisibility(View.GONE);
                 tv_title.setVisibility(View.VISIBLE);
             }
+
+            friend_profile_id=getArguments().getString(Constants.FRIEND_USER_PROFILE_ID);
         }
         attachAdapter();
         callAPI();
@@ -142,7 +146,12 @@ public class AllSuggestionFragment extends Fragment{
                 callAPI();
             }
         });
-
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                callAPI();
+            }
+        });
     }
 
     String date_start_range = "";
@@ -300,7 +309,7 @@ public class AllSuggestionFragment extends Fragment{
     public void callAPI() {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
-        nameValuePairs.add(new BasicNameValuePair("friend_profile_id",Constants.userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("friend_profile_id", friend_profile_id));
         nameValuePairs.add(new BasicNameValuePair("date_from", UtilityFunction.getConvertedDate(date_start_range)));
         nameValuePairs.add(new BasicNameValuePair("date_to", UtilityFunction.getConvertedDate(date_end_range)));
 
@@ -314,6 +323,7 @@ public class AllSuggestionFragment extends Fragment{
 
                 @Override
                 public void onGetMsg(ResponsePOJO<AllSearchPOJO> responsePOJO) {
+                    swipeRefreshLayout.setRefreshing(false);
                     suggestionPOJOS.clear();
                     try {
                         if (responsePOJO.isSuccess()) {
@@ -332,6 +342,7 @@ public class AllSuggestionFragment extends Fragment{
             new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
                 @Override
                 public void onGetMsg(ResponseListPOJO responseListPOJO) {
+                    swipeRefreshLayout.setRefreshing(false);
                     suggestionPOJOS.clear();
                     try {
                         if (responseListPOJO.isSuccess()) {

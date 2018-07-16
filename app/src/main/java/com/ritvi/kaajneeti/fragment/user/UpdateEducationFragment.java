@@ -86,10 +86,8 @@ public class UpdateEducationFragment extends Fragment implements DatePickerDialo
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        educationPOJO= (EducationPOJO) getArguments().getSerializable("educationPOJO");
-
-        if(educationPOJO!=null){
-            setValues();
+        if(getArguments()!=null) {
+            educationPOJO = (EducationPOJO) getArguments().getSerializable("educationPOJO");
         }
 
         ll_back.setOnClickListener(new View.OnClickListener() {
@@ -152,7 +150,9 @@ public class UpdateEducationFragment extends Fragment implements DatePickerDialo
                 checkLocation();
             }
         });
-
+        if(educationPOJO!=null){
+            setValues();
+        }
     }
 
 
@@ -184,11 +184,12 @@ public class UpdateEducationFragment extends Fragment implements DatePickerDialo
         et_qualification.setText(educationPOJO.getQualification());
         et_location.setText(educationPOJO.getQualificationLocation());
         tv_start_date.setText(educationPOJO.getQualificationFrom());
-        tv_end_date.setText(educationPOJO.getQualificationTo());
+
         if (educationPOJO.getPersuing().equals("1")) {
             check_pursuing.setChecked(true);
         } else {
             check_pursuing.setChecked(false);
+            tv_end_date.setText(educationPOJO.getQualificationTo());
         }
     }
 

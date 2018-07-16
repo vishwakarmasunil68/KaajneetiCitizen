@@ -99,7 +99,7 @@ public class AllMenuFragment extends FragmentController {
             HomeActivity homeActivity= (HomeActivity) getActivity();
             UserProfileFragment userProfileFragment=new UserProfileFragment();
             Bundle bundle=new Bundle();
-            bundle.putSerializable("userProfile",Constants.userProfilePOJO);
+            bundle.putSerializable("user_profile_id",Constants.userProfilePOJO.getUserProfileId());
             userProfileFragment.setArguments(bundle);
 
             homeActivity.replaceFragmentinFrameHome(userProfileFragment,"UserProfileFragment");

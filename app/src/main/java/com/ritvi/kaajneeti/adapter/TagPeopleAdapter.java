@@ -1,14 +1,11 @@
 package com.ritvi.kaajneeti.adapter;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -66,24 +63,28 @@ public class TagPeopleAdapter extends RecyclerView.Adapter<TagPeopleAdapter.View
             }
         });
 
-        boolean is_checked=false;
-        for(UserProfilePOJO userProfilePOJO:taggedUserProfilePOJOS){
-            if(userProfilePOJO.getUserProfileId().equalsIgnoreCase(items.get(position).getUserProfileId())){
-                is_checked=true;
+        boolean is_checked = false;
+        for (UserProfilePOJO userProfilePOJO : taggedUserProfilePOJOS) {
+            if (userProfilePOJO.getUserProfileId().equalsIgnoreCase(items.get(position).getUserProfileId())) {
+                is_checked = true;
             }
         }
 
-        if(is_checked){
+        if (is_checked) {
             holder.iv_tag_check.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             holder.iv_tag_check.setVisibility(View.GONE);
         }
-
+        if (items.get(position).getUserTypeId().equalsIgnoreCase("1")) {
+            holder.iv_crown.setVisibility(View.GONE);
+        } else {
+            holder.iv_crown.setVisibility(View.VISIBLE);
+        }
         holder.ll_user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(activity instanceof TagPeopleActivity) {
-                    TagPeopleActivity tagPeopleActivity= (TagPeopleActivity) activity;
+                if (activity instanceof TagPeopleActivity) {
+                    TagPeopleActivity tagPeopleActivity = (TagPeopleActivity) activity;
                     if (holder.iv_tag_check.getVisibility() == View.VISIBLE) {
                         holder.iv_tag_check.setVisibility(View.GONE);
                         tagPeopleActivity.removeUser(items.get(position));
@@ -109,6 +110,7 @@ public class TagPeopleAdapter extends RecyclerView.Adapter<TagPeopleAdapter.View
         public TextView tv_name;
         public TextView tv_email;
         public ImageView iv_tag_check;
+        public ImageView iv_crown;
         public LinearLayout ll_user;
 
         public ViewHolder(View itemView) {
@@ -118,6 +120,7 @@ public class TagPeopleAdapter extends RecyclerView.Adapter<TagPeopleAdapter.View
             tv_email = itemView.findViewById(R.id.tv_email);
             ll_user = itemView.findViewById(R.id.ll_user);
             iv_tag_check = itemView.findViewById(R.id.iv_tag_check);
+            iv_crown = itemView.findViewById(R.id.iv_crown);
         }
     }
 }

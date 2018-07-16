@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="50dp"
+        android:gravity="center">
+
+        <com.ritvi.kaajneeti.view.SourceSansProBoldTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kaajneeti"
+            android:textColor="@color/colorPrimary"
+            android:textSize="30sp" />
+
+        <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
+            android:layout_margin="25dp"
+            android:layout_gravity="center"
+            android:gravity="center"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/tv_intro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="?attr/actionBarSize"
+        android:adjustViewBounds="true"
+        android:src="@drawable/slider2" />
+
+    <LinearLayout
+        android:id="@+id/ll_signup"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="bottom|center"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Already a member?" />
+
+        <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/colorPrimary"
+            android:text="Sign in" />
+    </LinearLayout>
+
+
+</FrameLayout>

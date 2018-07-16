@@ -17,6 +17,7 @@ import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
 import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.Util.ToastClass;
+import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.adapter.PollCommentAdapter;
 import com.ritvi.kaajneeti.fragmentcontroller.FragmentContants;
 import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
@@ -90,6 +91,7 @@ public class PollCommentFragment extends FragmentController {
                             comment_added++;
                             et_comment.setText("");
                             postCommentAdapter.notifyDataSetChanged();
+                            setCommentValue();
                         } else {
                             ToastClass.showShortToast(getActivity(), responsePOJO.getMessage());
                         }
@@ -111,7 +113,9 @@ public class PollCommentFragment extends FragmentController {
                 postCommentPOJOS.clear();
                 try {
                     Collections.reverse(responseListPOJO.getResultList());
+                    comment_added=responseListPOJO.getResultList().size();
                     postCommentPOJOS.addAll(responseListPOJO.getResultList());
+                    setCommentValue();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -132,11 +136,10 @@ public class PollCommentFragment extends FragmentController {
         rv_comments.setItemAnimator(new DefaultItemAnimator());
     }
 
-    @Override
-    public void onBackPressed() {
-        Log.d(TagUtils.getTag(), "on back pressed");
-        Bundle bundle = new Bundle();
-        bundle.putInt("total_comments_added", comment_added);
-        activityManager.popBackResultFragment(startingFragment, requestCode, FragmentContants.RESULT_OK, bundle);
+    public void setCommentValue() {
+        if (getActivity() instanceof HomeActivity) {
+            HomeActivity homeActivity = (HomeActivity) getActivity();
+            homeActivity.setCommentCount(String.valueOf(comment_added));
+        }
     }
 }

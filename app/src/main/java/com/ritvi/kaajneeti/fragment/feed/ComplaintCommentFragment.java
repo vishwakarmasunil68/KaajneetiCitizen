@@ -17,6 +17,7 @@ import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
 import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.Util.ToastClass;
+import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.adapter.ComplaintCommentAdapter;
 import com.ritvi.kaajneeti.adapter.EventCommentAdapter;
 import com.ritvi.kaajneeti.fragmentcontroller.FragmentContants;
@@ -91,6 +92,7 @@ public class ComplaintCommentFragment extends FragmentController {
                             postCommentPOJOS.add(responsePOJO.getResult());
                             comment_added++;
                             et_comment.setText("");
+                            setCommentValue();
                             postCommentAdapter.notifyDataSetChanged();
                         } else {
                             ToastClass.showShortToast(getActivity(), responsePOJO.getMessage());
@@ -99,7 +101,7 @@ public class ComplaintCommentFragment extends FragmentController {
                         e.printStackTrace();
                     }
                 }
-            }, ComplaintCommentPOJO.class, "SAVE_COMMENT", false).execute(WebServicesUrls.SAVE_COMPLAINT_COMMENT);
+            }, ComplaintCommentPOJO.class, "SAVE_COMMENT", true).execute(WebServicesUrls.SAVE_COMPLAINT_COMMENT);
         }
     }
 
@@ -113,7 +115,9 @@ public class ComplaintCommentFragment extends FragmentController {
                 postCommentPOJOS.clear();
                 try {
                     Collections.reverse(responseListPOJO.getResultList());
+                    comment_added=responseListPOJO.getResultList().size();
                     postCommentPOJOS.addAll(responseListPOJO.getResultList());
+                    setCommentValue();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -134,11 +138,11 @@ public class ComplaintCommentFragment extends FragmentController {
         rv_comments.setItemAnimator(new DefaultItemAnimator());
     }
 
-    @Override
-    public void onBackPressed() {
-        Log.d(TagUtils.getTag(), "on back pressed");
-        Bundle bundle = new Bundle();
-        bundle.putInt("total_comments_added", comment_added);
-        activityManager.popBackResultFragment(startingFragment, requestCode, FragmentContants.RESULT_OK, bundle);
+
+    public void setCommentValue() {
+        if (getActivity() instanceof HomeActivity) {
+            HomeActivity homeActivity = (HomeActivity) getActivity();
+            homeActivity.setCommentCount(String.valueOf(comment_added));
+        }
     }
 }

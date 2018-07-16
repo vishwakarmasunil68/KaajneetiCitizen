@@ -3,6 +3,7 @@ package com.ritvi.kaajneeti.fragment.wallet;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,12 +18,10 @@ import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
 import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.adapter.ContributeTransAdapter;
-import com.ritvi.kaajneeti.adapter.HomeFeedAdapter;
 import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
 import com.ritvi.kaajneeti.pojo.ResponseListPOJO;
 import com.ritvi.kaajneeti.pojo.allfeeds.FeedPOJO;
 import com.ritvi.kaajneeti.pojo.payment.PaymentDataPOJO;
-import com.ritvi.kaajneeti.pojo.payment.PaymentTransPOJO;
 import com.ritvi.kaajneeti.webservice.ResponseListCallback;
 import com.ritvi.kaajneeti.webservice.WebServiceBaseResponseList;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
@@ -45,7 +44,8 @@ public class ContributeFragment extends FragmentController {
     LinearLayout ll_contribute;
     @BindView(R.id.tv_total_contribute)
     TextView tv_total_contribute;
-
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -69,7 +69,17 @@ public class ContributeFragment extends FragmentController {
         ll_contribute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activityManager.startFragmentForResult(R.id.frame_home, ContributeFragment.this, new SelectUserForContributionFragment(), 101);
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("is_contribute", true);
+                SelectUserForContributionFragment selectUserForContributionFragment = new SelectUserForContributionFragment();
+                selectUserForContributionFragment.setArguments(bundle);
+                activityManager.startFragmentForResult(R.id.frame_home, ContributeFragment.this, selectUserForContributionFragment, 101);
+            }
+        });
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getContributeLogs();
             }
         });
 
@@ -83,7 +93,9 @@ public class ContributeFragment extends FragmentController {
             getContributeLogs();
         }
     }
-    List<FeedPOJO> feedPOJOS=new ArrayList<>();
+
+    List<FeedPOJO> feedPOJOS = new ArrayList<>();
+
     public void getContributeLogs() {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
@@ -93,6 +105,7 @@ public class ContributeFragment extends FragmentController {
         new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
             @Override
             public void onGetMsg(ResponseListPOJO<FeedPOJO> responseListPOJO) {
+                swipeRefreshLayout.setRefreshing(false);
                 feedPOJOS.clear();
                 try {
                     if (responseListPOJO.isSuccess()) {
@@ -114,9 +127,9 @@ public class ContributeFragment extends FragmentController {
                                 }
                             }
                         }
-                        tv_total_contribute.setText("Rs. "+String.valueOf(money));
+                        tv_total_contribute.setText("Rs. " + String.valueOf(money));
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 contributeTransAdapter.notifyDataSetChanged();

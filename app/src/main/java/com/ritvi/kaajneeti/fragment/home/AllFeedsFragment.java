@@ -173,14 +173,6 @@ public class AllFeedsFragment extends FragmentController{
     }
 
     TextView tv_comments;
-    public void showComment(TextView tv_comments, PostPOJO postPOJO) {
-        this.tv_comments=tv_comments;
-        CommentFragment commentFragment=new CommentFragment();
-        Bundle bundle=new Bundle();
-        bundle.putString("post_id",postPOJO.getPostId());
-        commentFragment.setArguments(bundle);
-        activityManager.startFragmentForResult(R.id.frame_home,AllFeedsFragment.this,commentFragment,101);
-    }
 
     @Override
     public void onFragmentResult(int requestCode, int resultCode, Bundle data) {
@@ -197,30 +189,4 @@ public class AllFeedsFragment extends FragmentController{
         }
     }
 
-    public void showPollComments(TextView tv_comments, PollPOJO pollPOJO) {
-        this.tv_comments=tv_comments;
-        PollCommentFragment commentFragment=new PollCommentFragment();
-        Bundle bundle=new Bundle();
-        bundle.putString("poll_id",pollPOJO.getPollId());
-        commentFragment.setArguments(bundle);
-        activityManager.startFragmentForResult(R.id.frame_home,AllFeedsFragment.this,commentFragment,101);
-    }
-
-    public void showEventComment(TextView tv_comments, EventPOJO eventPOJO) {
-        this.tv_comments=tv_comments;
-        EventCommentFragment commentFragment=new EventCommentFragment();
-        Bundle bundle=new Bundle();
-        bundle.putString("event_id",eventPOJO.getEventId());
-        commentFragment.setArguments(bundle);
-        activityManager.startFragmentForResult(R.id.frame_home,AllFeedsFragment.this,commentFragment,101);
-    }
-
-    public void showComplaintComments(TextView tv_comments, ComplaintPOJO complaintPOJO) {
-        this.tv_comments=tv_comments;
-        ComplaintCommentFragment commentFragment=new ComplaintCommentFragment();
-        Bundle bundle=new Bundle();
-        bundle.putString("complaint_id",complaintPOJO.getComplaintId());
-        commentFragment.setArguments(bundle);
-        activityManager.startFragmentForResult(R.id.frame_home,AllFeedsFragment.this,commentFragment,101);
-    }
 }

@@ -2,6 +2,7 @@ package com.ritvi.kaajneeti.adapter;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +11,11 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -37,8 +43,8 @@ import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.fragment.AttachmentViewPagerFragment;
 import com.ritvi.kaajneeti.fragment.ComplaintDetailFragment;
 import com.ritvi.kaajneeti.fragment.event.EventPreviewFragment;
-import com.ritvi.kaajneeti.fragment.home.AllFeedsFragment;
 import com.ritvi.kaajneeti.fragment.poll.PollPreviewFragment;
+import com.ritvi.kaajneeti.fragment.post.PostViewFragment;
 import com.ritvi.kaajneeti.fragment.suggestion.SuggestionDetailFragment;
 import com.ritvi.kaajneeti.fragment.user.UserProfileFragment;
 import com.ritvi.kaajneeti.interfaces.OnLoadMoreListener;
@@ -136,6 +142,10 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         return 5;
                     case "information":
                         return 6;
+                    case "follower":
+                        return 7;
+                    case "following":
+                        return 8;
                 }
                 return super.getItemViewType(position);
             } else {
@@ -172,6 +182,12 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case 6:
                 v = LayoutInflater.from(parent.getContext()).inflate(R.layout.inflate_information_feed, parent, false);
                 return new InformationViewHolder(v);
+            case 7:
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.inflate_search_user_profile, parent, false);
+                return new UserProfileViewHolder(v);
+            case 8:
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.inflate_search_user_profile, parent, false);
+                return new UserProfileViewHolder(v);
             case 101:
                 v = LayoutInflater.from(parent.getContext()).inflate(R.layout.inflate_item_loading, parent, false);
                 return new LoadingViewHolder(v);
@@ -207,6 +223,14 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     UserProfileViewHolder userProfileViewHolder = (UserProfileViewHolder) holder;
                     inflateUserData(userProfileViewHolder, items.get(position).getProfiledata(), position);
                     break;
+                case "follower":
+                    UserProfileViewHolder followerUserProfileViewHolder = (UserProfileViewHolder) holder;
+                    inflateUserData(followerUserProfileViewHolder, items.get(position).getFollowerdataUserProfilePOJO(), position);
+                    break;
+                case "following":
+                    UserProfileViewHolder followingUserProfileViewHolder = (UserProfileViewHolder) holder;
+                    inflateUserData(followingUserProfileViewHolder, items.get(position).getFollowingdataUserProfilePOJO(), position);
+                    break;
                 case "suggestion":
                     SuggestionViewHolder suggestionViewHolder = (SuggestionViewHolder) holder;
                     inflateSuggestionData(suggestionViewHolder, items.get(position).getSuggestiondata(), position);
@@ -223,85 +247,120 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void inflateUserData(final UserProfileViewHolder userProfileViewHolder, final UserProfilePOJO userProfilePOJO, final int position) {
-        userProfileViewHolder.tv_user_name.setText(userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName());
-        Glide.with(activity.getApplicationContext())
-                .load(userProfilePOJO.getProfilePhotoPath())
-                .placeholder(R.drawable.ic_default_profile_pic)
-                .error(R.drawable.ic_default_profile_pic)
-                .dontAnimate()
-                .into(userProfileViewHolder.cv_profile_pic);
-        userProfileViewHolder.swipeRevealLayout.lockDrag(true);
-        userProfileViewHolder.btn_accept.setVisibility(View.GONE);
-        switch (userProfilePOJO.getMyFriend()) {
-            case 0:
-                userProfileViewHolder.btn_accept.setText("+ Add");
-                userProfileViewHolder.btn_accept.setVisibility(View.VISIBLE);
-                userProfileViewHolder.swipeRevealLayout.lockDrag(true);
-                break;
-            case 1:
-                userProfileViewHolder.btn_accept.setVisibility(View.GONE);
-                userProfileViewHolder.swipeRevealLayout.lockDrag(false);
-                break;
-            case 2:
-                userProfileViewHolder.btn_accept.setVisibility(View.VISIBLE);
-                userProfileViewHolder.btn_accept.setText("Accept");
-                userProfileViewHolder.swipeRevealLayout.lockDrag(false);
-                break;
-            case 3:
-                userProfileViewHolder.btn_accept.setVisibility(View.GONE);
-                userProfileViewHolder.swipeRevealLayout.lockDrag(false);
-                break;
-            case 4:
-                userProfileViewHolder.btn_accept.setText("Follow");
-                userProfileViewHolder.btn_accept.setVisibility(View.VISIBLE);
-                break;
+        if (userProfilePOJO != null) {
+            userProfileViewHolder.tv_user_name.setText(userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName());
+            Glide.with(activity.getApplicationContext())
+                    .load(userProfilePOJO.getProfilePhotoPath())
+                    .placeholder(R.drawable.ic_default_profile_pic)
+                    .error(R.drawable.ic_default_profile_pic)
+                    .dontAnimate()
+                    .into(userProfileViewHolder.cv_profile_pic);
+            userProfileViewHolder.swipeRevealLayout.lockDrag(true);
+            userProfileViewHolder.btn_accept.setVisibility(View.GONE);
+            switch (userProfilePOJO.getMyFriend()) {
+                case 0:
+                    userProfileViewHolder.btn_accept.setText("+ Add");
+                    userProfileViewHolder.btn_accept.setVisibility(View.VISIBLE);
+                    userProfileViewHolder.swipeRevealLayout.lockDrag(true);
+                    break;
+                case 1:
+                    userProfileViewHolder.btn_accept.setVisibility(View.GONE);
+                    userProfileViewHolder.swipeRevealLayout.lockDrag(false);
+                    break;
+                case 2:
+                    userProfileViewHolder.btn_accept.setVisibility(View.VISIBLE);
+                    userProfileViewHolder.btn_accept.setText("Accept");
+                    userProfileViewHolder.swipeRevealLayout.lockDrag(false);
+                    break;
+                case 3:
+                    userProfileViewHolder.btn_accept.setVisibility(View.GONE);
+                    userProfileViewHolder.swipeRevealLayout.lockDrag(false);
+                    break;
+                case 4:
+                    userProfileViewHolder.btn_accept.setText("Follow");
+                    userProfileViewHolder.btn_accept.setVisibility(View.VISIBLE);
+                    break;
+            }
+
+            userProfileViewHolder.btn_accept.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    switch (userProfilePOJO.getMyFriend()) {
+                        case 0:
+                            sendFriendRequest(userProfilePOJO);
+                            break;
+                        case 2:
+                            acceptRequest(userProfilePOJO);
+                            break;
+                        case 4:
+                            followUser(userProfilePOJO);
+                            userProfileViewHolder.btn_accept.setVisibility(View.GONE);
+                            break;
+                    }
+                    userProfileViewHolder.swipeRevealLayout.close(true);
+                }
+            });
+
+            userProfileViewHolder.ll_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switch (userProfilePOJO.getMyFriend()) {
+                        case 1:
+                            undoFriendRequest(userProfilePOJO);
+                            break;
+                        case 2:
+                            cancelFriendRequest(userProfilePOJO);
+                            break;
+                        case 3:
+                            sendFriendRequest(userProfilePOJO);
+                            break;
+                    }
+                    userProfileViewHolder.swipeRevealLayout.close(true);
+                }
+            });
+
+            userProfileViewHolder.tv_email.setText(userProfilePOJO.getEmail());
+
+            userProfileViewHolder.ll_user.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (activity instanceof HomeActivity) {
+                        HomeActivity homeActivity = (HomeActivity) activity;
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("user_profile_id", userProfilePOJO.getUserProfileId());
+                        UserProfileFragment userProfileFragment = new UserProfileFragment();
+                        userProfileFragment.setArguments(bundle);
+                        homeActivity.replaceFragmentinFrameHome(userProfileFragment, userProfileFragment.getClass().getSimpleName());
+                    }
+                }
+            });
+
+            if (userProfilePOJO.getUserTypeId().equalsIgnoreCase("1")) {
+                userProfileViewHolder.iv_crown.setVisibility(View.GONE);
+            } else {
+                userProfileViewHolder.iv_crown.setVisibility(View.VISIBLE);
+            }
         }
+    }
 
-        userProfileViewHolder.btn_accept.setOnClickListener(new View.OnClickListener() {
+    public void followUser(final UserProfilePOJO userProfilePOJO) {
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+        nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
+        nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
+        nameValuePairs.add(new BasicNameValuePair("friend_user_profile_id", userProfilePOJO.getUserProfileId()));
+        new WebServiceBase(nameValuePairs, activity, new WebServicesCallBack() {
             @Override
-            public void onClick(View view) {
-                switch (userProfilePOJO.getMyFriend()) {
-                    case 0:
-                        sendFriendRequest(userProfilePOJO);
-                        break;
-                    case 2:
-                        acceptRequest(userProfilePOJO);
-                        break;
-                }
-                userProfileViewHolder.swipeRevealLayout.close(true);
-            }
-        });
-
-        userProfileViewHolder.ll_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (userProfilePOJO.getMyFriend()) {
-                    case 1:
-                        undoFriendRequest(userProfilePOJO);
-                        break;
-                    case 3:
-                        sendFriendRequest(userProfilePOJO);
-                        break;
-                }
-                userProfileViewHolder.swipeRevealLayout.close(true);
-            }
-        });
-
-        userProfileViewHolder.tv_email.setText(userProfilePOJO.getEmail());
-
-        userProfileViewHolder.ll_user.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (activity instanceof HomeActivity) {
-                    HomeActivity homeActivity = (HomeActivity) activity;
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("userProfile", userProfilePOJO);
-                    UserProfileFragment userProfileFragment = new UserProfileFragment();
-                    userProfileFragment.setArguments(bundle);
-                    homeActivity.replaceFragmentinFrameHome(userProfileFragment, userProfileFragment.getClass().getSimpleName());
+            public void onGetMsg(String apicall, String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject.optString("status").equalsIgnoreCase("success")) {
+                        userProfilePOJO.setFollowing(jsonObject.optInt("follow"));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        });
+        }, "FOLLOW_UNFOLLOW", true).execute(WebServicesUrls.FOLLOW_UNFOLLOW_PEOPLE);
     }
 
 
@@ -313,17 +372,11 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         new WebServiceBase(nameValuePairs, activity, new WebServicesCallBack() {
             @Override
             public void onGetMsg(String apicall, String response) {
-
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     if (jsonObject.optString("status").equalsIgnoreCase("success")) {
-                        if (jsonObject.optString("message").equalsIgnoreCase("Sent connection request to user")) {
-                            userProfilePOJO.setMyFriend(1);
-                            notifyDataSetChanged();
-                        } else if (jsonObject.optString("message").equalsIgnoreCase("My request cancelled")) {
-                            userProfilePOJO.setMyFriend(0);
-                            notifyDataSetChanged();
-                        }
+                        userProfilePOJO.setMyFriend(jsonObject.optInt("friend"));
+                        notifyDataSetChanged();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -340,13 +393,22 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         new WebServiceBase(nameValuePairs, activity, new WebServicesCallBack() {
             @Override
             public void onGetMsg(String apicall, String response) {
-                userProfilePOJO.setMyFriend(0);
-                notifyDataSetChanged();
+//                userProfilePOJO.setMyFriend(0);
+//                notifyDataSetChanged();
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject.optString("status").equalsIgnoreCase("success")) {
+                        userProfilePOJO.setMyFriend(jsonObject.optInt("friend"));
+                        notifyDataSetChanged();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }, "CALL_ADD_FRIEND_API", true).execute(WebServicesUrls.UNDO_FRIEND_REQUEST);
     }
 
-    public void cancelFriendRequest(final UserProfilePOJO userProfilePOJO, TextView textView) {
+    public void cancelFriendRequest(final UserProfilePOJO userProfilePOJO) {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("user_id", Constants.userProfilePOJO.getUserId()));
         nameValuePairs.add(new BasicNameValuePair("user_profile_id", Constants.userProfilePOJO.getUserProfileId()));
@@ -354,8 +416,17 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         new WebServiceBase(nameValuePairs, activity, new WebServicesCallBack() {
             @Override
             public void onGetMsg(String apicall, String response) {
-                userProfilePOJO.setMyFriend(4);
-                notifyDataSetChanged();
+//                userProfilePOJO.setMyFriend(0);
+//                notifyDataSetChanged();
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject.optString("status").equalsIgnoreCase("success")) {
+                        userProfilePOJO.setMyFriend(jsonObject.optInt("friend"));
+                        notifyDataSetChanged();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }, "CALL_ADD_FRIEND_API", true).execute(WebServicesUrls.CANCEL_FRIEND_REQUEST);
     }
@@ -368,8 +439,17 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         new WebServiceBase(nameValuePairs, activity, new WebServicesCallBack() {
             @Override
             public void onGetMsg(String apicall, String response) {
-                userProfilePOJO.setMyFriend(3);
-                notifyDataSetChanged();
+//                userProfilePOJO.setMyFriend(3);
+//                notifyDataSetChanged();
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject.optString("status").equalsIgnoreCase("success")) {
+                        userProfilePOJO.setMyFriend(jsonObject.optInt("friend"));
+                        notifyDataSetChanged();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }, "CALL_ADD_FRIEND_API", true).execute(WebServicesUrls.SEND_FRIEND_REQUEST);
     }
@@ -432,7 +512,7 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 is_Ans_Image = true;
             }
         }
-        final PollFeedAnsAdapter pollFeedAnsAdapter = new PollFeedAnsAdapter(activity, null, pollPOJO.getPollAnsPOJOS());
+        final PollFeedAnsAdapter pollFeedAnsAdapter = new PollFeedAnsAdapter(activity, null, pollPOJO.getPollAnsPOJOS(), pollPOJO);
         if (is_Ans_Image) {
             GridLayoutManager layoutManager = new GridLayoutManager(activity, 2);
             pollViewHolder.rv_ans.setLayoutManager(layoutManager);
@@ -449,7 +529,9 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 //
         pollFeedAnsAdapter.setOnAnsClicked(new PollAnsClickInterface() {
             @Override
-            public void onAnsclicked(String ans_id) {
+            public void onAnsclicked(PollPOJO pollPOJO) {
+                items.get(position).setPollPOJO(pollPOJO);
+                notifyDataSetChanged();
             }
         });
 
@@ -466,21 +548,21 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         pollViewHolder.ll_poll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle bundle=new Bundle();
-                bundle.putSerializable("pollPOJO",pollPOJO);
+                Bundle bundle = new Bundle();
+                bundle.putString("poll_id", pollPOJO.getPollId());
 
-                PollPreviewFragment pollPreviewFragment=new PollPreviewFragment();
+                PollPreviewFragment pollPreviewFragment = new PollPreviewFragment();
                 pollPreviewFragment.setArguments(bundle);
 
-                if(activity instanceof HomeActivity){
-                    HomeActivity homeActivity= (HomeActivity) activity;
-                    homeActivity.startFragment(R.id.frame_home,pollPreviewFragment);
+                if (activity instanceof HomeActivity) {
+                    HomeActivity homeActivity = (HomeActivity) activity;
+                    homeActivity.startFragment(R.id.frame_home, pollPreviewFragment);
                 }
             }
         });
 
-        pollViewHolder.tv_poll_ends_in.setText("This poll ends in "+String.valueOf(UtilityFunction.getdateDifference(pollPOJO.getValidFromDate(),pollPOJO.getValidEndDate())+" days"));
-        pollViewHolder.tv_total_votes.setText( pollPOJO.getPollTotalParticipation()+" votes");
+        pollViewHolder.tv_poll_ends_in.setText("This poll ends in " + String.valueOf(UtilityFunction.getdateDifference(pollPOJO.getValidFromDate(), pollPOJO.getValidEndDate()) + " days"));
+        pollViewHolder.tv_total_votes.setText(pollPOJO.getPollTotalParticipation() + " votes");
 
         pollViewHolder.iv_poll_menu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -492,7 +574,9 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     public boolean onMenuItemClick(MenuItem menuitem) {
                         switch (menuitem.getItemId()) {
                             case R.id.popup_edit:
-
+                                Intent intent = new Intent(activity, ExpressActivity.class);
+                                intent.putExtra("pollPOJO", pollPOJO);
+                                activity.startActivity(intent);
                                 break;
                             case R.id.popup_delete:
                                 ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
@@ -539,9 +623,9 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         pollViewHolder.ll_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fragment instanceof AllFeedsFragment) {
-                    AllFeedsFragment allFeedsFragment = (AllFeedsFragment) fragment;
-                    allFeedsFragment.showPollComments(pollViewHolder.tv_comments, pollPOJO);
+                if (activity instanceof HomeActivity) {
+                    HomeActivity homeActivity = (HomeActivity) activity;
+                    homeActivity.showPollComments(pollViewHolder.tv_comments, pollPOJO);
                 }
             }
         });
@@ -598,18 +682,36 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 .placeholder(R.drawable.ic_default_profile_pic)
                 .dontAnimate()
                 .into(eventViewHolder.cv_profile_pic);
-            Log.d(TagUtils.getTag(),"event cover photo:-"+eventPOJO.getEventCoverPhoto());
+        Log.d(TagUtils.getTag(), "event cover photo:-" + eventPOJO.getEventCoverPhoto());
 //        if (eventPOJO.getEventAttacehment().size() > 0) {
-            Glide.with(activity.getApplicationContext())
-                    .load(eventPOJO.getEventCoverPhoto())
-                    .error(R.drawable.ic_default_profile_pic)
-                    .placeholder(R.drawable.ic_default_profile_pic)
-                    .dontAnimate()
-                    .into(eventViewHolder.iv_event_image);
+        Glide.with(activity.getApplicationContext())
+                .load(eventPOJO.getEventCoverPhoto())
+                .error(R.drawable.ic_default_pic)
+                .placeholder(R.drawable.ic_default_pic)
+                .dontAnimate()
+                .into(eventViewHolder.iv_event_image);
 //        }
 
         String name = "";
-        UserProfilePOJO userProfilePOJO = eventPOJO.getEventProfile();
+        final UserProfilePOJO userProfilePOJO = eventPOJO.getEventProfile();
+
+        eventViewHolder.cv_profile_pic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (activity instanceof HomeActivity) {
+
+                    HomeActivity homeActivity = (HomeActivity) activity;
+
+                    UserProfileFragment userProfileFragment = new UserProfileFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("user_profile_id", userProfilePOJO.getUserProfileId());
+                    userProfileFragment.setArguments(bundle);
+
+                    homeActivity.startFragment(R.id.frame_home, userProfileFragment);
+                }
+            }
+        });
 
         name = "<b>" + userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName() + "</b> created an <b>event</b>";
 
@@ -619,7 +721,7 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (activity instanceof HomeActivity) {
 
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("eventPOJO", eventPOJO);
+                    bundle.putString("event_id", eventPOJO.getEventId());
 
                     EventPreviewFragment eventPreviewFragment = new EventPreviewFragment();
                     eventPreviewFragment.setArguments(bundle);
@@ -799,9 +901,9 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         eventViewHolder.ll_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fragment instanceof AllFeedsFragment) {
-                    AllFeedsFragment allFeedsFragment = (AllFeedsFragment) fragment;
-                    allFeedsFragment.showEventComment(eventViewHolder.tv_comments, eventPOJO);
+                if (activity instanceof HomeActivity) {
+                    HomeActivity homeActivity = (HomeActivity) activity;
+                    homeActivity.showEventComment(eventViewHolder.tv_comments, eventPOJO);
                 }
             }
         });
@@ -848,12 +950,54 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     }
 
+    public void makeLinks(TextView textView, String[] links, ClickableSpan[] clickableSpans) {
+        SpannableString spannableString = new SpannableString(textView.getText());
+        for (int i = 0; i < links.length; i++) {
+            ClickableSpan clickableSpan = clickableSpans[i];
+            String link = links[i];
+
+            int startIndexOfLink = textView.getText().toString().indexOf(link);
+            spannableString.setSpan(clickableSpan, startIndexOfLink,
+                    startIndexOfLink + link.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        textView.setHighlightColor(
+                Color.TRANSPARENT); // prevent TextView change background when highlight
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        textView.setText(spannableString, TextView.BufferType.SPANNABLE);
+    }
+
+    public ClickableSpan returnSpanClick(final UserProfilePOJO userProfilePOJO) {
+        ClickableSpan profileClickSpan = new ClickableSpan() {
+            @Override
+            public void onClick(View view) {
+//                Toast.makeText(activity.getApplicationContext(), "Hi :- "+userProfilePOJO.getFirstName(), Toast.LENGTH_SHORT)
+//                        .show();
+                if (activity instanceof HomeActivity) {
+
+                    HomeActivity homeActivity = (HomeActivity) activity;
+
+                    UserProfileFragment userProfileFragment = new UserProfileFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("user_profile_id", userProfilePOJO.getUserProfileId());
+                    userProfileFragment.setArguments(bundle);
+
+                    homeActivity.startFragment(R.id.frame_home, userProfileFragment);
+                }
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                ds.setUnderlineText(false);
+            }
+        };
+
+        return profileClickSpan;
+    }
 
     public void inflatePostData(final PostViewHolder postViewHolder, final PostPOJO postPOJO, final int position) {
 
         try {
             UserProfilePOJO userProfilePOJO = postPOJO.getPostProfile();
-//            SetViews.setProfilePhoto(activity.getApplicationContext(), userProfilePOJO.getProfilePhotoPath(), postViewHolder.cv_profile_pic);
 
             if (postPOJO.getPostAttachment().size() > 0) {
 
@@ -920,9 +1064,9 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 postViewHolder.ll_images.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        List<AttachmentPOJO> attachmentPOJOS=new ArrayList<>();
-                        for(PostAttachmentPOJO postAttachmentPOJO:postPOJO.getPostAttachment()){
-                            AttachmentPOJO attachmentPOJO=new AttachmentPOJO();
+                        List<AttachmentPOJO> attachmentPOJOS = new ArrayList<>();
+                        for (PostAttachmentPOJO postAttachmentPOJO : postPOJO.getPostAttachment()) {
+                            AttachmentPOJO attachmentPOJO = new AttachmentPOJO();
                             attachmentPOJO.setFile_name(postAttachmentPOJO.getAttachmentFile());
                             attachmentPOJO.setFile_path(postAttachmentPOJO.getAttachmentFile());
                             attachmentPOJO.setFile_type(postAttachmentPOJO.getAttachmentFile());
@@ -932,15 +1076,15 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             attachmentPOJOS.add(attachmentPOJO);
                         }
 
-                        Bundle bundle=new Bundle();
+                        Bundle bundle = new Bundle();
                         bundle.putSerializable("attachments", (Serializable) attachmentPOJOS);
 
-                        AttachmentViewPagerFragment attachmentViewPagerFragment=new AttachmentViewPagerFragment();
+                        AttachmentViewPagerFragment attachmentViewPagerFragment = new AttachmentViewPagerFragment();
                         attachmentViewPagerFragment.setArguments(bundle);
 
-                        if(activity instanceof HomeActivity){
-                            HomeActivity homeActivity= (HomeActivity) activity;
-                            homeActivity.startFragment(R.id.frame_home,attachmentViewPagerFragment);
+                        if (activity instanceof HomeActivity) {
+                            HomeActivity homeActivity = (HomeActivity) activity;
+                            homeActivity.startFragment(R.id.frame_home, attachmentViewPagerFragment);
                         }
 
                     }
@@ -952,8 +1096,14 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 postViewHolder.ll_image_3.setVisibility(View.GONE);
             }
 
+            List<String> span = new ArrayList<>();
+            List<UserProfilePOJO> profilePOJOList = new ArrayList<>();
+
             String name = "";
-            name = "<b>" + userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName() + "</b>";
+            String profile_name = userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName();
+            span.add(profile_name);
+            profilePOJOList.add(userProfilePOJO);
+            name = "<b>" + profile_name + "</b>";
 
             String profile_description = "";
             boolean containDescribe = false;
@@ -979,12 +1129,26 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (postPOJO.getPostTag().size() > 0) {
                     profile_description += " with ";
                     if (postPOJO.getPostTag().size() > 2) {
-                        profile_description += "<b>" + postPOJO.getPostTag().get(0).getFirstName() + " and " + (postPOJO.getPostTag().size() - 1) + " other" + "</b>";
+                        String profile_tag = postPOJO.getPostTag().get(0).getFirstName() + " " + postPOJO.getPostTag().get(0).getLastName();
+                        span.add(profile_tag);
+                        profilePOJOList.add(postPOJO.getPostTag().get(0));
+                        profile_description += "<b>" + profile_tag + " and " + (postPOJO.getPostTag().size() - 1) + " other" + "</b>";
                     } else if (postPOJO.getPostTag().size() == 2) {
-                        profile_description += "<b>" + postPOJO.getPostTag().get(0).getFirstName() + " " + postPOJO.getPostTag().get(0).getLastName() +
-                                " and " + postPOJO.getPostTag().get(1).getFirstName() + " " + postPOJO.getPostTag().get(1).getLastName() + "</b>";
+                        String profile_tag_1 = postPOJO.getPostTag().get(0).getFirstName() + " " + postPOJO.getPostTag().get(0).getLastName();
+                        String profile_tag_2 = postPOJO.getPostTag().get(1).getFirstName() + " " + postPOJO.getPostTag().get(1).getLastName();
+                        profile_description += "<b>" + profile_tag_1 +
+                                " and " + profile_tag_2 + "</b>";
+                        span.add(profile_tag_1);
+                        span.add(profile_tag_2);
+
+                        profilePOJOList.add(postPOJO.getPostTag().get(0));
+                        profilePOJOList.add(postPOJO.getPostTag().get(1));
+
                     } else {
-                        profile_description += "<b>" + postPOJO.getPostTag().get(0).getFirstName() + " " + postPOJO.getPostTag().get(0).getLastName() + "</b>";
+                        String profile_tag = postPOJO.getPostTag().get(0).getFirstName() + " " + postPOJO.getPostTag().get(0).getLastName();
+                        profile_description += "<b>" + profile_tag + "</b>";
+                        span.add(profile_tag);
+                        profilePOJOList.add(postPOJO.getPostTag().get(0));
                     }
                 }
 
@@ -993,7 +1157,26 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             }
 
+            Glide.with(activity.getApplicationContext())
+                    .load(postPOJO.getPostProfile().getProfilePhotoPath())
+                    .placeholder(R.drawable.ic_default_profile_pic)
+                    .error(R.drawable.ic_default_profile_pic)
+                    .dontAnimate()
+                    .into(postViewHolder.cv_profile_pic);
+
             postViewHolder.tv_profile_name.setText(Html.fromHtml(name + " " + profile_description));
+            if (span.size() > 0) {
+                String[] tags = span.toArray(new String[span.size()]);
+                ClickableSpan[] clickableSpans = new ClickableSpan[profilePOJOList.size()];
+
+                for (int i = 0; i < profilePOJOList.size(); i++) {
+                    clickableSpans[i] = returnSpanClick(profilePOJOList.get(i));
+                }
+
+                makeLinks(postViewHolder.tv_profile_name, tags, clickableSpans);
+            }
+
+
             if (!postPOJO.getPostDescription().equalsIgnoreCase("")) {
                 postViewHolder.tv_description.setText(postPOJO.getPostDescription());
             } else {
@@ -1005,6 +1188,12 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 @Override
                 public void onClick(View view) {
                     if (activity instanceof HomeActivity) {
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("post_id", postPOJO.getPostId());
+                        PostViewFragment postViewFragment = new PostViewFragment();
+                        postViewFragment.setArguments(bundle);
+                        HomeActivity homeActivity = (HomeActivity) activity;
+                        homeActivity.startFragment(R.id.frame_home, postViewFragment);
                     }
                 }
             });
@@ -1076,9 +1265,9 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             postViewHolder.ll_comment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (fragment instanceof AllFeedsFragment) {
-                        AllFeedsFragment allFeedsFragment = (AllFeedsFragment) fragment;
-                        allFeedsFragment.showComment(postViewHolder.tv_comments, postPOJO);
+                    if (activity instanceof HomeActivity) {
+                        HomeActivity homeActivity = (HomeActivity) activity;
+                        homeActivity.showComment(postViewHolder.tv_comments, postPOJO);
                     }
                 }
             });
@@ -1199,9 +1388,9 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 complaintViewHolder.ll_images.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        List<AttachmentPOJO> attachmentPOJOS=new ArrayList<>();
-                        for(ComplaintAttachmentPOJO complaintAttachmentPOJO:complaintPOJO.getComplaintAttachments()){
-                            AttachmentPOJO attachmentPOJO=new AttachmentPOJO();
+                        List<AttachmentPOJO> attachmentPOJOS = new ArrayList<>();
+                        for (ComplaintAttachmentPOJO complaintAttachmentPOJO : complaintPOJO.getComplaintAttachments()) {
+                            AttachmentPOJO attachmentPOJO = new AttachmentPOJO();
                             attachmentPOJO.setFile_name(complaintAttachmentPOJO.getAttachmentFile());
                             attachmentPOJO.setFile_path(complaintAttachmentPOJO.getAttachmentFile());
                             attachmentPOJO.setFile_type(complaintAttachmentPOJO.getAttachmentFile());
@@ -1211,20 +1400,19 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             attachmentPOJOS.add(attachmentPOJO);
                         }
 
-                        Bundle bundle=new Bundle();
+                        Bundle bundle = new Bundle();
                         bundle.putSerializable("attachments", (Serializable) attachmentPOJOS);
 
-                        AttachmentViewPagerFragment attachmentViewPagerFragment=new AttachmentViewPagerFragment();
+                        AttachmentViewPagerFragment attachmentViewPagerFragment = new AttachmentViewPagerFragment();
                         attachmentViewPagerFragment.setArguments(bundle);
 
-                        if(activity instanceof HomeActivity){
-                            HomeActivity homeActivity= (HomeActivity) activity;
-                            homeActivity.startFragment(R.id.frame_home,attachmentViewPagerFragment);
+                        if (activity instanceof HomeActivity) {
+                            HomeActivity homeActivity = (HomeActivity) activity;
+                            homeActivity.startFragment(R.id.frame_home, attachmentViewPagerFragment);
                         }
 
                     }
                 });
-
 
 
             } else {
@@ -1232,12 +1420,33 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 complaintViewHolder.ll_image_2.setVisibility(View.GONE);
                 complaintViewHolder.ll_image_3.setVisibility(View.GONE);
             }
-
+            List<String> span = new ArrayList<>();
+            List<UserProfilePOJO> profilePOJOList = new ArrayList<>();
             String name = "";
-            name = "<b>" + userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName() + "</b>";
+            String user_name = userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName();
+            name = "<b>" + user_name + "</b>";
+            span.add(user_name);
+            profilePOJOList.add(userProfilePOJO);
             if (complaintPOJO.getComplaintAssigned().size() > 0) {
-                name += " has raised a Complaint with <b>" + complaintPOJO.getComplaintAssigned().get(0).getFirstName() + " " + complaintPOJO.getComplaintAssigned().get(0).getLastName();
+                String leader_name = complaintPOJO.getComplaintAssigned().get(0).getFirstName() + " " + complaintPOJO.getComplaintAssigned().get(0).getLastName();
+                name += " has raised a Complaint with <b>" + leader_name + "</b>";
+                span.add(leader_name);
+                profilePOJOList.add(complaintPOJO.getComplaintAssigned().get(0));
             }
+
+            complaintViewHolder.tv_profile_name.setText(Html.fromHtml(name));
+
+            if (span.size() > 0) {
+                String[] tags = span.toArray(new String[span.size()]);
+                ClickableSpan[] clickableSpans = new ClickableSpan[profilePOJOList.size()];
+
+                for (int i = 0; i < profilePOJOList.size(); i++) {
+                    clickableSpans[i] = returnSpanClick(profilePOJOList.get(i));
+                }
+
+                makeLinks(complaintViewHolder.tv_profile_name, tags, clickableSpans);
+            }
+
 
 //            String profile_description = "";
 //            boolean containDescribe = false;
@@ -1277,7 +1486,7 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 //                }
 //            }
             complaintViewHolder.tv_title.setText("Subject : " + complaintPOJO.getComplaintSubject());
-            complaintViewHolder.tv_profile_name.setText(Html.fromHtml(name));
+
             if (!complaintPOJO.getComplaintDescription().equalsIgnoreCase("")) {
                 complaintViewHolder.tv_description.setText(complaintPOJO.getComplaintDescription());
             } else {
@@ -1305,9 +1514,9 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             complaintViewHolder.ll_comment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (fragment instanceof AllFeedsFragment) {
-                        AllFeedsFragment allFeedsFragment = (AllFeedsFragment) fragment;
-                        allFeedsFragment.showComplaintComments(complaintViewHolder.tv_comments, complaintPOJO);
+                    if (activity instanceof HomeActivity) {
+                        HomeActivity homeActivity = (HomeActivity) activity;
+                        homeActivity.showComplaintComments(complaintViewHolder.tv_comments, complaintPOJO);
                     }
                 }
             });
@@ -1376,9 +1585,16 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         public boolean onMenuItemClick(MenuItem menuitem) {
                             switch (menuitem.getItemId()) {
                                 case R.id.popup_edit:
-                                    Intent intent = new Intent(activity, ExpressActivity.class);
-                                    intent.putExtra("complaintPOJO", complaintPOJO);
-                                    activity.startActivity(intent);
+                                    if (complaintPOJO.getComplaintStatus().equalsIgnoreCase("1") ||
+                                            complaintPOJO.getComplaintStatus().equalsIgnoreCase("5")
+                                            ) {
+                                        Intent intent = new Intent(activity, ExpressActivity.class);
+                                        intent.putExtra("complaintPOJO", complaintPOJO);
+                                        activity.startActivity(intent);
+                                    } else {
+                                        ToastClass.showShortToast(activity.getApplicationContext(), "You cannnot edit this complaint");
+                                    }
+
                                     break;
                                 case R.id.popup_delete:
                                     ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
@@ -1494,9 +1710,9 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 suggestionViewHolder.ll_images.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        List<AttachmentPOJO> attachmentPOJOS=new ArrayList<>();
-                        for(SuggestionAttachmentPOJO suggestionAttachmentPOJO:suggestionPOJO.getSuggestionAttachment()){
-                            AttachmentPOJO attachmentPOJO=new AttachmentPOJO();
+                        List<AttachmentPOJO> attachmentPOJOS = new ArrayList<>();
+                        for (SuggestionAttachmentPOJO suggestionAttachmentPOJO : suggestionPOJO.getSuggestionAttachment()) {
+                            AttachmentPOJO attachmentPOJO = new AttachmentPOJO();
                             attachmentPOJO.setFile_name(suggestionAttachmentPOJO.getAttachmentFile());
                             attachmentPOJO.setFile_path(suggestionAttachmentPOJO.getAttachmentFile());
                             attachmentPOJO.setFile_type(suggestionAttachmentPOJO.getAttachmentFile());
@@ -1506,15 +1722,15 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             attachmentPOJOS.add(attachmentPOJO);
                         }
 
-                        Bundle bundle=new Bundle();
+                        Bundle bundle = new Bundle();
                         bundle.putSerializable("attachments", (Serializable) attachmentPOJOS);
 
-                        AttachmentViewPagerFragment attachmentViewPagerFragment=new AttachmentViewPagerFragment();
+                        AttachmentViewPagerFragment attachmentViewPagerFragment = new AttachmentViewPagerFragment();
                         attachmentViewPagerFragment.setArguments(bundle);
 
-                        if(activity instanceof HomeActivity){
-                            HomeActivity homeActivity= (HomeActivity) activity;
-                            homeActivity.startFragment(R.id.frame_home,attachmentViewPagerFragment);
+                        if (activity instanceof HomeActivity) {
+                            HomeActivity homeActivity = (HomeActivity) activity;
+                            homeActivity.startFragment(R.id.frame_home, attachmentViewPagerFragment);
                         }
 
                     }
@@ -1527,14 +1743,41 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 suggestionViewHolder.ll_image_3.setVisibility(View.GONE);
             }
 
+            List<String> span = new ArrayList<>();
+            List<UserProfilePOJO> profilePOJOList = new ArrayList<>();
+
             String name = "";
-            name = "<b>" + userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName() + "</b>";
+            String profile_name = userProfilePOJO.getFirstName() + " " + userProfilePOJO.getLastName();
+            name = "<b>" + profile_name + "</b>";
+
+            span.add(profile_name);
+            profilePOJOList.add(userProfilePOJO);
+
             if (suggestionPOJO.getSuggestionAssigned().size() > 0) {
-                name += " has suggested <b>" + suggestionPOJO.getSuggestionAssigned().get(0).getFirstName() + " " + suggestionPOJO.getSuggestionAssigned().get(0).getLastName();
+                String leader_name = suggestionPOJO.getSuggestionAssigned().get(0).getFirstName() + " " + suggestionPOJO.getSuggestionAssigned().get(0).getLastName();
+                name += " has suggested <b>" + leader_name;
+
+                span.add(leader_name);
+                profilePOJOList.add(suggestionPOJO.getSuggestionAssigned().get(0));
+
             }
 
-            suggestionViewHolder.tv_title.setText("Subject : " + suggestionPOJO.getSuggestionSubject());
             suggestionViewHolder.tv_profile_name.setText(Html.fromHtml(name));
+
+            if (span.size() > 0) {
+                String[] tags = span.toArray(new String[span.size()]);
+                ClickableSpan[] clickableSpans = new ClickableSpan[profilePOJOList.size()];
+
+                for (int i = 0; i < profilePOJOList.size(); i++) {
+                    clickableSpans[i] = returnSpanClick(profilePOJOList.get(i));
+                }
+
+                makeLinks(suggestionViewHolder.tv_profile_name, tags, clickableSpans);
+            }
+
+
+            suggestionViewHolder.tv_title.setText("Subject : " + suggestionPOJO.getSuggestionSubject());
+
             if (!suggestionPOJO.getSuggestionDescription().equalsIgnoreCase("")) {
                 suggestionViewHolder.tv_description.setText(suggestionPOJO.getSuggestionDescription());
             } else {
@@ -1616,9 +1859,25 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void inflateInformationData(final InformationViewHolder informationViewHolder, final InformationPOJO informationPOJO, final int position) {
         try {
-            UserProfilePOJO userProfilePOJO = informationPOJO.getInformationProfile();
+            final UserProfilePOJO userProfilePOJO = informationPOJO.getInformationProfile();
             SetViews.setProfilePhoto(activity.getApplicationContext(), userProfilePOJO.getProfilePhotoPath(), informationViewHolder.cv_profile_pic);
 
+            informationViewHolder.cv_profile_pic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (activity instanceof HomeActivity) {
+
+                        HomeActivity homeActivity = (HomeActivity) activity;
+
+                        UserProfileFragment userProfileFragment = new UserProfileFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("user_profile_id", userProfilePOJO.getUserProfileId());
+                        userProfileFragment.setArguments(bundle);
+
+                        homeActivity.startFragment(R.id.frame_home, userProfileFragment);
+                    }
+                }
+            });
             if (informationPOJO.getInformationAttachment().size() > 0) {
 
                 if (informationPOJO.getInformationAttachment().size() == 1) {
@@ -1684,9 +1943,9 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 informationViewHolder.ll_images.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        List<AttachmentPOJO> attachmentPOJOS=new ArrayList<>();
-                        for(InformationAttachmentPOJO informationAttachmentPOJO:informationPOJO.getInformationAttachment()){
-                            AttachmentPOJO attachmentPOJO=new AttachmentPOJO();
+                        List<AttachmentPOJO> attachmentPOJOS = new ArrayList<>();
+                        for (InformationAttachmentPOJO informationAttachmentPOJO : informationPOJO.getInformationAttachment()) {
+                            AttachmentPOJO attachmentPOJO = new AttachmentPOJO();
                             attachmentPOJO.setFile_name(informationAttachmentPOJO.getAttachmentFile());
                             attachmentPOJO.setFile_path(informationAttachmentPOJO.getAttachmentFile());
                             attachmentPOJO.setFile_type(informationAttachmentPOJO.getAttachmentFile());
@@ -1696,20 +1955,19 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             attachmentPOJOS.add(attachmentPOJO);
                         }
 
-                        Bundle bundle=new Bundle();
+                        Bundle bundle = new Bundle();
                         bundle.putSerializable("attachments", (Serializable) attachmentPOJOS);
 
-                        AttachmentViewPagerFragment attachmentViewPagerFragment=new AttachmentViewPagerFragment();
+                        AttachmentViewPagerFragment attachmentViewPagerFragment = new AttachmentViewPagerFragment();
                         attachmentViewPagerFragment.setArguments(bundle);
 
-                        if(activity instanceof HomeActivity){
-                            HomeActivity homeActivity= (HomeActivity) activity;
-                            homeActivity.startFragment(R.id.frame_home,attachmentViewPagerFragment);
+                        if (activity instanceof HomeActivity) {
+                            HomeActivity homeActivity = (HomeActivity) activity;
+                            homeActivity.startFragment(R.id.frame_home, attachmentViewPagerFragment);
                         }
 
                     }
                 });
-
 
 
             } else {
@@ -1772,7 +2030,6 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public TextView tv_like;
         public TextView tv_comments;
         public LinearLayout ll_comment;
-        public TextView tv_revote;
         public TextView tv_poll_ends_in;
         public TextView tv_total_votes;
         public LinearLayout ll_poll;
@@ -1794,7 +2051,6 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             tv_like = itemView.findViewById(R.id.tv_like);
             tv_comments = itemView.findViewById(R.id.tv_comments);
             ll_comment = itemView.findViewById(R.id.ll_comment);
-            tv_revote = itemView.findViewById(R.id.tv_revote);
             tv_poll_ends_in = itemView.findViewById(R.id.tv_poll_ends_in);
             tv_total_votes = itemView.findViewById(R.id.tv_total_votes);
             ll_poll = itemView.findViewById(R.id.ll_poll);
@@ -2055,6 +2311,7 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public LinearLayout ll_user;
         public Button btn_accept;
         public LinearLayout ll_delete;
+        public ImageView iv_crown;
         public SwipeRevealLayout swipeRevealLayout;
 
         public UserProfileViewHolder(View itemView) {
@@ -2065,6 +2322,7 @@ public class HomeFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ll_user = itemView.findViewById(R.id.ll_user);
             btn_accept = itemView.findViewById(R.id.btn_accept);
             ll_delete = itemView.findViewById(R.id.ll_delete);
+            iv_crown = itemView.findViewById(R.id.iv_crown);
             swipeRevealLayout = itemView.findViewById(R.id.swipeRevealLayout);
         }
     }

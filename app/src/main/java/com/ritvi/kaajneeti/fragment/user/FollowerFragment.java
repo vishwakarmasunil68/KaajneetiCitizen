@@ -77,6 +77,13 @@ public class FollowerFragment extends FragmentController{
                 callAPI();
             }
         });
+
+        ll_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
 
@@ -95,8 +102,10 @@ public class FollowerFragment extends FragmentController{
         new WebServiceBaseResponseList<FeedPOJO>(nameValuePairs, getActivity(), new ResponseListCallback<FeedPOJO>() {
             @Override
             public void onGetMsg(ResponseListPOJO<FeedPOJO> responseListPOJO) {
+                swipeRefreshLayout.setRefreshing(false);
                 try{
                     if(responseListPOJO.isSuccess()) {
+                        feedPOJOS.clear();
                         feedPOJOS.addAll(responseListPOJO.getResultList());
                         homeFeedAdapter.notifyDataSetChanged();
                         swipeRefreshLayout.setRefreshing(false);

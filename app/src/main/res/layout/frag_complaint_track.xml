@@ -61,15 +61,17 @@
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
 
-    <android.support.v4.widget.NestedScrollView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         android:padding="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginBottom="80dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -88,9 +90,9 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp">
+                    android:layout_marginRight="10dp"
+                    android:orientation="vertical">
 
                     <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                         android:id="@+id/tv_acceptance"
@@ -98,15 +100,15 @@
                         android:layout_height="wrap_content"
                         android:text="Leader Accepted the Invitation"
                         android:textColor="#000000"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
 
                     <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                         android:id="@+id/tv_accepted_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Date"
                         android:layout_marginTop="7dp"
-                        android:textSize="10sp"/>
+                        android:text="Date"
+                        android:textSize="10sp" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -114,8 +116,188 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_history"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="20dp"></android.support.v7.widget.RecyclerView>
+
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <io.codetail.widget.RevealFrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/reveal_items"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#EEEEEE"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
+
+
+                            <LinearLayout
+                                android:id="@+id/ll_camera"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"
+                                    android:src="@drawable/ic_launcher" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="camera" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/ll_gallery"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"
+                                    android:src="@drawable/ic_launcher" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="gallery" />
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
+
+
+                            <LinearLayout
+                                android:id="@+id/ll_video"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"
+                                    android:src="@drawable/ic_launcher" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="video" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/ll_audio"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"
+                                    android:src="@drawable/ic_launcher" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="audio" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </io.codetail.widget.RevealFrameLayout>
+            </FrameLayout>
+            <LinearLayout
+                android:id="@+id/frame_reply"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/edit_comment_back"
+                android:gravity="center"
+                android:minHeight="60dp"
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/iv_attach"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/ic_attach"
+                    android:tint="@color/colorPrimary" />
+
+                <EditText
+                    android:id="@+id/et_reply"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="Enter Message"
+                    android:maxLength="400"
+                    android:minHeight="50dp"
+                    android:paddingLeft="50dp"
+                    android:paddingRight="40dp" />
+
+                <ImageView
+                    android:id="@+id/iv_send_comment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_gravity="right|center"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginRight="5dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/ic_comment_send" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
 </LinearLayout>

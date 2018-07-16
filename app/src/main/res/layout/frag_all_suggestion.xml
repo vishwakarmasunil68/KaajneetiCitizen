@@ -62,18 +62,18 @@
                         android:textColor="#FFFFFF"
                         android:textStyle="bold" />
 
-                    <TextView
+                    <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                         android:id="@+id/tv_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
-                        android:text="Suggestion"
-                        android:visibility="gone"
-                        android:textSize="20sp"
                         android:gravity="center_vertical"
+                        android:text="Suggestion"
                         android:textColor="#FFFFFF"
-                        android:textStyle="bold" />
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
 
                     <ImageView
                         android:id="@+id/iv_filter"
@@ -87,11 +87,16 @@
                 </LinearLayout>
             </android.support.v7.widget.Toolbar>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_data"
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+                android:layout_height="match_parent">
 
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+            </android.support.v4.widget.SwipeRefreshLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -233,17 +238,17 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="33dp"
                     android:layout_marginRight="25dp"
-                    android:visibility="gone"
-                    android:layout_marginTop="25dp">
+                    android:layout_marginTop="25dp"
+                    android:visibility="gone">
 
                     <com.ritvi.kaajneeti.view.ProximaNovaLightTextView
                         android:id="@+id/tv_range"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:background="@drawable/ic_edit_full"
                         android:gravity="center"
-                        android:textSize="17sp"
-                        android:background="@drawable/ic_edit_full" />
+                        android:textSize="17sp" />
 
                     <ImageView
                         android:id="@+id/iv_calendar"

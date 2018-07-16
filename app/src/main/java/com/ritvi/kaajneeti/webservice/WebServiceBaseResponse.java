@@ -51,7 +51,7 @@ public class WebServiceBaseResponse<T> extends AsyncTask<String, Void, ResponseP
     Class<T> cls;
     public WebServiceBaseResponse(ArrayList<NameValuePair> nameValuePairs, Context context, Object object, Class<T> cls, String msg, boolean isdialog) {
         this.nameValuePairs = nameValuePairs;
-//        this.nameValuePairs.addAll(UtilityFunction.getNameValuePairs(context));
+        this.nameValuePairs.addAll(UtilityFunction.getNameValuePairs(context));
         this.object = object;
         this.context=context;
         this.msg = msg;

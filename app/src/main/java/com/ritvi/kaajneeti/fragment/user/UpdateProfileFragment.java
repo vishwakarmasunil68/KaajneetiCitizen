@@ -2,6 +2,7 @@ package com.ritvi.kaajneeti.fragment.user;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -27,6 +29,7 @@ import com.google.android.gms.gcm.GcmListenerService;
 import com.google.gson.Gson;
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
+import com.ritvi.kaajneeti.Util.FileUtils;
 import com.ritvi.kaajneeti.Util.Pref;
 import com.ritvi.kaajneeti.Util.SetViews;
 import com.ritvi.kaajneeti.Util.StringUtils;
@@ -51,6 +54,7 @@ import com.ritvi.kaajneeti.webservice.WebServicesCallBack;
 import com.ritvi.kaajneeti.webservice.WebServicesUrls;
 import com.ritvi.kaajneeti.webservice.WebUploadService;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+import com.yalantis.ucrop.UCrop;
 
 import net.alhazmy13.mediapicker.Image.ImagePicker;
 
@@ -148,6 +152,8 @@ public class UpdateProfileFragment extends Fragment implements DatePickerDialog.
     RecyclerView rv_work;
     @BindView(R.id.rv_education)
     RecyclerView rv_education;
+    @BindView(R.id.frame_dob)
+    FrameLayout frame_dob;
 
 
     UserProfilePOJO userProfilePOJO;
@@ -339,6 +345,12 @@ public class UpdateProfileFragment extends Fragment implements DatePickerDialog.
                 dpd.show(getActivity().getFragmentManager(), "Date of birth");
             }
         });
+        frame_dob.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                iv_dob.callOnClick();
+            }
+        });
 
         attachAddressRecycler();
         attachWorkRecycler();
@@ -460,7 +472,11 @@ public class UpdateProfileFragment extends Fragment implements DatePickerDialog.
 
             et_bio.setText(fullProfilePOJO.getProfilePOJO().getUserBio());
 
-            et_first_name.setText(fullProfilePOJO.getProfilePOJO().getFirstName());
+            if(fullProfilePOJO.getProfilePOJO().getFirstName()!=null
+                    &&fullProfilePOJO.getProfilePOJO().getFirstName().equalsIgnoreCase("Profile Name")){
+            }else{
+                et_first_name.setText(fullProfilePOJO.getProfilePOJO().getFirstName());
+            }
             et_last_name.setText(fullProfilePOJO.getProfilePOJO().getLastName());
             et_email.setText(fullProfilePOJO.getProfilePOJO().getEmail());
             if (fullProfilePOJO.getProfilePOJO().getMobile().length() > 0) {
@@ -576,10 +592,28 @@ public class UpdateProfileFragment extends Fragment implements DatePickerDialog.
         if (requestCode == ImagePicker.IMAGE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             List<String> mPaths = (List<String>) data.getSerializableExtra(ImagePicker.EXTRA_IMAGE_PATH);
             //Your Code
-            if (mPaths.size() > 0) {
-                setProfilePic(mPaths.get(0));
+//            if (mPaths.size() > 0) {
+//                setProfilePic(mPaths.get(0));
+//            }
+            if(mPaths.size()>0){
+                cropPic(mPaths.get(0));
             }
 
+        }else if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            final Uri resultUri = UCrop.getOutput(data);
+            setProfilePic(resultUri.getPath());
+        }
+    }
+
+    public void cropPic(String source) {
+        if (new File(source).exists()) {
+            Uri uri = Uri.fromFile(new File(source));
+            String destPath = FileUtils.getPhotoFolder() + File.separator + System.currentTimeMillis() + ".png";
+            Uri destUri = Uri.fromFile(new File(destPath));
+            UCrop.of(uri, destUri)
+                    .start(getActivity());
+        } else {
+            ToastClass.showShortToast(getActivity().getApplicationContext(), "File is corrupted");
         }
     }
 

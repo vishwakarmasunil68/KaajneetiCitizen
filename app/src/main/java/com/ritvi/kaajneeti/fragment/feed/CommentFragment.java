@@ -1,22 +1,23 @@
 package com.ritvi.kaajneeti.fragment.feed;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.ritvi.kaajneeti.R;
 import com.ritvi.kaajneeti.Util.Constants;
-import com.ritvi.kaajneeti.Util.TagUtils;
 import com.ritvi.kaajneeti.Util.ToastClass;
+import com.ritvi.kaajneeti.activity.home.HomeActivity;
 import com.ritvi.kaajneeti.adapter.PostCommentAdapter;
 import com.ritvi.kaajneeti.fragmentcontroller.FragmentContants;
 import com.ritvi.kaajneeti.fragmentcontroller.FragmentController;
@@ -46,6 +47,8 @@ public class CommentFragment extends FragmentController {
     EditText et_comment;
     @BindView(R.id.iv_send_comment)
     ImageView iv_send_comment;
+    @BindView(R.id.ll_back)
+    LinearLayout ll_back;
     String post_id = "";
     int comment_added = 0;
 
@@ -71,6 +74,14 @@ public class CommentFragment extends FragmentController {
                 saveComment();
             }
         });
+
+        ll_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
     }
 
     public void saveComment() {
@@ -89,6 +100,7 @@ public class CommentFragment extends FragmentController {
                             comment_added++;
                             et_comment.setText("");
                             postCommentAdapter.notifyDataSetChanged();
+                            setCommentValue();
                         } else {
                             ToastClass.showShortToast(getActivity(), responsePOJO.getMessage());
                         }
@@ -110,7 +122,9 @@ public class CommentFragment extends FragmentController {
                 postCommentPOJOS.clear();
                 try {
                     Collections.reverse(responseListPOJO.getResultList());
+                    comment_added = responseListPOJO.getResultList().size();
                     postCommentPOJOS.addAll(responseListPOJO.getResultList());
+                    setCommentValue();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -131,11 +145,26 @@ public class CommentFragment extends FragmentController {
         rv_comments.setItemAnimator(new DefaultItemAnimator());
     }
 
-    @Override
-    public void onBackPressed() {
-        Log.d(TagUtils.getTag(), "on back pressed");
-        Bundle bundle = new Bundle();
-        bundle.putInt("total_comments_added", comment_added);
-        activityManager.popBackResultFragment(startingFragment, requestCode, FragmentContants.RESULT_OK, bundle);
+    public void setCommentValue() {
+        if (getActivity() instanceof HomeActivity) {
+            HomeActivity homeActivity = (HomeActivity) getActivity();
+            homeActivity.setCommentCount(String.valueOf(comment_added));
+        }
     }
+
+//    @Override
+//    public void onBackPressed() {
+//        Log.d(TagUtils.getTag(), "on back pressed");
+////        if (getActivity() instanceof HomeActivity) {
+////            HomeActivity homeActivity = (HomeActivity) getActivity();
+////            Bundle bundle = new Bundle();
+////            bundle.putInt("total_comments_added", comment_added);
+////            activityManager.popBackResultFragment(startingFragment, requestCode, FragmentContants.RESULT_OK, bundle);
+////            homeActivity.onActivityResult(Constants.FRAG_FEED_COMMENT, Activity.RESULT_OK, null);
+////        }
+////        activityManager.popFragment();
+////        Bundle bundle = new Bundle();
+////        bundle.putInt("total_comments_added", comment_added);
+////        activityManager.popBackResultFragment(startingFragment, requestCode, FragmentContants.RESULT_OK, bundle);
+//    }
 }

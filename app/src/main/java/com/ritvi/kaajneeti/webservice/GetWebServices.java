@@ -89,7 +89,7 @@ public class GetWebServices extends AsyncTask<String,Void,String> {
                 ToastClass.showShortToast(context,"Something went wrong");
             }
         }else{
-            ToastClass.showShortToast(context,"No Internet");
+//            ToastClass.showShortToast(context,"No Internet");
         }
     }
 

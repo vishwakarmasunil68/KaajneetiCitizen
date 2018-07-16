@@ -12,6 +12,9 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.EditText;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -21,6 +24,7 @@ import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -31,21 +35,21 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class UtilityFunction {
-//    public static ArrayList<NameValuePair> getNameValuePairs(Context context){
-//        ArrayList<NameValuePair> nameValuePairs=new ArrayList<>();
-//        nameValuePairs.add(new BasicNameValuePair("device_token", Pref.GetDeviceToken(context,"simulator_id")));
-//        if(android.os.Build.MODEL.equals("")) {
-//            nameValuePairs.add(new BasicNameValuePair("device_name", android.os.Build.MODEL));
-//        }else{
-//            nameValuePairs.add(new BasicNameValuePair("device_name", "simulator"));
-//        }
-//        nameValuePairs.add(new BasicNameValuePair("device_os","android"));
-//        nameValuePairs.add(new BasicNameValuePair("language", Pref.GetStringPref(context, StringUtils.SELECTED_LANGUAGE,"en")));
-//        nameValuePairs.add(new BasicNameValuePair("location_lang", Pref.GetStringPref(context, StringUtils.CURRENT_LATITUDE,"28.6274271")));
-//        nameValuePairs.add(new BasicNameValuePair("location_long", Pref.GetStringPref(context, StringUtils.CURRENT_LONGITUDE,"77.3723356")));
-//
-//        return nameValuePairs;
-//    }
+    public static ArrayList<NameValuePair> getNameValuePairs(Context context){
+        ArrayList<NameValuePair> nameValuePairs=new ArrayList<>();
+        nameValuePairs.add(new BasicNameValuePair("device_token", Pref.GetDeviceToken(context,"simulator_id")));
+        if(android.os.Build.MODEL.equals("")) {
+            nameValuePairs.add(new BasicNameValuePair("device_name", android.os.Build.MODEL));
+        }else{
+            nameValuePairs.add(new BasicNameValuePair("device_name", "simulator"));
+        }
+        nameValuePairs.add(new BasicNameValuePair("device_os","android"));
+        nameValuePairs.add(new BasicNameValuePair("language", Pref.GetStringPref(context, StringUtils.SELECTED_LANGUAGE,"en")));
+        nameValuePairs.add(new BasicNameValuePair("location_lang", Pref.GetStringPref(context, StringUtils.CURRENT_LATITUDE,"28.6274271")));
+        nameValuePairs.add(new BasicNameValuePair("location_long", Pref.GetStringPref(context, StringUtils.CURRENT_LONGITUDE,"77.3723356")));
+
+        return nameValuePairs;
+    }
 
 
     public static String getCurrentDate() {
@@ -340,6 +344,10 @@ public class UtilityFunction {
             e.printStackTrace();
         }
         return 0.0;
+    }
+
+    public static String format2Decimal(double number){
+        return String.format("%.2f", number);
     }
 
 }
